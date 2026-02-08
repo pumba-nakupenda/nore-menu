@@ -64,6 +64,10 @@ export default function StaffManagementPage() {
                 ? `${process.env.NEXT_PUBLIC_API_URL}/staff/${editingStaff.id}`
                 : `${process.env.NEXT_PUBLIC_API_URL}/staff/${restaurantId}`
             
+            // CONCATENATE PREFIX BEFORE SAVING TO DB
+            const prefix = restaurantName?.replace(/\s+/g, '').toLowerCase()
+            const finalUsername = `${prefix}@${username}`
+
             const res = await fetch(url, {
                 method: editingStaff ? 'PATCH' : 'POST',
                 headers: {
@@ -72,7 +76,7 @@ export default function StaffManagementPage() {
                 },
                 body: JSON.stringify({ 
                     displayName, 
-                    username, 
+                    username: finalUsername, // Store as restaurant@identifiant
                     password, 
                     can_view_whatsapp: perms.whatsapp,
                     can_view_cashier: perms.cashier,
@@ -90,7 +94,11 @@ export default function StaffManagementPage() {
     const openEdit = (member: any) => {
         setEditingStaff(member)
         setDisplayName(member.display_name)
-        setUsername(member.username)
+        
+        // STRIP PREFIX FOR EDITING (so user only sees the identifiant part)
+        const parts = member.username.split('@')
+        setUsername(parts.length > 1 ? parts[1] : parts[0])
+        
         setPassword(member.password)
         setPerms({
             whatsapp: member.can_view_whatsapp !== false,
