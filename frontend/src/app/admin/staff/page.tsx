@@ -169,9 +169,35 @@ export default function StaffManagementPage() {
                         </div>
                         <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 mb-6 group-hover:bg-[#c5a059]/10 group-hover:text-[#c5a059] transition-all"><User className="w-8 h-8" /></div>
                         <h3 className="font-black text-xl mb-1 text-zinc-900">{member.display_name}</h3>
-                        <div className="flex flex-col mb-6">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Identifiant de connexion :</p>
-                            <p className="text-sm font-bold text-[#c5a059]">{restaurantName?.replace(/\s+/g, '').toLowerCase()}@{member.username}</p>
+                        
+                        <div className="space-y-3 mb-6">
+                            <div className="flex flex-col group/copy relative">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Identifiant</p>
+                                <div className="flex items-center justify-between">
+                                    <p className="text-sm font-bold text-[#c5a059]">{member.username}</p>
+                                    <button 
+                                        onClick={() => { navigator.clipboard.writeText(member.username); toast.success('Identifiant copié !') }}
+                                        className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-400 transition-all"
+                                        title="Copier l'identifiant"
+                                    >
+                                        <Copy className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col group/copy relative">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Mot de passe</p>
+                                <div className="flex items-center justify-between">
+                                    <p className="text-sm font-bold text-zinc-900">••••••••</p>
+                                    <button 
+                                        onClick={() => { navigator.clipboard.writeText(member.password); toast.success('Mot de passe copié !') }}
+                                        className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-400 transition-all"
+                                        title="Copier le mot de passe"
+                                    >
+                                        <Copy className="w-3.5 h-3.5" />
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         
                         <div className="flex gap-2 mb-8">
