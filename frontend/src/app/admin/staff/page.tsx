@@ -189,8 +189,25 @@ export default function StaffManagementPage() {
                         <p className="text-zinc-400 text-sm font-medium mb-8">Définissez les accès de l'employé.</p>
 
                         <div className="space-y-4">
-                            <input required type="text" placeholder="Nom d'affichage" value={displayName} onChange={e => setDisplayName(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-[#064e3b] font-bold transition-all text-zinc-900" />
-                            <input required type="text" placeholder="Identifiant" value={username} onChange={e => setUsername(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-[#064e3b] font-bold transition-all text-zinc-900" />
+                            <input required type="text" placeholder="Nom d'affichage (ex: Jean)" value={displayName} onChange={e => setDisplayName(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-[#064e3b] font-bold transition-all text-zinc-900" />
+                            
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Identifiant unique</label>
+                                <div className="flex items-center bg-zinc-50 border border-zinc-100 rounded-2xl overflow-hidden focus-within:bg-white focus-within:border-[#064e3b] transition-all">
+                                    <div className="px-4 py-4 bg-zinc-100 text-zinc-400 font-bold text-xs border-r border-zinc-200 shrink-0">
+                                        {restaurantName?.replace(/\s+/g, '').toLowerCase()}@
+                                    </div>
+                                    <input 
+                                        required 
+                                        type="text" 
+                                        placeholder="identifiant" 
+                                        value={username} 
+                                        onChange={e => setUsername(e.target.value)} 
+                                        className="flex-1 px-4 py-4 bg-transparent outline-none font-bold text-zinc-900" 
+                                    />
+                                </div>
+                            </div>
+
                             <input required type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-[#064e3b] font-bold transition-all text-zinc-900" />
                             
                             <div className="pt-4 space-y-3">
