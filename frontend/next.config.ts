@@ -8,13 +8,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'etcmxirpubasziepirdy.supabase.co', // Updated to your actual Supabase project
-        port: '',
+        hostname: '**.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+        pathname: '/**',
       }
     ],
   },
