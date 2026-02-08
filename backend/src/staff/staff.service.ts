@@ -18,7 +18,9 @@ export class StaffService {
         can_view_kitchen: staffData.can_view_kitchen,
         can_manage_stocks: staffData.can_manage_stocks,
         can_view_transactions: staffData.can_view_transactions,
-        can_process_payments: staffData.can_process_payments
+        can_process_payments: staffData.can_process_payments,
+        can_validate_orders: staffData.can_validate_orders,
+        can_cancel_orders: staffData.can_cancel_orders
       })
       .select()
       .single();
@@ -53,7 +55,9 @@ export class StaffService {
         can_view_kitchen: staffData.can_view_kitchen,
         can_manage_stocks: staffData.can_manage_stocks,
         can_view_transactions: staffData.can_view_transactions,
-        can_process_payments: staffData.can_process_payments
+        can_process_payments: staffData.can_process_payments,
+        can_validate_orders: staffData.can_validate_orders,
+        can_cancel_orders: staffData.can_cancel_orders
       }).eq('id', staffId).select().single();
     if (error) throw new InternalServerErrorException(error.message);
     return data;

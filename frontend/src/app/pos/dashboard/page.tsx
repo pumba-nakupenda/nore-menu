@@ -361,8 +361,10 @@ export default function POSDashboardPage() {
                                         <span className="text-2xl font-black text-emerald-600">{order.total_price.toLocaleString()} {currency}</span>
                                         {order.status === 'PENDING' ? (
                                             <div className="flex gap-2">
-                                                <button onClick={() => updateWhatsAppStatus(order.id, 'CANCELLED')} className="p-3 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><XCircle className="w-6 h-6" /></button>
-                                                {staff?.can_process_payments !== false && (
+                                                {staff?.can_cancel_orders !== false && (
+                                                    <button onClick={() => updateWhatsAppStatus(order.id, 'CANCELLED')} className="p-3 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><XCircle className="w-6 h-6" /></button>
+                                                )}
+                                                {staff?.can_validate_orders !== false && (
                                                     <button 
                                                         onClick={() => {
                                                             setConfirmingOrder(order);
@@ -430,7 +432,7 @@ export default function POSDashboardPage() {
                                     <section><h3 className="font-black text-[10px] uppercase tracking-widest text-emerald-500 mb-6 flex items-center gap-2"><MessageCircle className="w-4 h-4" /> WhatsApp à encaisser</h3><div className="space-y-3">{orders.filter(o => !o.is_paid && o.production_status === 'RECEIVED').map(order => (<div key={order.id} className="bg-white border-2 border-emerald-100 rounded-3xl p-5 shadow-sm flex items-center justify-between animate-in slide-in-from-right-4">
                                         <div className="min-w-0 flex-1"><div className="flex items-center gap-2 mb-1"><p className="font-black text-zinc-900 text-sm truncate">{order.customer_name || 'Client'}</p><span className="text-[8px] font-black bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100">{order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span></div><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div>
                                         <div className="flex gap-2">
-                                            <button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-50 rounded-xl"><XCircle className="w-5 h-5" /></button>
+                                            {staff?.can_cancel_orders !== false && <button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-50 rounded-xl"><XCircle className="w-5 h-5" /></button>}
                                             {staff?.can_process_payments !== false && (
                                                 <button onClick={() => updateOrderStatus(order.id, 'RECEIVED', true)} className="bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg flex items-center gap-2 transition-all"><CreditCard className="w-4 h-4" /> Encaisser</button>
                                             )}
@@ -440,7 +442,7 @@ export default function POSDashboardPage() {
 
                                 <section><h3 className="font-black text-[10px] uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2"><LayoutGrid className="w-4 h-4 text-blue-500" /> Prêt à servir</h3><div className="space-y-3">{orders.filter(o => o.production_status === 'READY').map(order => (<div key={order.id} className="bg-emerald-50 border border-emerald-100 rounded-3xl p-5 flex items-center justify-between"><div><p className="font-black text-emerald-900 text-sm">{order.order_type === 'dine_in' ? `Table ${order.table_number}` : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</p><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-100 rounded-xl"><XCircle className="w-5 h-5" /></button>
+                                    {staff?.can_cancel_orders !== false && <button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-100 rounded-xl"><XCircle className="w-5 h-5" /></button>}
                                     {staff?.can_process_payments !== false && (
                                         <button onClick={() => updateOrderStatus(order.id, 'SERVED', true)} className="bg-zinc-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-black/10">Encaisser</button>
                                     )}
@@ -460,9 +462,11 @@ export default function POSDashboardPage() {
                                     {manualType === 'delivery' && <input type="text" placeholder="Adresse de livraison..." value={manualAddress} onChange={e => setManualAddress(e.target.value)} className="w-full px-5 py-4 rounded-2xl border border-zinc-200 outline-none font-black shadow-inner focus:bg-white transition-all" />}
                                 </div>
                                 <div className="flex justify-between items-center"><span className="text-[10px] font-black uppercase text-zinc-400">Total</span><span className="text-3xl font-black text-blue-900">{cartTotal.toLocaleString()} {currency}</span></div>
-                                <button disabled={cartTotal === 0} onClick={submitManualOrder} className={`w-full py-6 text-white rounded-[2.5rem] font-black uppercase tracking-[0.2em] shadow-2xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-20 transition-all ${paymentLogic === 'pay_before' ? 'bg-emerald-600' : 'bg-blue-600'}`}>
-                                    {paymentLogic === 'pay_before' ? <><CreditCard className="w-6 h-6" /> Encaisser & Envoyer</> : <><Send className="w-6 h-6" /> Envoyer Cuisine</>}
-                                </button>
+                                {staff?.can_validate_orders !== false && (
+                                    <button disabled={cartTotal === 0} onClick={submitManualOrder} className={`w-full py-6 text-white rounded-[2.5rem] font-black uppercase tracking-[0.2em] shadow-2xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-20 transition-all ${paymentLogic === 'pay_before' ? 'bg-emerald-600' : 'bg-blue-600'}`}>
+                                        {paymentLogic === 'pay_before' ? <><CreditCard className="w-6 h-6" /> Encaisser & Envoyer</> : <><Send className="w-6 h-6" /> Envoyer Cuisine</>}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
