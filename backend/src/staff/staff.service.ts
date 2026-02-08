@@ -53,9 +53,34 @@ export class StaffService {
     return data;
   }
 
-  async loginPOS(username: string, password: string) {
-    const { data, error } = await this.supabase.getClient().from('staff_accounts').select('*').eq('username', username).eq('password', password).single();
-    if (error || !data) throw new UnauthorizedException('Identifiants POS incorrects');
+  async loginPOS(credential: string, password: string) {
+    // Support both direct username (if unique) and scoped username (restaurant@user)
+    if (credential.includes('@')) {
+      const [resSlug, username] = credential.split('@');
+      
+      // First find the restaurant by name/slug (case insensitive search)
+      const { data: restaurant } = await this.supabase.getClient()
+        .from('restaurants')
+        .select('id')
+        .ilike('name', resSlug)
+        .single();
+
+      if (restaurant) {
+        const { data, error } = await this.supabase.getClient()
+          .from('staff_accounts')
+          .select('*')
+          .eq('restaurant_id', restaurant.id)
+          .eq('username', username)
+          .eq('password', password)
+          .single();
+        
+        if (!error && data) return data;
+      }
+    }
+
+    // Fallback to global search (for backward compatibility)
+    const { data, error } = await this.supabase.getClient().from('staff_accounts').select('*').eq('username', credential).eq('password', password).single();
+    if (error || !data) throw new UnauthorizedException('Identifiants POS incorrects (Format: restaurant@identifiant)');
     return data;
   }
 }

@@ -59,7 +59,7 @@ export default function POSLoginPage() {
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="nom_utilisateur"
+                                placeholder="nom_restaurant@identifiant"
                                 className="w-full pl-14 pr-6 py-5 rounded-2xl bg-zinc-50 border border-zinc-100 focus:bg-white focus:border-[#c5a059] outline-none font-bold transition-all shadow-sm"
                             />
                         </div>

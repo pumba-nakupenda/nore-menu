@@ -158,7 +158,10 @@ export default function StaffManagementPage() {
                         </div>
                         <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 mb-6 group-hover:bg-[#c5a059]/10 group-hover:text-[#c5a059] transition-all"><User className="w-8 h-8" /></div>
                         <h3 className="font-black text-xl mb-1 text-zinc-900">{member.display_name}</h3>
-                        <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-6">{member.username}</p>
+                        <div className="flex flex-col mb-6">
+                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Identifiant de connexion :</p>
+                            <p className="text-sm font-bold text-[#c5a059]">{restaurantName?.replace(/\s+/g, '').toLowerCase()}@{member.username}</p>
+                        </div>
                         
                         <div className="flex gap-2 mb-8">
                             {member.can_view_whatsapp && <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg" title="WhatsApp"><MessageCircle className="w-4 h-4" /></div>}
