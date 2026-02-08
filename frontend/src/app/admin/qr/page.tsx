@@ -383,7 +383,7 @@ export default function QrPage() {
             </div>
 
             <div className="grid lg:grid-cols-12 gap-10 items-start">
-                <div className="lg:col-span-5 space-y-8 h-[calc(100vh-280px)] overflow-y-auto pr-4 no-scrollbar pb-10">
+                <div className="lg:col-span-5 space-y-8 max-h-[calc(100vh-200px)] overflow-y-auto pr-4 custom-scrollbar pb-20">
                     
                     {/* SECTION: MODE SELECTOR */}
                     <div className="bg-white p-2 rounded-[2rem] border border-black/5 flex gap-2 shadow-sm">
