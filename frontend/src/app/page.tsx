@@ -57,9 +57,27 @@ export default function Home() {
   const x = useTransform(horizontalProgress, [0, 1], ["0%", "-240vw"])
 
   // Robust Default Values
-  const hero = siteContent?.hero || { title: "Digitalisez L'Excellence", subtitle: "Système complet de Commande WhatsApp & POS pour les restaurants premium.", image_url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070" }
-  const solution = siteContent?.solution || { title: "Un écosystème \nsans failles.", description: "Nore Menu résout la lenteur du service et les erreurs de commande.", image_url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070" }
-  const flow = siteContent?.flow || { title: "Le Flux", steps: [ { n: "01", t: "Commande", d: "Scan & WhatsApp", img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974" }, { n: "02", t: "Validation", d: "Sur POS", img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?q=80&w=2070" }, { n: "03", t: "Cuisine", d: "Écran KDS", img: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=1954" }, { n: "04", t: "Data", d: "Stats réelles", img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070" } ] }
+  const hero = {
+    title: siteContent?.hero?.title || "Digitalisez L'Excellence",
+    subtitle: siteContent?.hero?.subtitle || "Système complet de Commande WhatsApp & POS pour les restaurants premium.",
+    image_url: siteContent?.hero?.image_url || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070"
+  }
+
+  const solution = {
+    title: siteContent?.solution?.title || "Un écosystème \nsans failles.",
+    description: siteContent?.solution?.description || "Nore Menu résout la lenteur du service et les erreurs de commande.",
+    image_url: siteContent?.solution?.image_url || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070"
+  }
+
+  const flow = {
+    title: siteContent?.flow?.title || "Le Flux",
+    steps: siteContent?.flow?.steps || [
+      { n: "01", t: "Commande", d: "Scan & WhatsApp", img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974" },
+      { n: "02", t: "Validation", d: "Sur POS", img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?q=80&w=2070" },
+      { n: "03", t: "Cuisine", d: "Écran KDS", img: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=1954" },
+      { n: "04", t: "Data", d: "Stats réelles", img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070" }
+    ]
+  }
 
   return (
     <motion.div ref={containerRef} style={{ backgroundColor: bgColor, color: textColor }} className="min-h-screen flex flex-col font-sans selection:bg-[#b48a4d]/30 transition-colors duration-700 relative">
