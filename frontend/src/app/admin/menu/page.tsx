@@ -515,10 +515,10 @@ export default function MenuPage() {
         <div className="space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-20">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-zinc-900 tracking-tight">Menu Management</h2>
+                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-zinc-900 tracking-tight">Gestion du Menu</h2>
                     <p className="text-zinc-500 mt-1 text-sm md:text-base flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]"></span>
-                        Curate your restaurant's digital offering
+                        Organisez l'offre digitale de votre établissement
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-2 w-full sm:w-auto">
@@ -527,19 +527,19 @@ export default function MenuPage() {
                         target="_blank"
                         className="flex-1 sm:flex-none bg-emerald-50 text-[#064e3b] border border-emerald-100 px-4 py-3 rounded-xl hover:bg-emerald-100 flex items-center justify-center transition-all font-bold text-xs"
                     >
-                        <Eye className="w-4 h-4 mr-2" /> Preview Menu
+                        <Eye className="w-4 h-4 mr-2" /> Voir le Menu
                     </a>
                     <button
                         onClick={downloadTemplate}
                         className="flex-1 sm:flex-none bg-white text-[#c5a059] border border-[#c5a059]/20 px-4 py-3 rounded-xl hover:bg-amber-50 flex items-center justify-center shadow-sm transition-all font-bold text-xs"
                     >
-                        <Download className="w-4 h-4 mr-2" /> Blueprint
+                        <Download className="w-4 h-4 mr-2" /> Modèle CSV
                     </button>
                     <button
                         onClick={() => document.getElementById('global-csv-import')?.click()}
                         className="flex-1 sm:flex-none bg-white text-zinc-600 border border-black/5 px-4 py-3 rounded-xl hover:bg-zinc-50 flex items-center justify-center shadow-sm transition-all font-bold text-xs"
                     >
-                        <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" /> Global Import
+                        <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" /> Import Global
                     </button>
                     <input
                         type="file"
@@ -552,7 +552,7 @@ export default function MenuPage() {
                         onClick={() => openModal('category')}
                         className="w-full sm:w-auto bg-[#064e3b] text-white px-6 py-3 rounded-xl hover:bg-[#053e2f] flex items-center justify-center shadow-xl shadow-emerald-900/10 transition-all font-bold text-sm"
                     >
-                        <Plus className="w-5 h-5 mr-2" /> Add Category
+                        <Plus className="w-5 h-5 mr-2" /> Nouvelle Catégorie
                     </button>
                 </div>
             </div>
