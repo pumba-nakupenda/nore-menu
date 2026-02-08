@@ -25,16 +25,28 @@ export default function AdminLayout({
         setIsPreviewOpen(false)
     }, [pathname])
 
+    const [isLoadingSession, setIsLoadingSession] = useState(true)
+
     useEffect(() => {
-        const checkMaster = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
-            const { data } = await supabase.from('restaurants').select('id, is_master').eq('owner_id', user.id).single()
-            setRestaurantId(data?.id || null)
-            setIsMaster(data?.is_master || false)
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) {
+                router.push('/login')
+            } else {
+                setIsLoadingSession(false)
+                const { data: res } = await supabase.from('restaurants').select('id, is_master').eq('owner_id', session.user.id).single()
+                setRestaurantId(res?.id || null)
+                setIsMaster(res?.is_master || false)
+            }
         }
-        checkMaster()
-    }, [])
+        checkUser()
+    }, [router])
+
+    if (isLoadingSession) return (
+        <div className="min-h-screen bg-[#fdfcfb] flex items-center justify-center">
+            <ChefHat className="w-10 h-10 animate-bounce text-[#064e3b]" />
+        </div>
+    )
 
     const handleSignOut = async () => {
         await supabase.auth.signOut()
