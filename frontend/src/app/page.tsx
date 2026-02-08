@@ -151,16 +151,22 @@ export default function Home() {
         <section id="fonctionnement" className="py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-serif font-bold uppercase text-center mb-24">Le Voyage Nore</h2>
-            <div className="space-y-12">
+            <div className="space-y-24 md:space-y-32">
               {flowSteps.map((step: any, i: number) => (
-                <div key={i} className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-16`}>
-                  <div className="flex-1 space-y-6">
-                    <span className="text-6xl font-serif italic text-[#b48a4d] opacity-30">{step.n}</span>
-                    <h3 className="text-4xl font-serif font-bold">{step.t}</h3>
-                    <p className="text-xl text-zinc-500 font-medium leading-relaxed">{step.d}</p>
+                <div key={i} className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-10 md:gap-16`}>
+                  <div className="w-full md:flex-1 relative aspect-video rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white order-1 md:order-none">
+                    <Image 
+                      src={step.img || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974"} 
+                      alt={step.t} 
+                      fill 
+                      className="object-cover" 
+                      unoptimized 
+                    />
                   </div>
-                  <div className="flex-1 relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
-                    <Image src={step.img || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974"} alt={step.t} fill className="object-cover" unoptimized />
+                  <div className="w-full md:flex-1 space-y-6 text-center md:text-left order-2 md:order-none">
+                    <span className="text-5xl md:text-6xl font-serif italic text-[#b48a4d] opacity-30">{step.n}</span>
+                    <h3 className="text-3xl md:text-4xl font-serif font-bold">{step.t}</h3>
+                    <p className="text-lg md:text-xl text-zinc-500 font-medium leading-relaxed">{step.d}</p>
                   </div>
                 </div>
               ))}
