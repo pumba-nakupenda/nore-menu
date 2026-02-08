@@ -21,7 +21,10 @@ export default function StaffManagementPage() {
     const [perms, setPerms] = useState({
         whatsapp: true,
         cashier: true,
-        kitchen: true
+        kitchen: true,
+        stocks: true,
+        transactions: true,
+        payments: true
     })
 
     const copyAccessKit = (member: any) => {
@@ -87,7 +90,10 @@ export default function StaffManagementPage() {
                     password, 
                     can_view_whatsapp: perms.whatsapp,
                     can_view_cashier: perms.cashier,
-                    can_view_kitchen: perms.kitchen
+                    can_view_kitchen: perms.kitchen,
+                    can_manage_stocks: perms.stocks,
+                    can_view_transactions: perms.transactions,
+                    can_process_payments: perms.payments
                 })
             })
 
@@ -102,7 +108,6 @@ export default function StaffManagementPage() {
         setEditingStaff(member)
         setDisplayName(member.display_name)
         
-        // STRIP PREFIX FOR EDITING (so user only sees the identifiant part)
         const parts = member.username.split('@')
         setUsername(parts.length > 1 ? parts[1] : parts[0])
         
@@ -110,7 +115,10 @@ export default function StaffManagementPage() {
         setPerms({
             whatsapp: member.can_view_whatsapp !== false,
             cashier: member.can_view_cashier !== false,
-            kitchen: member.can_view_kitchen !== false
+            kitchen: member.can_view_kitchen !== false,
+            stocks: member.can_manage_stocks !== false,
+            transactions: member.can_view_transactions !== false,
+            payments: member.can_process_payments !== false
         })
         setIsModalOpen(true)
     }
@@ -241,11 +249,15 @@ export default function StaffManagementPage() {
                             <input required type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-[#064e3b] font-bold transition-all text-zinc-900" />
                             
                             <div className="pt-4 space-y-3">
-                                <p className="text-[10px] font-black uppercase text-zinc-400 ml-1">Visibilité des onglets POS</p>
+                                <p className="text-[10px] font-black uppercase text-zinc-400 ml-1">Permissions & Visibilité</p>
                                 <div className="grid grid-cols-3 gap-2">
                                     <button type="button" onClick={() => setPerms({...perms, whatsapp: !perms.whatsapp})} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${perms.whatsapp ? 'border-emerald-500 bg-emerald-50 text-emerald-600' : 'border-zinc-100 text-zinc-300'}`}><MessageCircle className="w-5 h-5" /><span className="text-[8px] font-black uppercase">WhatsApp</span></button>
                                     <button type="button" onClick={() => setPerms({...perms, cashier: !perms.cashier})} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${perms.cashier ? 'border-amber-500 bg-amber-50 text-amber-600' : 'border-zinc-100 text-zinc-300'}`}><Coins className="w-5 h-5" /><span className="text-[8px] font-black uppercase">Caisse</span></button>
                                     <button type="button" onClick={() => setPerms({...perms, kitchen: !perms.kitchen})} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${perms.kitchen ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-zinc-100 text-zinc-300'}`}><Utensils className="w-5 h-5" /><span className="text-[8px] font-black uppercase">Cuisine</span></button>
+                                    
+                                    <button type="button" onClick={() => setPerms({...perms, stocks: !perms.stocks})} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${perms.stocks ? 'border-amber-700 bg-amber-50 text-amber-900' : 'border-zinc-100 text-zinc-300'}`}><Layers className="w-5 h-5" /><span className="text-[8px] font-black uppercase">Stocks</span></button>
+                                    <button type="button" onClick={() => setPerms({...perms, transactions: !perms.transactions})} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${perms.transactions ? 'border-zinc-800 bg-zinc-50 text-zinc-900' : 'border-zinc-100 text-zinc-300'}`}><History className="w-5 h-5" /><span className="text-[8px] font-black uppercase">Ventes</span></button>
+                                    <button type="button" onClick={() => setPerms({...perms, payments: !perms.payments})} className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${perms.payments ? 'border-emerald-700 bg-emerald-50 text-emerald-900' : 'border-zinc-100 text-zinc-300'}`}><CreditCard className="w-5 h-5" /><span className="text-[8px] font-black uppercase">Paiements</span></button>
                                 </div>
                             </div>
                         </div>

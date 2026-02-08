@@ -15,7 +15,10 @@ export class StaffService {
         display_name: staffData.displayName,
         can_view_whatsapp: staffData.can_view_whatsapp,
         can_view_cashier: staffData.can_view_cashier,
-        can_view_kitchen: staffData.can_view_kitchen
+        can_view_kitchen: staffData.can_view_kitchen,
+        can_manage_stocks: staffData.can_manage_stocks,
+        can_view_transactions: staffData.can_view_transactions,
+        can_process_payments: staffData.can_process_payments
       })
       .select()
       .single();
@@ -47,7 +50,10 @@ export class StaffService {
         display_name: staffData.displayName,
         can_view_whatsapp: staffData.can_view_whatsapp,
         can_view_cashier: staffData.can_view_cashier,
-        can_view_kitchen: staffData.can_view_kitchen
+        can_view_kitchen: staffData.can_view_kitchen,
+        can_manage_stocks: staffData.can_manage_stocks,
+        can_view_transactions: staffData.can_view_transactions,
+        can_process_payments: staffData.can_process_payments
       }).eq('id', staffId).select().single();
     if (error) throw new InternalServerErrorException(error.message);
     return data;

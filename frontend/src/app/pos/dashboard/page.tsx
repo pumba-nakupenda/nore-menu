@@ -323,8 +323,8 @@ export default function POSDashboardPage() {
                         {staff?.can_view_whatsapp && <button onClick={() => setCurrentTab('whatsapp')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'whatsapp' ? 'bg-emerald-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><MessageCircle className="w-4 h-4" /> WhatsApp {whatsappOrders.length > 0 && <span className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center text-[8px]">{whatsappOrders.length}</span>}</button>}
                         {staff?.can_view_cashier && <button onClick={() => setCurrentTab('cashier')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'cashier' ? 'bg-[#c5a059] text-[#064e3b]' : 'text-white/40 hover:text-white'}`}><Coins className="w-4 h-4" /> Caisse</button>}
                         {staff?.can_view_kitchen && <button onClick={() => setCurrentTab('kitchen')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'kitchen' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><Utensils className="w-4 h-4" /> Cuisine {orders.length > 0 && <span className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center text-[8px]">{orders.length}</span>}</button>}
-                        <button onClick={() => setCurrentTab('stocks')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'stocks' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><Layers className="w-4 h-4" /> Stocks</button>
-                        <button onClick={() => setCurrentTab('transactions')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'transactions' ? 'bg-zinc-100 text-zinc-900 shadow-lg' : 'text-white/40 hover:text-white'}`}><History className="w-4 h-4" /> Ventes</button>
+                        {staff?.can_manage_stocks && <button onClick={() => setCurrentTab('stocks')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'stocks' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><Layers className="w-4 h-4" /> Stocks</button>}
+                        {staff?.can_view_transactions && <button onClick={() => setCurrentTab('transactions')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'transactions' ? 'bg-zinc-100 text-zinc-900 shadow-lg' : 'text-white/40 hover:text-white'}`}><History className="w-4 h-4" /> Ventes</button>}
                     </nav>
                 </div>
                 <div className="flex items-center gap-4">
@@ -362,16 +362,18 @@ export default function POSDashboardPage() {
                                         {order.status === 'PENDING' ? (
                                             <div className="flex gap-2">
                                                 <button onClick={() => updateWhatsAppStatus(order.id, 'CANCELLED')} className="p-3 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><XCircle className="w-6 h-6" /></button>
-                                                <button 
-                                                    onClick={() => {
-                                                        setConfirmingOrder(order);
-                                                        setCustomerName(order.customer_name || '');
-                                                        setDeliveryAddress(order.delivery_address || '');
-                                                    }} 
-                                                    className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
-                                                >
-                                                    <CheckCircle2 className="w-4 h-4" /> Confirmer
-                                                </button>
+                                                {staff?.can_process_payments !== false && (
+                                                    <button 
+                                                        onClick={() => {
+                                                            setConfirmingOrder(order);
+                                                            setCustomerName(order.customer_name || '');
+                                                            setDeliveryAddress(order.delivery_address || '');
+                                                        }} 
+                                                        className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
+                                                    >
+                                                        <CheckCircle2 className="w-4 h-4" /> Confirmer
+                                                    </button>
+                                                )}
                                             </div>
                                         ) : (
                                             <div className="flex flex-col gap-2 items-end">
@@ -427,10 +429,22 @@ export default function POSDashboardPage() {
                                 {paymentLogic === 'pay_before' && orders.filter(o => !o.is_paid && o.production_status === 'RECEIVED').length > 0 && (
                                     <section><h3 className="font-black text-[10px] uppercase tracking-widest text-emerald-500 mb-6 flex items-center gap-2"><MessageCircle className="w-4 h-4" /> WhatsApp à encaisser</h3><div className="space-y-3">{orders.filter(o => !o.is_paid && o.production_status === 'RECEIVED').map(order => (<div key={order.id} className="bg-white border-2 border-emerald-100 rounded-3xl p-5 shadow-sm flex items-center justify-between animate-in slide-in-from-right-4">
                                         <div className="min-w-0 flex-1"><div className="flex items-center gap-2 mb-1"><p className="font-black text-zinc-900 text-sm truncate">{order.customer_name || 'Client'}</p><span className="text-[8px] font-black bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100">{order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span></div><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div>
-                                        <div className="flex gap-2"><button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-50 rounded-xl"><XCircle className="w-5 h-5" /></button><button onClick={() => updateOrderStatus(order.id, 'RECEIVED', true)} className="bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg flex items-center gap-2 transition-all"><CreditCard className="w-4 h-4" /> Encaisser</button></div></div>))}</div></section>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-50 rounded-xl"><XCircle className="w-5 h-5" /></button>
+                                            {staff?.can_process_payments !== false && (
+                                                <button onClick={() => updateOrderStatus(order.id, 'RECEIVED', true)} className="bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg flex items-center gap-2 transition-all"><CreditCard className="w-4 h-4" /> Encaisser</button>
+                                            )}
+                                        </div>
+                                    </div>))}</div></section>
                                 )}
 
-                                <section><h3 className="font-black text-[10px] uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2"><LayoutGrid className="w-4 h-4 text-blue-500" /> Prêt à servir</h3><div className="space-y-3">{orders.filter(o => o.production_status === 'READY').map(order => (<div key={order.id} className="bg-emerald-50 border border-emerald-100 rounded-3xl p-5 flex items-center justify-between"><div><p className="font-black text-emerald-900 text-sm">{order.order_type === 'dine_in' ? `Table ${order.table_number}` : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</p><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div><div className="flex gap-2"><button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-100 rounded-xl"><XCircle className="w-5 h-5" /></button><button onClick={() => updateOrderStatus(order.id, 'SERVED', true)} className="bg-zinc-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-black/10">Encaisser</button></div></div>))}</div></section>
+                                <section><h3 className="font-black text-[10px] uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2"><LayoutGrid className="w-4 h-4 text-blue-500" /> Prêt à servir</h3><div className="space-y-3">{orders.filter(o => o.production_status === 'READY').map(order => (<div key={order.id} className="bg-emerald-50 border border-emerald-100 rounded-3xl p-5 flex items-center justify-between"><div><p className="font-black text-emerald-900 text-sm">{order.order_type === 'dine_in' ? `Table ${order.table_number}` : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</p><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div>
+                                <div className="flex gap-2">
+                                    <button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-100 rounded-xl"><XCircle className="w-5 h-5" /></button>
+                                    {staff?.can_process_payments !== false && (
+                                        <button onClick={() => updateOrderStatus(order.id, 'SERVED', true)} className="bg-zinc-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-black/10">Encaisser</button>
+                                    )}
+                                </div></div>))}</div></section>
                             </div>
                             <div className="p-8 border-t bg-zinc-50/50 space-y-6 shrink-0">
                                 <div className="flex bg-white p-1 rounded-2xl border">
