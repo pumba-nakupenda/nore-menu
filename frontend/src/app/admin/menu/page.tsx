@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Category, Dish } from '@/types'
-import { Plus, Trash2, Edit2, Camera, X, ImageIcon, Tag, Leaf, Carrot, Beef, Flame, WheatOff, Medal, Fish, ShieldCheck, Heart, Star, Coffee, Wine, Beer, Pizza, Loader2, Search, Sprout, Milk, Egg, Shrimp, Martini, GlassWater, Cake, IceCream, Cookie, Clock, Zap, Sparkles, UtensilsCrossed, FileSpreadsheet, Download, GripVertical, Eye, ArrowUpRight } from 'lucide-react'
+import { Plus, Trash2, Edit2, Camera, X, ImageIcon, Tag, Leaf, Carrot, Beef, Flame, WheatOff, Medal, Fish, ShieldCheck, Heart, Star, Coffee, Wine, Beer, Pizza, Loader2, Search, Sprout, Milk, Egg, Shrimp, Martini, GlassWater, Cake, IceCream, Cookie, Clock, Zap, Sparkles, UtensilsCrossed, FileSpreadsheet, Download, GripVertical, Eye, ArrowUpRight, CheckCircle2, XCircle, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import Papa from 'papaparse'
 import {
@@ -36,7 +36,6 @@ const BADGE_ICONS = {
 // Helper to fetch data
 const fetchMenu = async (restaurantId: string) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/menu/${restaurantId}`
-    console.log('Fetching menu from:', url)
     const res = await fetch(url)
     if (!res.ok) throw new Error('Failed to fetch menu')
     return res.json()
@@ -73,7 +72,6 @@ export default function MenuPage() {
         const newOrder = arrayMove(categories, oldIndex, newIndex)
         setCategories(newOrder)
 
-        // Sync with backend
         try {
             const token = (await supabase.auth.getSession()).data.session?.access_token
             const orders = newOrder.map((cat, index) => ({
@@ -89,9 +87,9 @@ export default function MenuPage() {
                 },
                 body: JSON.stringify({ orders })
             })
-            toast.success('Menu order updated!')
+            toast.success('Ordre du menu mis à jour !')
         } catch (err) {
-            toast.error('Failed to save new order')
+            toast.error('Erreur lors du changement d\'ordre')
         }
     }
 
@@ -263,17 +261,17 @@ export default function MenuPage() {
             setIsModalOpen(false)
             resetForm()
             loadMenu(restaurantId)
-            toast.success(isEditing ? 'Item updated!' : 'Item added!')
+            toast.success(isEditing ? 'Élément mis à jour !' : 'Élément ajouté !')
         } catch (err: any) {
             console.error('Error saving item:', err)
-            toast.error(err.message || 'Failed to save item')
+            toast.error(err.message || 'Erreur lors de la sauvegarde')
         } finally {
             setUploading(false)
         }
     }
 
     const handleDeleteDish = async (id: string) => {
-        if (!confirm("Are you sure?")) return
+        if (!confirm("Voulez-vous vraiment supprimer ce plat ?")) return
         const token = (await supabase.auth.getSession()).data.session?.access_token
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/dish/${id}`, {
             method: 'DELETE',
@@ -283,7 +281,7 @@ export default function MenuPage() {
     }
 
     const handleDeleteCategory = async (id: string) => {
-        if (!confirm("Deleting a category will delete all its dishes. Proceed?")) return
+        if (!confirm("Supprimer une catégorie supprimera tous ses plats. Continuer ?")) return
         const token = (await supabase.auth.getSession()).data.session?.access_token
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/category/${id}`, {
             method: 'DELETE',
@@ -371,10 +369,10 @@ export default function MenuPage() {
             setIsBadgeModalOpen(false)
             resetBadgeForm()
             loadMenu(restaurantId)
-            toast.success('Badge added successfully!')
+            toast.success('Filtre ajouté avec succès !')
         } catch (err: any) {
             console.error('Error saving badge:', err)
-            toast.error(err.message || 'Failed to save badge')
+            toast.error(err.message || 'Erreur lors de la sauvegarde du filtre')
         } finally {
             setLoading(false)
         }
@@ -382,46 +380,7 @@ export default function MenuPage() {
 
     const downloadTemplate = () => {
         const data = [
-            {
-                category: "Burgers",
-                name: "Le Classique",
-                name_en: "The Classic",
-                price: 4500,
-                description: "Bœuf, cheddar, salade, tomates",
-                description_en: "Beef, cheddar, lettuce, tomatoes",
-                image_url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=2000",
-                tags: "Popular"
-            },
-            {
-                category: "Burgers",
-                name: "Le Piquant",
-                name_en: "The Spicy",
-                price: 5000,
-                description: "Bœuf, piments, sauce samouraï",
-                description_en: "Beef, chili, samurai sauce",
-                image_url: "",
-                tags: "Spicy"
-            },
-            {
-                category: "Boissons",
-                name: "Limonade Maison",
-                name_en: "Home Lemonade",
-                price: 1500,
-                description: "Citron frais, menthe, sucre de canne",
-                description_en: "Fresh lemon, mint, cane sugar",
-                image_url: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=2000",
-                tags: "Refreshing, Vegan"
-            },
-            {
-                category: "Desserts",
-                name: "Fondant Chocolat",
-                name_en: "Chocolate Fondant",
-                price: 3500,
-                description: "Cœur coulant, glace vanille",
-                description_en: "Melting heart, vanilla ice cream",
-                image_url: "",
-                tags: "Dessert"
-            }
+            { category: "Burgers", name: "Le Classique", price: 4500, description: "Bœuf, cheddar, salade", image_url: "", tags: "Popular" }
         ];
         const csv = Papa.unparse(data);
         const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -484,7 +443,7 @@ export default function MenuPage() {
     };
 
     const handleDeleteBadge = async (badgeId: string) => {
-        if (!confirm('Are you sure you want to delete this filter?') || !restaurantId) return
+        if (!confirm('Voulez-vous supprimer ce filtre ?') || !restaurantId) return
 
         try {
             const token = (await supabase.auth.getSession()).data.session?.access_token
@@ -507,54 +466,50 @@ export default function MenuPage() {
     if (loading && !categories.length) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
-            <p className="font-medium animate-pulse">Loading your premium menu...</p>
+            <p className="font-medium animate-pulse">Chargement de votre menu premium...</p>
         </div>
     )
 
     return (
-        <div className="space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-20">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-32">
+            <div className="flex flex-col gap-6">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-zinc-900 tracking-tight">Gestion du Menu</h2>
-                    <p className="text-zinc-500 mt-1 text-sm md:text-base flex items-center gap-2">
+                    <h2 className="text-2xl md:text-4xl font-serif font-bold text-zinc-900 tracking-tight text-center md:text-left uppercase">Gestion du Menu</h2>
+                    <p className="text-zinc-500 mt-1 text-[10px] md:text-base flex items-center justify-center md:justify-start gap-2 font-black uppercase tracking-widest opacity-60">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]"></span>
-                        Organisez l'offre digitale de votre établissement
+                        Offre digitale premium
                     </p>
                 </div>
-                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                
+                {/* SCROLLABLE TOOLBAR MOBILE */}
+                <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap">
                     <a
                         href={restaurantId ? `/menu/${restaurantId}` : '#'}
                         target="_blank"
-                        className="flex-1 sm:flex-none bg-emerald-50 text-[#064e3b] border border-emerald-100 px-4 py-3 rounded-xl hover:bg-emerald-100 flex items-center justify-center transition-all font-bold text-xs"
+                        className="whitespace-nowrap bg-emerald-50 text-[#064e3b] border border-emerald-100 px-4 py-2.5 rounded-xl hover:bg-emerald-100 flex items-center justify-center transition-all font-bold text-[10px] uppercase tracking-widest shrink-0"
                     >
-                        <Eye className="w-4 h-4 mr-2" /> Voir le Menu
+                        <Eye className="w-3.5 h-3.5 mr-2" /> Aperçu
                     </a>
                     <button
                         onClick={downloadTemplate}
-                        className="flex-1 sm:flex-none bg-white text-[#c5a059] border border-[#c5a059]/20 px-4 py-3 rounded-xl hover:bg-amber-50 flex items-center justify-center shadow-sm transition-all font-bold text-xs"
+                        className="whitespace-nowrap bg-white text-[#c5a059] border border-[#c5a059]/20 px-4 py-2.5 rounded-xl hover:bg-amber-50 flex items-center justify-center shadow-sm transition-all font-bold text-[10px] uppercase tracking-widest shrink-0"
                     >
-                        <Download className="w-4 h-4 mr-2" /> Modèle CSV
+                        <Download className="w-3.5 h-3.5 mr-2" /> Modèle
                     </button>
                     <button
                         onClick={() => document.getElementById('global-csv-import')?.click()}
-                        className="flex-1 sm:flex-none bg-white text-zinc-600 border border-black/5 px-4 py-3 rounded-xl hover:bg-zinc-50 flex items-center justify-center shadow-sm transition-all font-bold text-xs"
+                        className="whitespace-nowrap bg-white text-zinc-600 border border-black/5 px-4 py-2.5 rounded-xl hover:bg-zinc-50 flex items-center justify-center shadow-sm transition-all font-bold text-[10px] uppercase tracking-widest shrink-0"
                     >
-                        <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" /> Import Global
+                        <FileSpreadsheet className="w-3.5 h-3.5 mr-2 text-emerald-600" /> Import
                     </button>
-                    <input
-                        type="file"
-                        id="global-csv-import"
-                        accept=".csv"
-                        onChange={handleFileImport}
-                        className="hidden"
-                    />
                     <button
                         onClick={() => openModal('category')}
-                        className="w-full sm:w-auto bg-[#064e3b] text-white px-6 py-3 rounded-xl hover:bg-[#053e2f] flex items-center justify-center shadow-xl shadow-emerald-900/10 transition-all font-bold text-sm"
+                        className="whitespace-nowrap bg-[#064e3b] text-white px-5 py-2.5 rounded-xl hover:bg-[#053e2f] flex items-center justify-center shadow-xl shadow-emerald-900/10 transition-all font-bold text-[10px] uppercase tracking-widest shrink-0"
                     >
-                        <Plus className="w-5 h-5 mr-2" /> Nouvelle Catégorie
+                        <Plus className="w-4 h-4 mr-2" /> Catégorie
                     </button>
                 </div>
+                <input type="file" id="global-csv-import" accept=".csv" onChange={handleFileImport} className="hidden" />
             </div>
 
             <div className="space-y-8 md:space-y-12">
@@ -589,10 +544,9 @@ export default function MenuPage() {
                         <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-100">
                             <UtensilsCrossed className="w-10 h-10 text-[#064e3b]" />
                         </div>
-                        <h4 className="text-2xl font-serif font-bold text-zinc-900 mb-2">Your menu is empty</h4>
-                        <p className="text-zinc-500 max-w-xs mx-auto mb-8 font-medium">Start by creating categories like 'Starters', 'Main Courses', or 'Wine List'.</p>
-                        <button onClick={() => openModal('category')} className="bg-[#064e3b] text-white px-8 py-4 rounded-2xl hover:bg-[#053e2f] transition-all font-bold shadow-xl shadow-emerald-900/10">
-                            Create First Category
+                        <h4 className="text-2xl font-serif font-bold text-zinc-900 mb-2">Votre menu est vide</h4>
+                        <button onClick={() => openModal('category')} className="bg-[#064e3b] text-white px-8 py-4 rounded-2xl hover:bg-[#053e2f] transition-all font-bold shadow-xl">
+                            Créer la première catégorie
                         </button>
                     </div>
                 )}
@@ -600,54 +554,54 @@ export default function MenuPage() {
 
             {/* MODALS */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#fdfcfb] p-10 rounded-[3rem] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl border border-white">
-                        <div className="flex justify-between items-start mb-8">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-end lg:items-center justify-center z-[150] p-0 lg:p-4 animate-in fade-in duration-300">
+                    <div className="bg-[#fdfcfb] p-6 lg:p-10 rounded-t-[2.5rem] lg:rounded-[3rem] w-full lg:max-w-lg h-[92vh] lg:h-auto lg:max-h-[90vh] overflow-y-auto shadow-2xl border-t lg:border border-white relative animate-in slide-in-from-bottom duration-500">
+                        <div className="flex justify-between items-start mb-6 lg:mb-8">
                             <div>
-                                <h3 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight">
-                                    {editingItem ? 'Edit' : 'Add New'} <span className="text-[#064e3b] italic">{modalType === 'category' ? 'Category' : 'Dish'}</span>
+                                <h3 className="text-2xl lg:text-3xl font-serif font-bold text-zinc-900 tracking-tight">
+                                    {editingItem ? 'Modifier' : 'Nouveau'} <span className="text-[#064e3b] italic">{modalType === 'category' ? 'Catégorie' : 'Plat'}</span>
                                 </h3>
-                                <div className="w-16 h-1.5 bg-[#c5a059] rounded-full mt-3"></div>
+                                <div className="w-12 h-1 bg-[#c5a059] rounded-full mt-2"></div>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-zinc-100 rounded-2xl transition-colors">
-                                <X className="w-6 h-6 text-zinc-400" />
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 lg:p-3 hover:bg-zinc-100 rounded-xl transition-colors">
+                                <X className="w-5 h-5 text-zinc-400" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-8">
+                        <form onSubmit={handleSubmit} className="space-y-6 lg:space-y-8 pb-20 lg:pb-0">
                             {modalType === 'dish' && (
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="flex flex-col items-center justify-center bg-white p-4 rounded-2xl border border-black/5 shadow-sm gap-2">
-                                        <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest text-center">Visible</span>
+                                <div className="grid grid-cols-3 gap-2 lg:gap-4">
+                                    <div className="flex flex-col items-center justify-center bg-white p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-black/5 shadow-sm gap-1 lg:gap-2">
+                                        <span className="text-[7px] lg:text-[8px] font-black text-zinc-400 uppercase tracking-widest text-center">Visible</span>
                                         <button
                                             type="button"
                                             onClick={() => setNewDishAvailable(!newDishAvailable)}
-                                            className={`w-10 h-5 rounded-full transition-all duration-300 relative ${newDishAvailable ? 'bg-[#064e3b]' : 'bg-zinc-200'}`}
+                                            className={`w-8 lg:w-10 h-4 lg:h-5 rounded-full transition-all duration-300 relative ${newDishAvailable ? 'bg-[#064e3b]' : 'bg-zinc-200'}`}
                                         >
-                                            <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${newDishAvailable ? 'left-6' : 'left-1'}`} />
+                                            <div className={`absolute top-0.5 w-3 lg:w-4 h-3 lg:h-4 bg-white rounded-full transition-all duration-300 ${newDishAvailable ? 'left-4.5 lg:left-5.5' : 'left-0.5'}`} />
                                         </button>
                                     </div>
-                                    <div className="flex flex-col items-center justify-center bg-white p-4 rounded-2xl border border-black/5 shadow-sm gap-2">
-                                        <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest text-center">In Stock</span>
+                                    <div className="flex flex-col items-center justify-center bg-white p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-black/5 shadow-sm gap-1 lg:gap-2">
+                                        <span className="text-[7px] lg:text-[8px] font-black text-zinc-400 uppercase tracking-widest text-center">Stock</span>
                                         <button
                                             type="button"
                                             onClick={() => setNewDishSoldOut(!newDishSoldOut)}
-                                            className={`w-10 h-5 rounded-full transition-all duration-300 relative ${newDishSoldOut ? 'bg-red-500' : 'bg-emerald-500'}`}
+                                            className={`w-8 lg:w-10 h-4 lg:h-5 rounded-full transition-all duration-300 relative ${newDishSoldOut ? 'bg-red-500' : 'bg-emerald-500'}`}
                                         >
-                                            <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${newDishSoldOut ? 'left-6' : 'left-1'}`} />
+                                            <div className={`absolute top-0.5 w-3 lg:w-4 h-3 lg:h-4 bg-white rounded-full transition-all duration-300 ${newDishSoldOut ? 'left-4.5 lg:left-5.5' : 'left-0.5'}`} />
                                         </button>
                                     </div>
-                                    <div className="flex flex-col items-center justify-center bg-white p-4 rounded-2xl border border-[#c5a059]/30 shadow-sm gap-2">
+                                    <div className="flex flex-col items-center justify-center bg-white p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-[#c5a059]/30 shadow-sm gap-1 lg:gap-2">
                                         <div className="flex items-center gap-1">
                                             <Sparkles className="w-2 h-2 text-[#c5a059]" />
-                                            <span className="text-[8px] font-black text-[#c5a059] uppercase tracking-widest">Specialty</span>
+                                            <span className="text-[7px] lg:text-[8px] font-black text-[#c5a059] uppercase tracking-widest">Spécial</span>
                                         </div>
                                         <button
                                             type="button"
                                             onClick={() => setNewDishSpecialty(!newDishSpecialty)}
-                                            className={`w-10 h-5 rounded-full transition-all duration-300 relative ${newDishSpecialty ? 'bg-[#c5a059]' : 'bg-zinc-200'}`}
+                                            className={`w-8 lg:w-10 h-4 lg:h-5 rounded-full transition-all duration-300 relative ${newDishSpecialty ? 'bg-[#064e3b]' : 'bg-zinc-200'}`}
                                         >
-                                            <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${newDishSpecialty ? 'left-6' : 'left-1'}`} />
+                                            <div className={`absolute top-0.5 w-3 lg:w-4 h-3 lg:h-4 bg-white rounded-full transition-all duration-300 ${newDishSpecialty ? 'left-4.5 lg:left-5.5' : 'left-0.5'}`} />
                                         </button>
                                     </div>
                                 </div>
@@ -655,24 +609,17 @@ export default function MenuPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Nom (FR)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Nom (FR)</label>
                                     <input
-                                        type="text"
-                                        required
-                                        value={newItemName}
-                                        onChange={(e) => setNewItemName(e.target.value)}
+                                        type="text" required value={newItemName} onChange={(e) => setNewItemName(e.target.value)}
                                         className="block w-full rounded-2xl border border-black/5 bg-white px-5 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-bold shadow-sm"
-                                        placeholder="Ex: Cocktails"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Name (EN)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Name (EN)</label>
                                     <input
-                                        type="text"
-                                        value={newItemNameEn}
-                                        onChange={(e) => setNewItemNameEn(e.target.value)}
+                                        type="text" value={newItemNameEn} onChange={(e) => setNewItemNameEn(e.target.value)}
                                         className="block w-full rounded-2xl border border-black/5 bg-white px-5 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-bold shadow-sm"
-                                        placeholder="Ex: Cocktails"
                                     />
                                 </div>
                             </div>
@@ -680,22 +627,17 @@ export default function MenuPage() {
                             {modalType === 'dish' && (
                                 <>
                                     <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Hero Image</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Image du Plat</label>
                                         <div
                                             onClick={() => document.getElementById('image-upload')?.click()}
                                             className="relative aspect-video rounded-3xl border-2 border-dashed border-zinc-200 bg-white flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all hover:border-[#064e3b] group shadow-sm"
                                         >
                                             {newDishImage ? (
-                                                <>
-                                                    <Image src={newDishImage} alt="Preview" fill className="object-cover" />
-                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                        <Camera className="text-white w-10 h-10" />
-                                                    </div>
-                                                </>
+                                                <Image src={newDishImage} alt="Preview" fill className="object-cover" />
                                             ) : (
                                                 <div className="text-center space-y-2">
-                                                    <ImageIcon className="text-zinc-200 w-12 h-12 mx-auto" />
-                                                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Upload Dish Visual</p>
+                                                    <ImageIcon className="text-zinc-200 w-10 h-10 mx-auto" />
+                                                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Uploader</p>
                                                 </div>
                                             )}
                                         </div>
@@ -703,97 +645,55 @@ export default function MenuPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Price ({currency})</label>
-                                        <div className="relative">
-                                            <input
-                                                type="number"
-                                                required
-                                                value={newDishPrice}
-                                                onChange={(e) => setNewDishPrice(e.target.value)}
-                                                className="block w-full rounded-2xl border border-black/5 bg-white pl-5 pr-12 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-bold shadow-sm"
-                                            />
-                                            <span className="absolute right-5 top-1/2 -translate-y-1/2 font-bold text-zinc-400">₣</span>
-                                        </div>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Prix ({currency})</label>
+                                        <input
+                                            type="number" required value={newDishPrice} onChange={(e) => setNewDishPrice(e.target.value)}
+                                            className="block w-full rounded-2xl border border-black/5 bg-white px-5 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-bold shadow-sm"
+                                        />
                                     </div>
 
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Description (FR)</label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Description (FR)</label>
                                             <textarea
-                                                value={newDishDesc}
-                                                onChange={(e) => setNewDishDesc(e.target.value)}
+                                                value={newDishDesc} onChange={(e) => setNewDishDesc(e.target.value)}
                                                 className="block w-full rounded-2xl border border-black/5 bg-white px-5 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-medium min-h-[80px] shadow-sm text-sm"
-                                                placeholder="Description en français..."
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Description (EN)</label>
-                                            <textarea
-                                                value={newDishDescEn}
-                                                onChange={(e) => setNewDishDescEn(e.target.value)}
-                                                className="block w-full rounded-2xl border border-black/5 bg-white px-5 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-medium min-h-[80px] shadow-sm text-sm"
-                                                placeholder="Description in English..."
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Dietary & Style Tags</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Étiquettes & Allergènes</label>
                                         <div className="grid grid-cols-2 gap-2">
-                                            {/* Standard Tags */}
                                             {DIETARY_TAGS.map(tag => (
                                                 <button
-                                                    key={tag.name}
-                                                    type="button"
-                                                    onClick={() => toggleTag(tag.name)}
-                                                    className={`px-4 py-3 rounded-xl border transition-all flex items-center gap-3 font-bold text-[11px] ${newDishTags.includes(tag.name)
-                                                        ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-lg shadow-emerald-900/20'
+                                                    key={tag.name} type="button" onClick={() => toggleTag(tag.name)}
+                                                    className={`px-4 py-3 rounded-xl border transition-all flex items-center gap-3 font-bold text-[10px] uppercase ${newDishTags.includes(tag.name)
+                                                        ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-lg'
                                                         : 'bg-white text-zinc-500 border-black/5 hover:border-emerald-200'
                                                         }`}
                                                 >
-                                                    <tag.icon className={`w-4 h-4 ${newDishTags.includes(tag.name) ? 'text-[#c5a059]' : 'text-[#c5a059]'}`} />
+                                                    <tag.icon className="w-3.5 h-3.5 text-[#c5a059]" />
                                                     {lang === 'en' ? (tag.name_en || tag.name) : tag.name}
                                                 </button>
                                             ))}
-
-                                            {/* Custom Category Filters */}
-                                            {categories.find(c => c.id === selectedCategoryId)?.badges?.map(badge => {
-                                                const Icon = (BADGE_ICONS as any)[badge.icon] || Tag
-                                                const isSelected = newDishTags.includes(badge.name)
-                                                return (
-                                                    <button
-                                                        key={badge.id}
-                                                        type="button"
-                                                        onClick={() => toggleTag(badge.name)}
-                                                        className={`px-4 py-3 rounded-xl border transition-all flex items-center gap-3 font-bold text-[11px] ${isSelected
-                                                            ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-lg shadow-emerald-900/20'
-                                                            : 'bg-white text-zinc-500 border-black/5 hover:border-[#c5a059]/30'
-                                                            }`}
-                                                    >
-                                                        <Icon className={`w-4 h-4 ${isSelected ? 'text-[#c5a059]' : 'text-zinc-400'}`} />
-                                                        {lang === 'en' ? (badge.name_en || badge.name) : badge.name}
-                                                    </button>
-                                                )
-                                            })}
                                         </div>
                                     </div>
                                 </>
                             )}
 
-                            <div className="flex gap-4 pt-6">
+                            <div className="flex gap-4 pt-6 fixed bottom-0 left-0 right-0 p-6 bg-white border-t lg:static lg:bg-transparent lg:border-none lg:p-0">
                                 <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="flex-1 px-6 py-4 text-zinc-400 hover:text-zinc-600 font-bold text-sm transition-colors"
+                                    type="button" onClick={() => setIsModalOpen(false)}
+                                    className="flex-1 px-6 py-4 text-zinc-400 font-bold text-sm transition-colors"
                                 >
-                                    Cancel
+                                    Annuler
                                 </button>
                                 <button
-                                    type="submit"
-                                    disabled={uploading}
-                                    className="flex-[2] px-6 py-4 bg-[#064e3b] text-white rounded-2xl hover:bg-[#053e2f] shadow-xl shadow-emerald-900/10 font-bold text-sm transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                                    type="submit" disabled={uploading}
+                                    className="flex-[2] px-6 py-4 bg-[#064e3b] text-white rounded-2xl shadow-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
                                 >
-                                    {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : (editingItem ? 'Update Item' : 'Create Item')}
+                                    {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : (editingItem ? 'Mettre à jour' : 'Créer')}
                                 </button>
                             </div>
                         </form>
@@ -801,126 +701,48 @@ export default function MenuPage() {
                 </div>
             )}
 
-            {/* BADGE MODAL (Emerald version) */}
+            {/* BADGE MODAL */}
             {isBadgeModalOpen && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#fdfcfb] p-10 rounded-[3rem] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl border border-white">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-end lg:items-center justify-center z-[150] p-0 lg:p-4 animate-in fade-in duration-300">
+                    <div className="bg-[#fdfcfb] p-6 lg:p-10 rounded-t-[2.5rem] lg:rounded-[3rem] w-full lg:max-w-lg h-[92vh] lg:h-auto lg:max-h-[90vh] overflow-y-auto shadow-2xl border-t lg:border border-white relative animate-in slide-in-from-bottom duration-500">
                         <div className="flex justify-between items-start mb-8">
-                            <div>
-                                <h3 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight">Category <span className="text-[#064e3b] italic">Filters</span></h3>
-                                <div className="w-16 h-1.5 bg-[#c5a059] rounded-full mt-3"></div>
-                            </div>
-                            <button onClick={() => setIsBadgeModalOpen(false)} className="p-3 hover:bg-zinc-100 rounded-2xl transition-colors">
-                                <X className="w-6 h-6 text-zinc-400" />
-                            </button>
+                            <h3 className="text-2xl font-serif font-bold text-zinc-900 tracking-tight">Filtres de <span className="text-[#064e3b] italic">Catégorie</span></h3>
+                            <button onClick={() => setIsBadgeModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-xl transition-colors"><X className="w-5 h-5 text-zinc-400" /></button>
                         </div>
 
-                        {/* Existing Badges List */}
-                        <div className="mb-10 space-y-4">
-                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Active Filters</label>
-                            <div className="flex flex-wrap gap-3">
+                        <div className="mb-8 space-y-4">
+                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Filtres Actifs</label>
+                            <div className="flex flex-wrap gap-2">
                                 {categories.find(c => c.id === selectedCategoryId)?.badges?.map(badge => {
                                     const Icon = (BADGE_ICONS as any)[badge.icon] || Tag
                                     return (
                                         <div key={badge.id} className="relative group">
-                                            <div className={`pl-4 pr-12 py-2.5 rounded-xl border flex items-center gap-3 ${badge.bg_color} ${badge.color} ${badge.border_color} shadow-sm`}>
-                                                <Icon className="w-4 h-4" />
-                                                <span className="font-bold text-sm">{lang === 'en' ? (badge.name_en || badge.name) : badge.name}</span>
+                                            <div className={`pl-3 pr-10 py-2 rounded-xl border flex items-center gap-2 ${badge.bg_color} ${badge.color} ${badge.border_color}`}>
+                                                <Icon className="w-3.5 h-3.5" />
+                                                <span className="font-bold text-[11px] uppercase tracking-tighter">{lang === 'en' ? (badge.name_en || badge.name) : badge.name}</span>
                                             </div>
-                                            <button
-                                                onClick={() => handleDeleteBadge(badge.id)}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-md active:scale-90"
-                                                title="Delete Filter"
-                                            >
-                                                <Trash2 className="w-3.5 h-3.5" />
-                                            </button>
+                                            <button onClick={() => handleDeleteBadge(badge.id)} className="absolute right-1 top-1/2 -translate-y-1/2 p-1 bg-red-500 text-white rounded-md shadow-md"><Trash2 className="w-3 h-3" /></button>
                                         </div>
                                     )
                                 })}
-                                {(!categories.find(c => c.id === selectedCategoryId)?.badges || categories.find(c => c.id === selectedCategoryId)?.badges?.length === 0) && (
-                                    <div className="py-4 px-6 bg-zinc-50 rounded-2xl border border-dashed border-zinc-200 text-zinc-400 text-xs font-medium w-full text-center">
-                                        No custom filters yet for this category.
-                                    </div>
-                                )}
                             </div>
                         </div>
 
-                        <form onSubmit={handleBadgeSubmit} className="space-y-6 pt-8 border-t border-black/5">
-                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] ml-1">Create New Filter</label>
+                        <form onSubmit={handleBadgeSubmit} className="space-y-6 pt-6 border-t border-black/5 pb-20">
+                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#c5a059] ml-1">Créer un nouveau filtre</label>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Nom (FR)</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={newBadgeName}
-                                        onChange={(e) => setNewBadgeName(e.target.value)}
-                                        className="block w-full rounded-2xl border border-black/5 bg-white px-5 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-bold shadow-sm text-sm"
-                                        placeholder="Ex: Bio"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Name (EN)</label>
-                                    <input
-                                        type="text"
-                                        value={newBadgeNameEn}
-                                        onChange={(e) => setNewBadgeNameEn(e.target.value)}
-                                        className="block w-full rounded-2xl border border-black/5 bg-white px-5 py-4 text-zinc-900 focus:ring-2 focus:ring-emerald-100 focus:border-[#064e3b] outline-none transition-all font-bold shadow-sm text-sm"
-                                        placeholder="Ex: Organic"
-                                    />
-                                </div>
+                                <input type="text" required placeholder="Nom (FR)" value={newBadgeName} onChange={(e) => setNewBadgeName(e.target.value)} className="w-full rounded-xl border border-black/5 bg-white px-4 py-3 text-sm font-bold shadow-sm" />
+                                <input type="text" placeholder="Name (EN)" value={newBadgeNameEn} onChange={(e) => setNewBadgeNameEn(e.target.value)} className="w-full rounded-xl border border-black/5 bg-white px-4 py-3 text-sm font-bold shadow-sm" />
                             </div>
-
-                            <div className="pt-4 border-t border-black/5">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-4 ml-1">Icon Selection</label>
-                                <div className="grid grid-cols-6 sm:grid-cols-8 gap-3">
-                                    {Object.keys(BADGE_ICONS).map(iconName => {
-                                        const Icon = (BADGE_ICONS as any)[iconName]
-                                        return (
-                                            <button
-                                                key={iconName}
-                                                type="button"
-                                                onClick={() => setNewBadgeIcon(iconName)}
-                                                className={`p-3.5 rounded-xl border transition-all flex items-center justify-center ${newBadgeIcon === iconName ? 'bg-[#064e3b] border-[#064e3b] shadow-lg text-white scale-110' : 'bg-white border-black/5 hover:border-[#c5a059]/30 text-zinc-400 hover:text-[#064e3b]'}`}
-                                            >
-                                                <Icon className="w-5 h-5" />
-                                            </button>
-                                        )
-                                    })}
-                                </div>
+                            <div className="grid grid-cols-6 gap-2">
+                                {Object.keys(BADGE_ICONS).map(iconName => {
+                                    const Icon = (BADGE_ICONS as any)[iconName]
+                                    return (
+                                        <button key={iconName} type="button" onClick={() => setNewBadgeIcon(iconName)} className={`p-3 rounded-lg border transition-all flex items-center justify-center ${newBadgeIcon === iconName ? 'bg-[#064e3b] text-white' : 'bg-white text-zinc-400'}`}><Icon className="w-4 h-4" /></button>
+                                    )
+                                })}
                             </div>
-
-                            <div className="pt-4 border-t border-black/5">
-                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-4 ml-1">Badge Style (Color)</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {[
-                                        { label: 'Emerald Green', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-100' },
-                                        { label: 'Premium Gold', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-100' },
-                                        { label: 'Royal Blue', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-100' },
-                                        { label: 'Sunset Red', color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-100' },
-                                        { label: 'Elegant Purple', color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-100' },
-                                        { label: 'Sleek Zinc', color: 'text-zinc-700', bg: 'bg-zinc-100', border: 'border-zinc-200' },
-                                    ].map(style => (
-                                        <button
-                                            key={style.label}
-                                            type="button"
-                                            onClick={() => {
-                                                setNewBadgeColor(style.color)
-                                                setNewBadgeBg(style.bg)
-                                                setNewBadgeBorder(style.border)
-                                            }}
-                                            className={`p-3.5 rounded-2xl border flex items-center gap-3 transition-all ${newBadgeColor === style.color ? 'border-[#064e3b] bg-emerald-50/20' : 'border-black/5 bg-zinc-50/50'}`}
-                                        >
-                                            <div className={`w-4 h-4 rounded-full ${style.bg} border ${style.border} shadow-sm`} />
-                                            <span className={`text-[10px] font-bold ${style.color}`}>{style.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <button type="submit" className="w-full py-4 bg-[#064e3b] text-white rounded-2xl font-bold shadow-xl shadow-emerald-900/10 hover:bg-[#053e2f] transition-all mt-4">
-                                Add Filter
-                            </button>
+                            <button type="submit" className="w-full py-4 bg-[#064e3b] text-white rounded-xl font-bold shadow-xl shadow-emerald-900/10">Ajouter le Filtre</button>
                         </form>
                     </div>
                 </div>
@@ -928,80 +750,19 @@ export default function MenuPage() {
 
             {/* IMPORT PREVIEW MODAL */}
             {isImportModalOpen && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-in fade-in duration-300">
-                    <div className="bg-[#fdfcfb] p-10 rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border border-white">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[160] p-4 animate-in fade-in duration-300">
+                    <div className="bg-[#fdfcfb] p-6 lg:p-10 rounded-[2.5rem] lg:rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border border-white">
                         <div className="flex justify-between items-start mb-8">
-                            <div>
-                                <h3 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight">Confirm <span className="text-[#064e3b] italic">Bulk Import</span></h3>
-                                <p className="text-zinc-500 text-sm mt-2">Preview the {importData.length} items from your file.</p>
-                            </div>
-                            <button onClick={() => setIsImportModalOpen(false)} className="p-3 hover:bg-zinc-100 rounded-2xl transition-colors">
-                                <X className="w-6 h-6 text-zinc-400" />
-                            </button>
+                            <h3 className="text-2xl font-serif font-bold text-zinc-900 tracking-tight">Confirmer <span className="text-[#064e3b] italic">l'Import</span></h3>
+                            <button onClick={() => setIsImportModalOpen(false)} className="p-2 hover:bg-zinc-100 rounded-xl transition-colors"><X className="w-5 h-5 text-zinc-400" /></button>
                         </div>
-
                         <div className="overflow-x-auto rounded-2xl border border-black/5 mb-8">
-                            <table className="w-full text-left border-collapse">
-                                <thead className="bg-zinc-50 border-b border-black/5">
-                                    <tr>
-                                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Category</th>
-                                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Name (FR/EN)</th>
-                                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Price</th>
-                                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Description</th>
-                                        <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Image URL</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-black/5 bg-white">
-                                    {importData.map((row, idx) => (
-                                        <tr key={idx}>
-                                            <td className="px-6 py-4">
-                                                <span className="bg-emerald-50 text-[#064e3b] px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-emerald-100">
-                                                    {row.category}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <p className="font-bold text-zinc-900 text-sm">{row.name}</p>
-                                                <p className="text-[10px] text-zinc-400 font-medium italic">{row.name_en}</p>
-                                            </td>
-                                            <td className="px-6 py-4 font-black text-sm text-[#064e3b] whitespace-nowrap">{row.price.toLocaleString()} {currency}</td>
-                                            <td className="px-6 py-4 text-xs text-zinc-500 max-w-xs truncate">{row.description}</td>
-                                            <td className="px-6 py-4">
-                                                {row.image_url ? (
-                                                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-black/5">
-                                                        <img src={row.image_url} className="w-full h-full object-cover" />
-                                                    </div>
-                                                ) : <span className="text-zinc-300 italic text-[10px]">None</span>}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
+                            <table className="w-full text-left text-xs">
+                                <thead className="bg-zinc-50 border-b border-black/5"><tr><th className="px-4 py-3">Catégorie</th><th className="px-4 py-3">Nom</th><th className="px-4 py-3">Prix</th></tr></thead>
+                                <tbody className="divide-y divide-black/5 bg-white">{importData.map((row, idx) => (<tr key={idx}><td className="px-4 py-3 uppercase font-black text-[9px] text-[#064e3b]">{row.category}</td><td className="px-4 py-3 font-bold">{row.name}</td><td className="px-4 py-3 font-black">{row.price.toLocaleString()}</td></tr>))}</tbody>
                             </table>
                         </div>
-
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-black/5">
-                            <button
-                                onClick={downloadTemplate}
-                                className="flex items-center gap-2 text-[#c5a059] font-bold text-xs hover:underline"
-                            >
-                                <Download className="w-4 h-4" /> Download template CSV
-                            </button>
-                            <div className="flex gap-4 w-full md:w-auto">
-                                <button
-                                    onClick={() => setIsImportModalOpen(false)}
-                                    className="flex-1 md:flex-none px-8 py-4 text-zinc-400 hover:text-zinc-600 font-bold text-sm transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={confirmBulkImport}
-                                    disabled={loading}
-                                    className="flex-[2] md:flex-none px-10 py-4 bg-[#064e3b] text-white rounded-2xl hover:bg-[#053e2f] shadow-xl shadow-emerald-900/10 font-bold text-sm transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                                >
-                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileSpreadsheet className="w-5 h-5" />}
-                                    Confirm Import
-                                </button>
-                            </div>
-                        </div>
+                        <button onClick={confirmBulkImport} disabled={loading} className="w-full py-4 bg-[#064e3b] text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-xl">{loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-5 h-5" />} Lancer l'importation</button>
                     </div>
                 </div>
             )}
@@ -1029,100 +790,70 @@ function SortableCategory({ category, t, currency, restaurantId, openBadgeModal,
 
     return (
         <div ref={setNodeRef} style={style} className="relative group">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4 border-b border-black/5 pb-6">
-                <div className="flex items-center gap-3 w-full lg:w-auto">
-                    <button
-                        {...attributes}
-                        {...listeners}
-                        className="p-2 -ml-2 text-zinc-300 hover:text-[#c5a059] cursor-grab active:cursor-grabbing transition-colors"
-                    >
-                        <GripVertical className="w-5 h-5" />
-                    </button>
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3">
-                            <h3 className="text-xl md:text-2xl font-serif font-bold text-[#064e3b] truncate">{t(category, 'name')}</h3>
-                            <span className="text-[10px] font-bold text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-md uppercase tracking-widest shrink-0">
-                                {category.dishes?.length || 0}
-                            </span>
-                        </div>
-                    </div>
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 lg:mb-6 gap-3 lg:gap-4 border-b border-black/5 pb-4 lg:pb-6">
+                <div className="flex items-center gap-2 lg:gap-3 w-full lg:w-auto">
+                    <button {...attributes} {...listeners} className="p-2 -ml-2 text-zinc-300 hover:text-[#c5a059] cursor-grab active:cursor-grabbing"><GripVertical className="w-5 h-5" /></button>
+                    <div className="flex-1 min-w-0"><div className="flex items-center gap-2"><h3 className="text-lg lg:text-2xl font-serif font-bold text-[#064e3b] truncate uppercase">{t(category, 'name')}</h3><span className="text-[9px] font-bold text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded uppercase tracking-widest">{category.dishes?.length || 0}</span></div></div>
                     <div className="flex gap-1">
-                        <button onClick={() => openModal('category', null, category)} className="p-2 text-zinc-400 hover:text-[#064e3b] transition-colors rounded-xl bg-white border border-black/5 lg:border-none lg:bg-transparent shadow-sm lg:shadow-none">
-                            <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleDeleteCategory(category.id)} className="p-2 text-zinc-400 hover:text-red-500 transition-colors rounded-xl bg-white border border-black/5 lg:border-none lg:bg-transparent shadow-sm lg:shadow-none">
-                            <Trash2 className="w-4 h-4" />
-                        </button>
+                        <button onClick={() => openModal('category', null, category)} className="p-2 text-zinc-400 hover:text-[#064e3b] rounded-lg bg-white border border-black/5"><Edit2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleDeleteCategory(category.id)} className="p-2 text-zinc-400 hover:text-red-500 rounded-lg bg-white border border-black/5"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                 </div>
                 <div className="flex gap-2 w-full lg:w-auto">
-                    <button
-                        onClick={() => openBadgeModal(category.id)}
-                        className="flex-1 lg:flex-none text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:text-[#064e3b] flex items-center justify-center bg-white px-4 py-3 rounded-xl transition shadow-sm border border-black/5"
-                    >
-                        <Tag className="w-3.5 h-3.5 mr-2 text-[#c5a059]" /> Filtres
-                    </button>
-                    <button
-                        onClick={() => openModal('dish', category.id)}
-                        className="flex-1 lg:flex-none text-[#064e3b] text-[10px] font-black uppercase tracking-widest hover:text-white hover:bg-[#064e3b] flex items-center justify-center bg-emerald-50 px-4 py-3 rounded-xl transition shadow-sm border border-emerald-100"
-                    >
-                        <Plus className="w-3.5 h-3.5 mr-2" /> Nouveau Plat
-                    </button>
+                    <button onClick={() => openBadgeModal(category.id)} className="flex-1 lg:flex-none text-zinc-600 text-[9px] font-black uppercase tracking-widest bg-white px-3 py-2.5 rounded-xl border border-black/5 shadow-sm flex items-center justify-center gap-2"><Tag className="w-3 h-3 text-[#c5a059]" /> Filtres</button>
+                    <button onClick={() => openModal('dish', category.id)} className="flex-1 lg:flex-none text-[#064e3b] text-[9px] font-black uppercase tracking-widest bg-emerald-50 px-3 py-2.5 rounded-xl border border-emerald-100 shadow-sm flex items-center justify-center gap-2"><Plus className="w-3 h-3" /> Nouveau Plat</button>
                 </div>
             </div>
 
-            <div className="grid gap-4 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 lg:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {category.dishes?.map((dish: Dish) => (
-                    <div key={dish.id} className={`group relative bg-white rounded-[2rem] border border-black/5 transition-all duration-500 overflow-hidden flex flex-row sm:flex-col ${dish.is_available === false ? 'opacity-60 grayscale-[0.3]' : 'hover:shadow-2xl hover:shadow-emerald-900/5'}`}>
-                        {/* Mobile Actions Overlay - Simplified */}
-                        <div className="absolute top-2 right-2 z-10 flex flex-col gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-                            <button onClick={() => openModal('dish', category.id, dish)} className="text-zinc-600 hover:text-[#064e3b] bg-white/90 backdrop-blur-md p-2 rounded-lg shadow-lg border border-black/5">
+                    <div key={dish.id} className={`group relative bg-white rounded-2xl lg:rounded-[2rem] border border-black/5 transition-all duration-500 overflow-hidden flex flex-row lg:flex-col ${dish.is_available === false ? 'opacity-60 grayscale-[0.3]' : 'hover:shadow-2xl hover:shadow-emerald-900/5'}`}>
+                        {/* Actions Overlay */}
+                        <div className="absolute top-2 right-2 z-10 flex flex-col gap-1.5 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all">
+                            <button onClick={() => openModal('dish', category.id, dish)} className="text-[#064e3b] bg-white/90 backdrop-blur-md p-2 rounded-lg shadow-lg border border-black/5 active:scale-90">
                                 <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => handleDeleteDish(dish.id)} className="text-red-500 bg-white/90 backdrop-blur-md p-2 rounded-lg shadow-lg border border-black/5 active:scale-90 lg:hidden">
+                                <Trash2 className="w-3.5 h-3.5" />
                             </button>
                         </div>
 
-                        <div className="w-24 h-24 sm:w-full sm:aspect-[4/3] bg-zinc-50 overflow-hidden relative shrink-0">
+                        <div className="w-20 h-20 lg:w-full lg:aspect-[4/3] bg-zinc-50 overflow-hidden relative shrink-0">
                             {dish.image_url ? (
-                                <Image src={dish.image_url} alt={dish.name} fill sizes="(max-width: 640px) 100px, 400px" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
+                                <Image src={dish.image_url} alt={dish.name} fill sizes="(max-width: 640px) 80px, 400px" className="object-cover transition-transform duration-1000 group-hover:scale-110" />
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center text-zinc-200">
-                                    <ImageIcon className="w-8 h-8 sm:w-16 sm:h-16" />
+                                    <ImageIcon className="w-6 h-6 lg:w-16 lg:h-16" />
                                 </div>
                             )}
-                            <div className="absolute top-2 left-2 flex flex-col gap-1">
-                                {dish.is_available === false && <span className="bg-zinc-900/80 backdrop-blur-md text-white px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest shadow-lg">Caché</span>}
-                                {dish.is_sold_out && <span className="bg-red-600/90 backdrop-blur-md text-white px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest shadow-lg">Rupture</span>}
+                            <div className="absolute top-1 left-1 flex flex-col gap-1">
+                                {dish.is_available === false && <span className="bg-zinc-900/80 backdrop-blur-md text-white px-1.5 py-0.5 rounded-md text-[6px] font-black uppercase tracking-widest shadow-lg">Masqué</span>}
+                                {dish.is_sold_out && <span className="bg-red-600/90 backdrop-blur-md text-white px-1.5 py-0.5 rounded-md text-[6px] font-black uppercase tracking-widest shadow-lg">Rupture</span>}
                             </div>
                         </div>
 
-                        <div className="p-4 sm:p-8 flex-1 flex flex-col min-w-0">
-                            <div className="flex flex-col sm:flex-row justify-between items-start mb-1 sm:mb-4 gap-1">
-                                <h4 className="font-serif font-bold text-base sm:text-xl text-zinc-900 leading-tight group-hover:text-[#064e3b] transition-colors truncate w-full sm:w-auto">{t(dish, 'name')}</h4>
-                                <span className="text-[#064e3b] font-black text-sm sm:text-lg whitespace-nowrap">{dish.price.toLocaleString()} {currency}</span>
+                        <div className="p-3 lg:p-8 flex-1 flex flex-col min-w-0 justify-center lg:justify-start">
+                            <div className="flex flex-col lg:flex-row justify-between items-start mb-0.5 lg:mb-4 gap-0.5 lg:gap-1">
+                                <h4 className="font-serif font-bold text-xs lg:text-xl text-zinc-900 leading-tight group-hover:text-[#064e3b] transition-colors truncate w-full">{t(dish, 'name')}</h4>
+                                <span className="text-[#064e3b] font-black text-[10px] lg:text-lg whitespace-nowrap">{dish.price.toLocaleString()} {currency}</span>
                             </div>
-                            <p className="text-zinc-500 text-[10px] sm:text-sm leading-snug line-clamp-1 sm:line-clamp-2 mb-2 sm:mb-6 font-medium">{t(dish, 'description')}</p>
+                            <p className="text-zinc-500 text-[9px] lg:text-sm leading-snug line-clamp-1 lg:line-clamp-2 mb-1 lg:mb-6 font-medium">{t(dish, 'description')}</p>
                             
-                            {/* Tags on mobile */}
+                            {/* Tags */}
                             {dish.tags && dish.tags.length > 0 && (
                                 <div className="mt-auto flex flex-wrap gap-1">
                                     {dish.tags.slice(0, 2).map((tag: string) => (
-                                        <span key={tag} className="text-[7px] font-black uppercase tracking-widest text-[#c5a059] bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-100/50">{tag}</span>
+                                        <span key={tag} className="text-[6px] lg:text-[7px] font-black uppercase tracking-widest text-[#c5a059] bg-amber-50 px-1 py-0.5 rounded-md border border-amber-100/50">{tag}</span>
                                     ))}
-                                    {dish.tags.length > 2 && <span className="text-[7px] font-black text-zinc-400">+{dish.tags.length - 2}</span>}
                                 </div>
                             )}
                         </div>
                     </div>
                 ))}
                 {(!category.dishes || category.dishes.length === 0) && (
-                    <div className="col-span-full py-16 text-center bg-white rounded-[2.5rem] border border-dashed border-zinc-200">
-                        <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-100">
-                            <Search className="w-8 h-8 text-zinc-300" />
-                        </div>
-                        <p className="text-zinc-400 font-medium">No dishes in this category yet.</p>
-                        <button onClick={() => openModal('dish', category.id)} className="text-[#064e3b] font-bold mt-4 hover:underline flex items-center justify-center mx-auto gap-2">
-                            <Plus className="w-4 h-4" /> Add your first dish
-                        </button>
+                    <div className="col-span-full py-10 text-center bg-white rounded-2xl border border-dashed border-zinc-200">
+                        <p className="text-zinc-400 text-xs font-medium">Aucun plat dans cette catégorie.</p>
+                        <button onClick={() => openModal('dish', category.id)} className="text-[#064e3b] font-bold mt-2 text-xs hover:underline flex items-center justify-center mx-auto gap-2"><Plus className="w-3 h-3" /> Ajouter un plat</button>
                     </div>
                 )}
             </div>
