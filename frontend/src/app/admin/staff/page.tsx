@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { UserPlus, Trash2, Key, Shield, User, Loader2, Smartphone, ShieldAlert, Edit2, Utensils, Coins, MessageCircle, Check, X, ArrowRight, Copy } from 'lucide-react'
+import { UserPlus, Trash2, Key, Shield, User, Loader2, Smartphone, ShieldAlert, Edit2, Utensils, Coins, MessageCircle, Check, X, ArrowRight, Copy, Layers, History, CreditCard } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function StaffManagementPage() {
