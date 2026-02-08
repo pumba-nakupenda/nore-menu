@@ -1,42 +1,31 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from 'framer-motion'
-import { ArrowRight, QrCode, Smartphone, ChefHat, ScanLine, UtensilsCrossed, Sparkles, Check, PlayCircle, Star, Users, Globe, Zap, HelpCircle, Plus, Minus, Palette, Printer, ShoppingBag, CreditCard, Truck, ShieldCheck, Cpu, X, MessageCircle, Coins, Utensils, LayoutDashboard, ChevronRight, Bike, Monitor, Gem, Crown, Coffee, Compass, BarChart3, Clock, Layers } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { 
+    ArrowRight, 
+    ChefHat, 
+    Zap, 
+    Check, 
+    ShoppingBag, 
+    ChevronRight, 
+    BarChart3, 
+    Clock, 
+    Layers, 
+    Smartphone, 
+    ShieldCheck, 
+    Globe,
+    MessageCircle
+} from 'lucide-react'
 import Magnetic from '@/components/Magnetic'
 
 export default function Home() {
-  const router = useRouter()
   const [user, setUser] = useState<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
   const [siteContent, setSiteContent] = useState<any>(null)
   const [hardwareItems, setHardwareItems] = useState<any[]>([])
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
-
-  // Theme Transitions
-  const bgColor = useTransform(scrollYProgress, [0, 0.38, 0.42, 0.68, 0.72, 0.88, 0.92, 1], ["#fdfcfb", "#fdfcfb", "#064e3b", "#064e3b", "#09090b", "#09090b", "#fdfcfb", "#fdfcfb"])
-  const textColor = useTransform(scrollYProgress, [0, 0.38, 0.42, 0.68, 0.72, 0.88, 0.92, 1], ["#111827", "#111827", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#111827", "#111827"])
-  const borderColor = useTransform(scrollYProgress, [0, 0.38, 0.42, 0.68, 0.72, 0.88, 0.92, 1], ["rgba(17, 24, 39, 0.15)", "rgba(17, 24, 39, 0.15)", "rgba(255, 255, 255, 0.2)", "rgba(255, 255, 255, 0.2)", "rgba(255, 255, 255, 0.15)", "rgba(255, 255, 255, 0.15)", "rgba(17, 24, 39, 0.15)", "rgba(17, 24, 39, 0.15)"])
-  const headerBg = useTransform(scrollYProgress, [0, 0.38, 0.42, 0.68, 0.72, 0.88, 0.92, 1], ["rgba(253, 252, 251, 0.7)", "rgba(253, 252, 251, 0.7)", "rgba(6, 78, 59, 0.7)", "rgba(6, 78, 59, 0.7)", "rgba(9, 9, 11, 0.7)", "rgba(9, 9, 11, 0.7)", "rgba(253, 252, 251, 0.7)", "rgba(253, 252, 251, 0.7)"])
-
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const cursorSpringX = useSpring(mouseX, { stiffness: 500, damping: 28, mass: 0.5 })
-  const cursorSpringY = useSpring(mouseY, { stiffness: 500, damping: 28, mass: 0.5 })
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => { mouseX.set(e.clientX); mouseY.set(e.clientY) }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,139 +35,225 @@ export default function Home() {
       const { data: cData } = await supabase.from('site_content').select('*')
       if (cData) setSiteContent(cData.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {}))
 
-      const { data: hData } = await supabase.from('hardware_products').select('*').eq('is_active', true).limit(2).order('created_at', { ascending: false })
+      const { data: hData } = await supabase.from('hardware_products').select('*').eq('is_active', true).limit(3).order('created_at', { ascending: false })
       if (hData) setHardwareItems(hData)
     }
     fetchData()
   }, [])
 
-  const targetRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress: horizontalProgress } = useScroll({ target: targetRef, offset: ["start start", "end end"] })
-  const x = useTransform(horizontalProgress, [0, 1], ["0%", "-240vw"])
-
-  // Robust Default Values
+  // Dynamic Content with Robust Fallbacks
   const hero = {
-    title: siteContent?.hero?.title || "Digitalisez L'Excellence",
-    subtitle: siteContent?.hero?.subtitle || "Système complet de Commande WhatsApp & POS pour les restaurants premium.",
+    title: siteContent?.hero?.title || "Digitalisez\nL'Excellence",
+    subtitle: siteContent?.hero?.subtitle || "Le système de commande WhatsApp & POS conçu pour les établissements premium.",
     image_url: siteContent?.hero?.image_url || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070"
   }
 
   const solution = {
-    title: siteContent?.solution?.title || "Un écosystème \nsans failles.",
-    description: siteContent?.solution?.description || "Nore Menu résout la lenteur du service et les erreurs de commande.",
-    image_url: siteContent?.solution?.image_url || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070"
+    title: siteContent?.solution?.title || "Un écosystème sans failles.",
+    description: siteContent?.solution?.description || "Optimisez chaque aspect de votre service, de la prise de commande à la gestion des stocks.",
+    image_url: siteContent?.solution?.image_url || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974"
   }
 
-  const flow = {
-    title: siteContent?.flow?.title || "Le Flux",
-    steps: siteContent?.flow?.steps || [
-      { n: "01", t: "Commande", d: "Scan & WhatsApp", img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974" },
-      { n: "02", t: "Validation", d: "Sur POS", img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?q=80&w=2070" },
-      { n: "03", t: "Cuisine", d: "Écran KDS", img: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=1954" },
-      { n: "04", t: "Data", d: "Stats réelles", img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070" }
-    ]
-  }
+  const flowSteps = siteContent?.flow?.steps || [
+    { n: "01", t: "Commande", d: "Le client scanne et commande sur WhatsApp.", img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974" },
+    { n: "02", t: "Validation", d: "Le serveur valide instantanément sur le POS.", img: "https://images.unsplash.com/photo-1526367790999-0150786486a9?q=80&w=2070" },
+    { n: "03", t: "Cuisine", d: "La commande s'affiche sur l'écran KDS.", img: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=1954" }
+  ]
+
+  const pricingPlans = siteContent?.pricing?.plans || [
+    { t: "Essentiel", p: "Gratuit", f: ["Menu 20 Plats", "QR Code Standard", "Commandes WhatsApp"] },
+    { t: "Signature", p: "15.000 FCFA", f: ["Plats Illimités", "Logiciel de Caisse POS", "Gestion de Stock", "Support 24/7"] },
+    { t: "Héritage", p: "Sur Devis", f: ["Multi-établissements", "Marque Blanche", "API Intégration", "Account Manager"] }
+  ]
 
   return (
-    <motion.div ref={containerRef} style={{ backgroundColor: bgColor, color: textColor }} className="min-h-screen flex flex-col font-sans selection:bg-[#b48a4d]/30 transition-colors duration-700 relative">
-      <motion.div className="fixed top-0 left-0 w-4 h-4 bg-[#b48a4d] rounded-full pointer-events-none z-[9999] mix-blend-difference hidden lg:block" style={{ x: cursorSpringX, y: cursorSpringY, translateX: "-50%", translateY: "-50%" }} />
-
-      <motion.header style={{ backgroundColor: headerBg, borderBottomColor: borderColor }} className="fixed top-0 w-full z-[100] h-20 backdrop-blur-xl border-b transition-colors duration-500">
-        <div className="max-w-7xl mx-auto px-6 h-full flex justify-between items-center">
-          <Magnetic><div className="flex items-center gap-2.5 group cursor-pointer"><div className="bg-[#064e3b] text-white p-2 rounded-xl shadow-lg"><ChefHat className="w-5 h-5" /></div><span className="text-xl font-serif font-bold tracking-tight">Nore Menu</span></div></Magnetic>
-          <nav className="hidden lg:flex items-center gap-12">
-            {['Solution', 'Fonctionnement', 'Tarifs'].map(item => (<Magnetic key={item}><Link href={`#${item === 'Solution' ? 'solution' : item === 'Fonctionnement' ? 'fonctionnement' : 'tarifs'}`} className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60 hover:opacity-100">{item}</Link></Magnetic>))}
-            <Magnetic><Link href="/shop" className="text-[10px] font-black uppercase tracking-[0.3em] text-[#b48a4d] flex items-center gap-2 hover:gap-3 transition-all">Boutique <ShoppingBag className="w-3 h-3" /></Link></Magnetic>
+    <div className="min-h-screen bg-[#fdfcfb] text-zinc-900 font-sans selection:bg-[#064e3b]/10">
+      
+      {/* NAVBAR */}
+      <header className="fixed top-0 w-full z-[100] bg-white/80 backdrop-blur-md border-b border-zinc-100">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="bg-[#064e3b] text-white p-2 rounded-xl shadow-lg">
+              <ChefHat className="w-5 h-5" />
+            </div>
+            <span className="text-xl font-serif font-bold tracking-tight">Nore Menu</span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-10">
+            {['Solution', 'Fonctionnement', 'Tarifs'].map(item => (
+              <Link key={item} href={`#${item.toLowerCase()}`} className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#064e3b] transition-colors">{item}</Link>
+            ))}
+            <Link href="/shop" className="text-xs font-bold uppercase tracking-widest text-[#b48a4d] flex items-center gap-2">Boutique <ShoppingBag className="w-3 h-3" /></Link>
           </nav>
-          <div className="flex items-center gap-8">
-            {!user ? (<><Magnetic><Link href="/login" className="text-[10px] font-black uppercase tracking-widest opacity-60 hover:opacity-100 hidden sm:block">Sign In</Link></Magnetic><Magnetic><Link href="/login" className="px-8 py-2.5 bg-zinc-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl flex items-center gap-2 group"><span className="mix-blend-difference text-white">Sign Up</span><ArrowRight className="w-3 h-3 mix-blend-difference text-white group-hover:translate-x-1" /></Link></Magnetic></>) : (<Magnetic><Link href="/admin/menu" className="px-8 py-2.5 bg-[#064e3b] text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#053e2f] transition-all shadow-xl flex items-center gap-2 group">Tableau de bord<ArrowRight className="w-3 h-3 group-hover:translate-x-1" /></Link></Magnetic>)}
+          <div className="flex items-center gap-4">
+            {!user ? (
+              <Link href="/login" className="px-6 py-2.5 bg-zinc-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg flex items-center gap-2 group">
+                Démarrer <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            ) : (
+              <Link href="/admin/menu" className="px-6 py-2.5 bg-[#064e3b] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Tableau de Bord</Link>
+            )}
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      <main className="flex-1 relative z-10">
-        <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.5 }} className="text-center z-10 px-6">
-            <div className="space-y-12">
-              <div className="inline-flex items-center gap-3 px-5 py-2 border border-current opacity-30 rounded-full bg-white/5 backdrop-blur-sm"><Zap className="w-3 h-3 animate-pulse text-[#b48a4d]" /><span className="text-[8px] font-black uppercase tracking-[0.5em]">The Imperial Standard</span></div>
-              <h1 className="text-[8vw] lg:text-[10vw] font-serif font-bold leading-[0.75] tracking-tighter uppercase relative">
-                {hero.title.split('\n').map((t: string, i: number) => (<span key={i}>{i === 1 ? <span className="italic text-[#b48a4d]">{t}</span> : t}<br /></span>))}
-              </h1>
-              <div className="flex flex-col items-center gap-8">
-                <p className="text-xl md:text-2xl max-w-2xl opacity-70 font-medium leading-relaxed">{hero.subtitle}</p>
-                <div className="flex gap-6"><Link href="/login" className="px-10 py-5 bg-[#064e3b] text-white rounded-full text-xs font-black uppercase tracking-widest shadow-2xl hover:scale-105 transition-transform">Démarrer maintenant</Link><Link href="#solution" className="px-10 py-5 border border-current rounded-full text-xs font-black uppercase tracking-widest hover:bg-current hover:text-white transition-all">Découvrir</Link></div>
+      <main>
+        {/* HERO SECTION */}
+        <section className="relative pt-40 pb-20 px-6 overflow-hidden">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className="space-y-8 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 rounded-full border border-emerald-100">
+                <Zap className="w-3 h-3 text-[#b48a4d]" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">L'Allié des Restaurants Premium</span>
               </div>
-            </div>
-          </motion.div>
-        </section>
-
-        <section id="solution" className="py-60 px-6 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-32 items-center">
-            <motion.div initial={{ clipPath: 'inset(100% 0 0 0)' }} whileInView={{ clipPath: 'inset(0% 0 0 0)' }} transition={{ duration: 1.5 }} className="relative aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl">
-              <Image src={solution.image_url} alt="Service" fill className="object-cover" /><div className="absolute inset-0 bg-[#064e3b]/30 mix-blend-multiply"></div>
-            </motion.div>
-            <div className="space-y-16">
-              <h2 className="text-6xl md:text-8xl font-serif font-bold leading-tight uppercase">{solution.title.split('\n').map((t: string, i: number) => (<span key={i}>{i === 1 ? <span className="text-[#b48a4d] italic">{t}</span> : t}<br /></span>))}</h2>
-              <p className="text-xl opacity-70 italic leading-relaxed">{solution.description}</p>
-              <div className="space-y-12">
-                {[ { t: "Vendez Plus", d: "Menu digital interactif.", i: <BarChart3 /> }, { t: "Servez plus Vite", d: "Commandes instantanées.", i: <Clock /> }, { t: "Gérez Tout", d: "POS moderne.", i: <Layers /> } ].map((item, i) => (
-                  <motion.div key={item.t} initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.2 }} className="group">
-                    <div className="flex items-center gap-4 mb-2"><span className="text-[#b48a4d] opacity-50 group-hover:opacity-100">{item.i}</span><h3 className="text-3xl font-serif font-bold group-hover:text-[#b48a4d] transition-colors">{item.t}</h3></div>
-                    <p className="text-lg opacity-70 ml-9">{item.d}</p>
-                  </motion.div>
+              <h1 className="text-6xl md:text-8xl font-serif font-bold leading-[0.9] tracking-tighter uppercase">
+                {hero.title.split('\n').map((t, i) => (
+                  <span key={i} className="block">{i === 1 ? <span className="text-[#b48a4d] italic">{t}</span> : t}</span>
                 ))}
+              </h1>
+              <p className="text-xl text-zinc-500 max-w-lg mx-auto lg:mx-0 leading-relaxed font-medium">
+                {hero.subtitle}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link href="/login" className="px-10 py-5 bg-[#064e3b] text-white rounded-2xl font-bold shadow-2xl hover:scale-105 transition-transform text-center">Essayer Gratuitement</Link>
+                <Link href="#solution" className="px-10 py-5 border border-zinc-200 rounded-2xl font-bold hover:bg-zinc-50 transition-all text-center">Voir la démo</Link>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="fonctionnement" ref={targetRef} className="relative h-[600vh] bg-transparent">
-          <div className="sticky top-0 h-screen flex items-center overflow-hidden">
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-32 h-1 bg-current opacity-10 rounded-full z-20"><motion.div style={{ scaleX: horizontalProgress }} className="h-full bg-[#b48a4d] origin-left rounded-full" /></div>
-            <motion.div style={{ x }} className="flex flex-nowrap gap-[10vw] px-[10vw]">
-              <div className="w-[80vw] lg:w-[40vw] flex-shrink-0 flex flex-col justify-center"><h2 className="text-[10vw] font-serif font-bold leading-none uppercase mb-10">{flow.title}</h2><p className="text-2xl opacity-70 max-w-md italic font-medium">L'expérience Nore en 4 étapes fluides.</p></div>
-              {flow.steps.map((step: any) => (
-                <div key={step.n} className="w-[80vw] lg:w-[60vw] flex-shrink-0 flex flex-col justify-center relative">
-                   <div className="relative h-[60vh] rounded-[4rem] overflow-hidden group border border-current/20 z-10 shadow-2xl"><Image src={step.img} alt={step.t} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-110 group-hover:scale-100" /><div className="absolute inset-0 bg-black/60 p-16 flex flex-col justify-end"><span className="text-7xl font-serif italic text-[#b48a4d] mb-4">{step.n}</span><h4 className="text-5xl font-serif font-bold text-white mb-4">{step.t}</h4><p className="text-xl text-white/80 max-w-sm">{step.d}</p></div></div>
-                </div>
-              ))}
+            </motion.div>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="relative aspect-square rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] border-8 border-white">
+              <Image src={hero.image_url} alt="Nore Menu Hero" fill className="object-cover" priority unoptimized />
             </motion.div>
           </div>
         </section>
 
-        <section id="shop" className="py-60 px-6 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row justify-between items-end mb-32 gap-10"><div className="max-w-2xl"><h2 className="text-6xl md:text-8xl font-serif font-bold leading-tight uppercase">Hardware<br /><span className="text-[#b48a4d] italic">Signature</span></h2></div><p className="text-xl opacity-70 max-w-sm italic mb-4">Découvrez nos supports physiques réels.</p></div>
-            <div className="grid md:grid-cols-2 gap-20">
-              {hardwareItems.map((item: any, i: number) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.2 }} className="group">
-                  <div className="aspect-[16/10] relative rounded-[3rem] overflow-hidden mb-10 shadow-2xl border border-current/10"><Image src={item.image_url} alt={item.title} fill className="object-cover group-hover:scale-110 transition-all duration-1000" /></div>
-                  <div className="flex justify-between items-start px-4"><div><h3 className="text-2xl font-serif font-bold mb-2">{item.title}</h3><p className="opacity-70 text-sm font-medium">{item.price?.toLocaleString()} FCFA</p></div><Link href="/shop" className="p-4 border border-current rounded-full hover:bg-[#b48a4d] hover:text-white transition-all"><ChevronRight className="w-5 h-5" /></Link></div>
+        {/* SOLUTION SECTION */}
+        <section id="solution" className="py-32 bg-zinc-50 px-6">
+          <div className="max-w-7xl mx-auto space-y-20">
+            <div className="max-w-3xl">
+              <h2 className="text-4xl md:text-6xl font-serif font-bold uppercase mb-6">{solution.title}</h2>
+              <p className="text-xl text-zinc-500 font-medium">{solution.description}</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { t: "Ventes Boostées", d: "Un menu digital interactif qui suggère intelligemment des suppléments.", i: <BarChart3 className="w-6 h-6" /> },
+                { t: "Service Rapide", d: "Les commandes arrivent instantanément en cuisine sans erreur.", i: <Clock className="w-6 h-6" /> },
+                { t: "Contrôle Total", d: "Pilotez vos stocks, votre personnel et vos ventes en temps réel.", i: <Layers className="w-6 h-6" /> }
+              ].map((item, i) => (
+                <motion.div key={i} whileHover={{ y: -5 }} className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm space-y-6">
+                  <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-[#064e3b]">{item.i}</div>
+                  <h3 className="text-2xl font-serif font-bold">{item.t}</h3>
+                  <p className="text-zinc-500 font-medium leading-relaxed">{item.d}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="tarifs" className="py-60 px-6 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto text-center mb-40 relative z-10"><h2 className="text-7xl md:text-9xl font-serif font-bold uppercase tracking-tighter mb-10">L'Investissement</h2><p className="text-xl opacity-70 italic">Le standard adapté à votre ambition.</p></div>
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-12 relative z-10">
-            {[ { t: "Essentiel", p: "Gratuit", f: ["Menu 20 Plats", "QR Code Standard"] }, { t: "Signature", p: "15k", f: ["Illimité", "Caisse POS", "Écran Cuisine KDS"] }, { t: "Héritage", p: "Sur Devis", f: ["Multi-sites", "Marque Blanche"] } ].map((plan, i) => (
-              <motion.div key={plan.t} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.2 }} className={`p-16 rounded-[4rem] bg-white/5 border border-current/20 flex flex-col gap-12 relative overflow-hidden ${i === 1 ? 'bg-[#b48a4d] text-zinc-950 shadow-2xl border-none' : ''}`} ><h3 className="text-3xl font-serif font-bold">{plan.t}</h3><div className="text-7xl font-serif font-bold">{plan.p}</div><ul className="space-y-6 flex-1 opacity-90">{plan.f.map(f => (<li key={f} className="flex items-center gap-3"><Check className="w-4 h-4 text-current" /> {f}</li>))}</ul><Magnetic><Link href="/login" className={`w-full py-6 rounded-3xl text-[10px] font-black uppercase tracking-widest text-center ${i === 1 ? 'bg-zinc-950 text-white' : 'bg-current text-white mix-blend-difference'}`}>Démarrer</Link></Magnetic></motion.div>
+        {/* HOW IT WORKS (FLUX) */}
+        <section id="fonctionnement" className="py-32 px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl md:text-6xl font-serif font-bold uppercase text-center mb-24">Le Voyage Nore</h2>
+            <div className="space-y-12">
+              {flowSteps.map((step: any, i: number) => (
+                <div key={i} className={`flex flex-col ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-16`}>
+                  <div className="flex-1 space-y-6">
+                    <span className="text-6xl font-serif italic text-[#b48a4d] opacity-30">{step.n}</span>
+                    <h3 className="text-4xl font-serif font-bold">{step.t}</h3>
+                    <p className="text-xl text-zinc-500 font-medium leading-relaxed">{step.d}</p>
+                  </div>
+                  <div className="flex-1 relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
+                    <Image src={step.img} alt={step.t} fill className="object-cover" unoptimized />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* HARDWARE PREVIEW */}
+        <section className="py-32 bg-[#064e3b] text-white px-6 rounded-[4rem] mx-4 mb-32">
+          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-end gap-10 mb-20">
+            <div className="max-w-xl">
+              <h2 className="text-5xl md:text-7xl font-serif font-bold uppercase leading-[0.9]">Hardware<br/><span className="text-[#b48a4d] italic text-4xl md:text-6xl">Signature</span></h2>
+            </div>
+            <p className="text-xl text-emerald-100/60 font-medium max-w-sm">Découvrez nos supports physiques conçus pour durer et sublimer vos tables.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {hardwareItems.map((item, i) => (
+              <div key={i} className="group cursor-pointer">
+                <div className="aspect-[4/5] relative rounded-[2.5rem] overflow-hidden mb-6 shadow-2xl">
+                  <Image src={item.image_url} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" unoptimized />
+                </div>
+                <div className="flex justify-between items-center px-2">
+                  <h4 className="text-xl font-serif font-bold">{item.title}</h4>
+                  <Link href="/shop" className="p-3 bg-white/10 rounded-full hover:bg-[#b48a4d] transition-colors"><ChevronRight className="w-4 h-4" /></Link>
+                </div>
+              </div>
             ))}
+          </div>
+        </section>
+
+        {/* PRICING */}
+        <section id="tarifs" className="py-32 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center space-y-4 mb-20">
+              <h2 className="text-5xl md:text-7xl font-serif font-bold uppercase tracking-tight">L'Investissement</h2>
+              <p className="text-xl text-zinc-500 font-medium italic">Le standard adapté à votre ambition.</p>
+            </div>
+            <div className="grid lg:grid-cols-3 gap-8">
+              {pricingPlans.map((plan: any, i: number) => (
+                <div key={i} className={`p-12 rounded-[3.5rem] border ${i === 1 ? 'bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border-emerald-100 scale-105 relative z-10' : 'bg-zinc-50 border-zinc-100'} space-y-10`}>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-serif font-bold">{plan.t}</h3>
+                    <div className="text-5xl font-serif font-bold text-[#064e3b]">{plan.p}</div>
+                  </div>
+                  <ul className="space-y-4">
+                    {plan.f.map((feature: string, j: number) => (
+                      <li key={j} className="flex items-center gap-3 text-sm font-medium text-zinc-600">
+                        <Check className="w-4 h-4 text-[#b48a4d]" /> {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/login" className={`block w-full py-5 rounded-2xl text-center font-black uppercase text-[10px] tracking-widest transition-all ${i === 1 ? 'bg-[#064e3b] text-white shadow-xl shadow-emerald-900/20' : 'bg-zinc-200 text-zinc-900 hover:bg-zinc-300'}`}>Sélectionner</Link>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>
 
-      <motion.footer style={{ borderTopColor: borderColor }} className="py-40 px-6 border-t relative z-30 bg-transparent overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="font-serif font-bold text-3xl tracking-tighter">Nore Menu</div>
-          <div className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Dakar &copy; {new Date().getFullYear()}</div>
-          <div className="flex gap-12">{['Confidentialité', 'CGU', 'Instagram'].map(item => (
-            <Magnetic key={item}><Link href="#" className="text-[10px] font-black uppercase tracking-[0.3em] hover:text-[#b48a4d] transition-colors">{item}</Link></Magnetic>
-          ))}</div>
+      {/* FOOTER */}
+      <footer className="bg-zinc-900 text-white py-24 px-6 rounded-t-[4rem]">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-16">
+          <div className="col-span-2 space-y-8">
+            <div className="flex items-center gap-3">
+              <ChefHat className="w-8 h-8 text-[#b48a4d]" />
+              <span className="text-3xl font-serif font-bold tracking-tighter">Nore Menu</span>
+            </div>
+            <p className="text-zinc-400 max-w-sm text-lg font-medium leading-relaxed">Redéfinir l'expérience culinaire à travers l'innovation digitale et l'esthétique premium.</p>
+          </div>
+          <div className="space-y-6">
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Plateforme</h4>
+            <ul className="space-y-4 text-sm font-bold text-zinc-300">
+              <li><Link href="#solution" className="hover:text-[#b48a4d] transition-colors">Solution</Link></li>
+              <li><Link href="/shop" className="hover:text-[#b48a4d] transition-colors">Hardware</Link></li>
+              <li><Link href="/login" className="hover:text-[#b48a4d] transition-colors">Connexion</Link></li>
+            </ul>
+          </div>
+          <div className="space-y-6">
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Contact</h4>
+            <ul className="space-y-4 text-sm font-bold text-zinc-300">
+              <li className="flex items-center gap-2"><MessageCircle className="w-4 h-4" /> WhatsApp Support</li>
+              <li className="flex items-center gap-2"><Globe className="w-4 h-4" /> Dakar, Sénégal</li>
+            </ul>
+          </div>
         </div>
-      </motion.footer>
-    </motion.div>
+        <div className="max-w-7xl mx-auto pt-16 mt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
+          <p>&copy; {new Date().getFullYear()} Nore Menu. Signature Digital Excellence.</p>
+          <div className="flex gap-8">
+            <Link href="/privacy" className="hover:text-white">Confidentialité</Link>
+            <Link href="/terms" className="hover:text-white">CGU</Link>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
