@@ -160,7 +160,7 @@ export default function Home() {
                     <p className="text-xl text-zinc-500 font-medium leading-relaxed">{step.d}</p>
                   </div>
                   <div className="flex-1 relative aspect-video rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white">
-                    <Image src={step.img} alt={step.t} fill className="object-cover" unoptimized />
+                    <Image src={step.img || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1974"} alt={step.t} fill className="object-cover" unoptimized />
                   </div>
                 </div>
               ))}
