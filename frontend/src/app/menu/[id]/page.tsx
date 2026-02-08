@@ -732,10 +732,25 @@ export default function PublicMenuPage() {
                                                             sizes="(max-width: 768px) 100vw, 600px"
                                                             className={`object-cover ${dish.is_sold_out ? 'grayscale opacity-70' : ''}`} 
                                                         />
-                                                        <div className="absolute top-4 left-4 flex animate-in zoom-in duration-500">
+                                                        <div className="absolute top-4 left-4 flex flex-col gap-2 animate-in zoom-in duration-500">
                                                             <div className="bg-[#c5a059] text-[#064e3b] px-4 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl flex items-center gap-2 border border-white/20">
                                                                 <Sparkles className="w-3 h-3" />
                                                                 {lang === 'fr' ? 'Spécialité' : 'Signature'}
+                                                            </div>
+                                                            
+                                                            {/* ICONS ON SPECIALTY IMAGE */}
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                {dish.tags?.map(tag => {
+                                                                    const tagDef = DIETARY_TAGS.find(t => t.name === tag);
+                                                                    const customBadge = currentCategory.badges?.find(b => b.name === tag);
+                                                                    const Icon = tagDef?.icon || (customBadge ? (BADGE_ICONS as any)[customBadge.icon] : null);
+                                                                    if (!Icon) return null;
+                                                                    return (
+                                                                        <div key={tag} className="p-1.5 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-white/20">
+                                                                            <Icon className={`w-3.5 h-3.5 ${tagDef?.color || 'text-[#c5a059]'}`} />
+                                                                        </div>
+                                                                    );
+                                                                })}
                                                             </div>
                                                         </div>
                                                         {dish.is_sold_out && (
@@ -805,6 +820,22 @@ export default function PublicMenuPage() {
                                                         <UtensilsCrossed className="w-8 h-8" />
                                                     </div>
                                                 )}
+                                                
+                                                {/* ICONS ON IMAGE */}
+                                                <div className="absolute top-1.5 left-1.5 flex flex-wrap gap-1 max-w-[80%]">
+                                                    {dish.tags?.map(tag => {
+                                                        const tagDef = DIETARY_TAGS.find(t => t.name === tag);
+                                                        const customBadge = currentCategory.badges?.find(b => b.name === tag);
+                                                        const Icon = tagDef?.icon || (customBadge ? (BADGE_ICONS as any)[customBadge.icon] : null);
+                                                        if (!Icon) return null;
+                                                        return (
+                                                            <div key={tag} className="p-1 bg-white/90 backdrop-blur-md rounded-md shadow-sm border border-black/5">
+                                                                <Icon className={`w-2.5 h-2.5 ${tagDef?.color || 'text-[#c5a059]'}`} />
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+
                                                 {dish.is_sold_out && (
                                                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center">
                                                         <span className="text-[8px] font-black uppercase tracking-widest text-white bg-red-500 px-2 py-1 rounded-lg">
@@ -831,7 +862,7 @@ export default function PublicMenuPage() {
                                                                         <button onClick={() => updateQuantity(dish.id, 1)} className="w-6 h-6 flex items-center justify-center text-zinc-400"><Plus className="w-3 h-3" /></button>
                                                                     </div>
                                                                 ) : (
-                                                                    <button disabled={dish.is_sold_out} onClick={() => updateQuantity(dish.id, 1)} className="w-8 h-8 flex items-center justify-center rounded-lg transition-all" style={!dish.is_sold_out ? { backgroundColor: brandColor, color: isDark ? 'black' : 'white' } : { backgroundColor: '#f4f4f5', color: '#ccc' }}><Plus className="w-4 h-4" /></button>
+                                                                    <button disabled={dish.is_sold_out} onClick={() => updateQuantity(dish.id, 1)} className="w-8 h-8 flex items-center justify-center rounded-lg transition-all shadow-sm" style={!dish.is_sold_out ? { backgroundColor: brandColor, color: isDark ? 'black' : 'white' } : { backgroundColor: '#f4f4f5', color: '#ccc' }}><Plus className="w-4 h-4" /></button>
                                                                 )}
                                                             </>
                                                         )}
