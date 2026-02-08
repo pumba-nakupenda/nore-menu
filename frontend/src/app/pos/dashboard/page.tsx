@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { Clock, CheckCircle2, Utensils, PackageCheck, Package, XCircle, Search, Loader2, Bell, MapPin, ChevronRight, LogOut, ShoppingBag, UtensilsCrossed, Monitor, Coins, CreditCard, Plus, Minus, X, Trash2, ArrowLeft, Send, Sparkles, LayoutGrid, MessageCircle, User, Phone, ChefHat, History, Filter, Receipt, Bike, Layers, Printer, AlertTriangle } from 'lucide-react'
+import { Clock, CheckCircle2, Utensils, PackageCheck, Package, XCircle, Search, Loader2, Bell, MapPin, ChevronRight, LogOut, ShoppingBag, UtensilsCrossed, Monitor, Coins, CreditCard, Plus, Minus, X, Trash2, ArrowLeft, Send, Sparkles, LayoutGrid, MessageCircle, User, Phone, ChefHat, History, Filter, Receipt, Bike, Layers, Printer, AlertTriangle, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
 
