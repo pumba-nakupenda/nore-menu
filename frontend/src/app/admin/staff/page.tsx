@@ -64,9 +64,10 @@ export default function StaffManagementPage() {
                 ? `${process.env.NEXT_PUBLIC_API_URL}/staff/${editingStaff.id}`
                 : `${process.env.NEXT_PUBLIC_API_URL}/staff/${restaurantId}`
             
-            // CONCATENATE PREFIX BEFORE SAVING TO DB
+            // CLEAN USERNAME: remove any existing prefix if the user typed it by mistake
+            const cleanUsername = username.includes('@') ? username.split('@')[1] : username;
             const prefix = restaurantName?.replace(/\s+/g, '').toLowerCase()
-            const finalUsername = `${prefix}@${username}`
+            const finalUsername = `${prefix}@${cleanUsername}`
 
             const res = await fetch(url, {
                 method: editingStaff ? 'PATCH' : 'POST',
@@ -76,7 +77,7 @@ export default function StaffManagementPage() {
                 },
                 body: JSON.stringify({ 
                     displayName, 
-                    username: finalUsername, // Store as restaurant@identifiant
+                    username: finalUsername, 
                     password, 
                     can_view_whatsapp: perms.whatsapp,
                     can_view_cashier: perms.cashier,
