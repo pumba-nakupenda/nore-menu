@@ -82,7 +82,7 @@ export default function AdminLayout({
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 w-72 bg-[#053e2f] shadow-2xl flex flex-col text-white z-50 transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed inset-y-0 left-0 w-72 bg-[#053e2f] shadow-2xl flex flex-col text-white z-50 transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 overflow-y-auto no-scrollbar ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-8 pb-10 flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
