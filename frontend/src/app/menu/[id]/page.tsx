@@ -368,7 +368,10 @@ export default function PublicMenuPage() {
         const encodedMessage = encodeURIComponent(message);
         const cleanNumber = restaurant.whatsapp_number.replace(/[^\d+]/g, '');
         const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
+        
+        // Use window.location.href for better mobile compatibility
+        // Mobile browsers often block window.open() if not triggered directly by user action
+        window.location.href = whatsappUrl;
     };
 
     const makePhoneCall = () => {
