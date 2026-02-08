@@ -309,7 +309,8 @@ export class AnalyticsService {
         const { count: totalRestaurants } = await client.from('restaurants').select('*', { count: 'exact', head: true });
         const { count: totalDishes } = await client.from('dishes').select('*', { count: 'exact', head: true });
         const { count: totalScans } = await client.from('qr_scans').select('*', { count: 'exact', head: true });
-        const { count: totalWhatsAppOrders } = await client.from('whatsapp_orders').select('*', { count: 'exact', head: true });
+        const { count: totalWhatsAppOrdersRaw } = await client.from('whatsapp_orders').select('*', { count: 'exact', head: true });
+        const totalWhatsAppOrders = totalWhatsAppOrdersRaw || 0;
         
         const { data: revenueData } = await client.from('orders').select('total_price, restaurant_id').eq('production_status', 'delivered');
         const totalRevenue = revenueData?.reduce((sum, order) => sum + (Number(order.total_price) || 0), 0) || 0;
@@ -334,7 +335,7 @@ export class AnalyticsService {
             totalRestaurants: totalRestaurants || 0,
             totalDishes: totalDishes || 0,
             totalScans: totalScans || 0,
-            totalWhatsAppOrders: totalWhatsAppOrders || 0,
+            totalWhatsAppOrders,
             totalRevenue,
             averageOrderValue: totalWhatsAppOrders > 0 ? totalRevenue / totalWhatsAppOrders : 0,
             shops: shops || [],
