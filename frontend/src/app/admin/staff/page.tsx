@@ -30,6 +30,12 @@ export default function StaffManagementPage() {
         toast.success('Kit de connexion copié !')
     }
 
+    const copyPosLink = () => {
+        const url = `${window.location.origin}/pos/login`
+        navigator.clipboard.writeText(url)
+        toast.success('Lien du POS copié !')
+    }
+
     useEffect(() => {
         const fetchUserRestaurant = async () => {
             const { data: { user } } = await supabase.auth.getUser()
