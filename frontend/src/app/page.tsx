@@ -79,7 +79,7 @@ export default function Home() {
             <span className="text-xl font-serif font-bold tracking-tight">Nore Menu</span>
           </Link>
           <nav className="hidden md:flex items-center gap-10">
-            {['Solution', 'Fonctionnement', 'Tarifs'].map(item => (
+            {['Solution', 'Fonctionnement', 'Tarifs'].map((item: string) => (
               <Link key={item} href={`#${item.toLowerCase()}`} className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#064e3b] transition-colors">{item}</Link>
             ))}
             <Link href="/shop" className="text-xs font-bold uppercase tracking-widest text-[#b48a4d] flex items-center gap-2">Boutique <ShoppingBag className="w-3 h-3" /></Link>
@@ -106,7 +106,7 @@ export default function Home() {
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">L'Allié des Restaurants Premium</span>
               </div>
               <h1 className="text-6xl md:text-8xl font-serif font-bold leading-[0.9] tracking-tighter uppercase">
-                {hero.title.split('\n').map((t, i) => (
+                {hero.title.split('\n').map((t: string, i: number) => (
                   <span key={i} className="block">{i === 1 ? <span className="text-[#b48a4d] italic">{t}</span> : t}</span>
                 ))}
               </h1>
@@ -136,7 +136,7 @@ export default function Home() {
                 { t: "Ventes Boostées", d: "Un menu digital interactif qui suggère intelligemment des suppléments.", i: <BarChart3 className="w-6 h-6" /> },
                 { t: "Service Rapide", d: "Les commandes arrivent instantanément en cuisine sans erreur.", i: <Clock className="w-6 h-6" /> },
                 { t: "Contrôle Total", d: "Pilotez vos stocks, votre personnel et vos ventes en temps réel.", i: <Layers className="w-6 h-6" /> }
-              ].map((item, i) => (
+              ].map((item: any, i: number) => (
                 <motion.div key={i} whileHover={{ y: -5 }} className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm space-y-6">
                   <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-[#064e3b]">{item.i}</div>
                   <h3 className="text-2xl font-serif font-bold">{item.t}</h3>
@@ -177,7 +177,7 @@ export default function Home() {
             <p className="text-xl text-emerald-100/60 font-medium max-w-sm">Découvrez nos supports physiques conçus pour durer et sublimer vos tables.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            {hardwareItems.map((item, i) => (
+            {hardwareItems.map((item: any, i: number) => (
               <div key={i} className="group cursor-pointer">
                 <div className="aspect-[4/5] relative rounded-[2.5rem] overflow-hidden mb-6 shadow-2xl">
                   <Image src={item.image_url} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" unoptimized />
@@ -249,8 +249,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto pt-16 mt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
           <p>&copy; {new Date().getFullYear()} Nore Menu. Signature Digital Excellence.</p>
           <div className="flex gap-8">
-            <Link href="/privacy" className="hover:text-white">Confidentialité</Link>
-            <Link href="/terms" className="hover:text-white">CGU</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Confidentialité</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">CGU</Link>
           </div>
         </div>
       </footer>
