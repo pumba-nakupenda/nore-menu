@@ -16,6 +16,16 @@ export default function AuthPage() {
     const [message, setMessage] = useState('')
     const router = useRouter()
 
+    const signInWithGoogle = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/admin/menu`
+            }
+        })
+        if (error) setMessage(error.message)
+    }
+
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
