@@ -59,9 +59,17 @@ export class AnalyticsController {
     @Patch('whatsapp-orders/:orderId')
     async updateWhatsAppStatus(
         @Param('orderId') orderId: string,
-        @Body() body: { status: 'VALIDATED' | 'CANCELLED'; staffId?: string }
+        @Body() body: { 
+            status: 'VALIDATED' | 'CANCELLED'; 
+            staffId?: string;
+            customerName?: string;
+            deliveryAddress?: string;
+        }
     ) {
-        return this.analyticsService.updateWhatsAppOrderStatus(orderId, body.status, body.staffId);
+        return this.analyticsService.updateWhatsAppOrderStatus(orderId, body.status, body.staffId, {
+            customerName: body.customerName,
+            deliveryAddress: body.deliveryAddress
+        });
     }
 
     // Public/POS endpoint - Update WhatsApp order payment status

@@ -84,18 +84,44 @@ export class AnalyticsService {
     }
 
 
-    async updateWhatsAppOrderStatus(orderId: string, status: 'VALIDATED' | 'CANCELLED', staffId?: string) {
+    async updateWhatsAppOrderStatus(orderId: string, status: 'VALIDATED' | 'CANCELLED', staffId?: string, extraData?: { customerName?: string; deliveryAddress?: string; }) {
         const client = this.supabase.getClient();
+        
+        // 1. Update the WhatsApp order record
         const { data, error } = await client
             .from('whatsapp_orders')
-            .update({ status, processed_by: staffId })
+            .update({ 
+                status, 
+                processed_by: staffId,
+                customer_name: extraData?.customerName,
+                delivery_address: extraData?.deliveryAddress
+            })
             .eq('id', orderId)
             .select()
             .single();
 
         if (error) throw new InternalServerErrorException(error.message);
 
-        // Log activity for audit trail
+        // 2. If validated, CREATE a real order for the kitchen/POS
+        if (status === 'VALIDATED' && data) {
+            const { error: kitchenError } = await client.from('orders').insert({
+                restaurant_id: data.restaurant_id,
+                items: data.items,
+                total_price: data.total_price,
+                order_type: data.order_type,
+                table_number: data.table_number,
+                customer_name: extraData?.customerName || data.customer_name,
+                delivery_address: extraData?.deliveryAddress || data.delivery_address,
+                production_status: 'RECEIVED',
+                is_paid: data.is_paid || false,
+                processed_by: staffId,
+                source: 'WHATSAPP'
+            });
+
+            if (kitchenError) console.error('Kitchen conversion error:', kitchenError);
+        }
+
+        // Log activity
         if (staffId && data) {
             await this.logActivity(
                 data.restaurant_id,
