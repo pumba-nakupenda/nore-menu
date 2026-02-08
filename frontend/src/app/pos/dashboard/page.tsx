@@ -39,6 +39,11 @@ export default function POSDashboardPage() {
     const [printingOrder, setPrintingOrder] = useState<any>(null)
     const printRef = useRef<HTMLDivElement>(null)
 
+    // DELIVERY FLOW STATES
+    const [confirmingOrder, setConfirmingOrder] = useState<any>(null)
+    const [customerName, setCustomerName] = useState('')
+    const [deliveryAddress, setDeliveryAddress] = useState('')
+
     const router = useRouter()
 
     useEffect(() => {
@@ -175,16 +180,41 @@ export default function POSDashboardPage() {
         })
     }
 
-    const updateWhatsAppStatus = async (id: string, status: 'VALIDATED' | 'CANCELLED') => {
+    const updateWhatsAppStatus = async (id: string, status: 'VALIDATED' | 'CANCELLED', deliveryData?: any) => {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/analytics/whatsapp-orders/${id}`, {
             method: 'PATCH',
             headers: { 
                 'Content-Type': 'application/json',
                 'x-staff-id': staff.id
             },
-            body: JSON.stringify({ status, staffId: staff.id })
+            body: JSON.stringify({ 
+                status, 
+                staffId: staff.id,
+                customerName: deliveryData?.customerName,
+                deliveryAddress: deliveryData?.deliveryAddress
+            })
         })
         setWhatsappOrders(prev => prev.filter(o => o.id !== id))
+    }
+
+    const handleConfirmWhatsApp = async () => {
+        if (!confirmingOrder) return
+        
+        setLoading(true)
+        try {
+            await updateWhatsAppStatus(confirmingOrder.id, 'VALIDATED', {
+                customerName: customerName || 'Client WhatsApp',
+                deliveryAddress: deliveryAddress
+            })
+            toast.success('Commande validée et envoyée en cuisine !')
+            setConfirmingOrder(null)
+            setCustomerName('')
+            setDeliveryAddress('')
+        } catch (error) {
+            toast.error('Erreur lors de la validation')
+        } finally {
+            setLoading(false)
+        }
     }
 
     const updateWhatsAppPayment = async (id: string, isPaid: boolean) => {
@@ -330,7 +360,19 @@ export default function POSDashboardPage() {
                                     <div className="flex items-center justify-between pt-6 border-t border-zinc-50">
                                         <span className="text-2xl font-black text-emerald-600">{order.total_price.toLocaleString()} {currency}</span>
                                         {order.status === 'PENDING' ? (
-                                            <div className="flex gap-2"><button onClick={() => updateWhatsAppStatus(order.id, 'CANCELLED')} className="p-3 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><XCircle className="w-6 h-6" /></button><button onClick={() => updateWhatsAppStatus(order.id, 'VALIDATED')} className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"><CheckCircle2 className="w-4 h-4" /> Valider</button></div>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => updateWhatsAppStatus(order.id, 'CANCELLED')} className="p-3 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><XCircle className="w-6 h-6" /></button>
+                                                <button 
+                                                    onClick={() => {
+                                                        setConfirmingOrder(order);
+                                                        setCustomerName(order.customer_name || '');
+                                                        setDeliveryAddress(order.delivery_address || '');
+                                                    }} 
+                                                    className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
+                                                >
+                                                    <CheckCircle2 className="w-4 h-4" /> Confirmer
+                                                </button>
+                                            </div>
                                         ) : (
                                             <div className="flex flex-col gap-2 items-end">
                                                 <span className={`text-[8px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest ${order.status === 'VALIDATED' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>{order.status === 'VALIDATED' ? 'Validée' : 'Annulée'}</span>
@@ -549,6 +591,65 @@ export default function POSDashboardPage() {
                     </div>
                 )}
             </main>
+
+            {/* MODAL CONFIRMATION WHATSAPP / LIVRAISON */}
+            {confirmingOrder && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setConfirmingOrder(null)} />
+                    <div className="relative bg-white rounded-[3rem] p-10 w-full max-w-md shadow-2xl animate-pop-in">
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                                <MessageCircle className="w-8 h-8" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-zinc-900 uppercase">Confirmer la Commande</h2>
+                                <p className="text-zinc-400 text-[10px] font-black uppercase tracking-widest">#{confirmingOrder.id.slice(0, 6)} • WhatsApp</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6 mb-10">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-zinc-400 ml-2">Nom du Client</label>
+                                <div className="relative">
+                                    <User className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ex: Samba Ndiaye" 
+                                        value={customerName} 
+                                        onChange={e => setCustomerName(e.target.value)}
+                                        className="w-full pl-14 pr-6 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl font-bold outline-none focus:bg-white focus:border-emerald-500 transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-zinc-400 ml-2">Adresse de Livraison</label>
+                                <div className="relative">
+                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Ex: Rue 10, Immeuble Nore, Dakar" 
+                                        value={deliveryAddress} 
+                                        onChange={e => setDeliveryAddress(e.target.value)}
+                                        className="w-full pl-14 pr-6 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl font-bold outline-none focus:bg-white focus:border-emerald-500 transition-all"
+                                    />
+                                </div>
+                                <p className="text-[9px] text-zinc-400 italic ml-2">Laissez vide si c'est une commande sur place ou à emporter.</p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button onClick={() => setConfirmingOrder(null)} className="flex-1 py-4 font-black uppercase text-[10px] text-zinc-400 hover:text-zinc-600 transition-colors">Annuler</button>
+                            <button 
+                                onClick={handleConfirmWhatsApp}
+                                className="flex-[2] bg-emerald-500 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 hover:bg-black transition-all"
+                            >
+                                <Check className="w-4 h-4" /> Envoyer en Cuisine
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* PRINTABLE COMPONENT (Hidden in UI) */}
             <div className="hidden print:block print:fixed print:inset-0 print:bg-white print:p-8 font-mono text-sm leading-tight text-black" ref={printRef}>
