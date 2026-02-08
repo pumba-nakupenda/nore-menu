@@ -43,6 +43,7 @@ export default function POSDashboardPage() {
     const [confirmingOrder, setConfirmingOrder] = useState<any>(null)
     const [customerName, setCustomerName] = useState('')
     const [deliveryAddress, setDeliveryAddress] = useState('')
+    const [isCartOpen, setIsCartOpen] = useState(false)
 
     const router = useRouter()
 
@@ -316,53 +317,52 @@ export default function POSDashboardPage() {
 
     return (
         <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans overflow-hidden">
-            <header className="bg-[#053e2f] text-white p-4 flex justify-between items-center shadow-xl shrink-0">
-                <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-4 border-r border-white/10 pr-6 mr-2"><div className="bg-[#c5a059] p-2 rounded-xl text-[#064e3b] shadow-lg"><ChefHat className="w-5 h-5" /></div><h1 className="font-black tracking-tighter text-lg">{restaurantName}</h1></div>
-                    <nav className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
-                        {staff?.can_view_whatsapp && <button onClick={() => setCurrentTab('whatsapp')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'whatsapp' ? 'bg-emerald-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><MessageCircle className="w-4 h-4" /> WhatsApp {whatsappOrders.length > 0 && <span className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center text-[8px]">{whatsappOrders.length}</span>}</button>}
-                        {staff?.can_view_cashier && <button onClick={() => setCurrentTab('cashier')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'cashier' ? 'bg-[#c5a059] text-[#064e3b]' : 'text-white/40 hover:text-white'}`}><Coins className="w-4 h-4" /> Caisse</button>}
-                        {staff?.can_view_kitchen && <button onClick={() => setCurrentTab('kitchen')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'kitchen' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><Utensils className="w-4 h-4" /> Cuisine {orders.length > 0 && <span className="w-4 h-4 bg-white/20 rounded-full flex items-center justify-center text-[8px]">{orders.length}</span>}</button>}
-                        {staff?.can_manage_stocks && <button onClick={() => setCurrentTab('stocks')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'stocks' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><Layers className="w-4 h-4" /> Stocks</button>}
-                        {staff?.can_view_transactions && <button onClick={() => setCurrentTab('transactions')} className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all ${currentTab === 'transactions' ? 'bg-zinc-100 text-zinc-900 shadow-lg' : 'text-white/40 hover:text-white'}`}><History className="w-4 h-4" /> Ventes</button>}
+            <header className="bg-[#053e2f] text-white p-3 lg:p-4 flex justify-between items-center shadow-xl shrink-0">
+                <div className="flex items-center gap-2 lg:gap-6">
+                    <div className="flex items-center gap-2 lg:gap-4 border-r border-white/10 pr-3 lg:pr-6 mr-1 lg:mr-2"><div className="bg-[#c5a059] p-1.5 lg:p-2 rounded-lg lg:rounded-xl text-[#064e3b] shadow-lg"><ChefHat className="w-4 h-4 lg:w-5 lg:h-5" /></div><h1 className="font-black tracking-tighter text-sm lg:text-lg truncate max-w-[80px] lg:max-w-none">{restaurantName}</h1></div>
+                    <nav className="flex bg-white/5 p-1 rounded-xl lg:rounded-2xl border border-white/10 overflow-x-auto no-scrollbar max-w-[180px] xs:max-w-[240px] sm:max-w-none">
+                        {staff?.can_view_whatsapp && <button onClick={() => setCurrentTab('whatsapp')} className={`px-3 lg:px-5 py-1.5 lg:py-2 rounded-lg lg:rounded-xl text-[8px] lg:text-[10px] font-black uppercase flex items-center gap-1.5 lg:gap-2 transition-all shrink-0 ${currentTab === 'whatsapp' ? 'bg-emerald-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><MessageCircle className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> <span className="hidden xs:inline">WhatsApp</span> {whatsappOrders.length > 0 && <span className="w-3.5 h-3.5 bg-white/20 rounded-full flex items-center justify-center text-[7px]">{whatsappOrders.length}</span>}</button>}
+                        {staff?.can_view_cashier && <button onClick={() => setCurrentTab('cashier')} className={`px-3 lg:px-5 py-1.5 lg:py-2 rounded-lg lg:rounded-xl text-[8px] lg:text-[10px] font-black uppercase flex items-center gap-1.5 lg:gap-2 transition-all shrink-0 ${currentTab === 'cashier' ? 'bg-[#c5a059] text-[#064e3b]' : 'text-white/40 hover:text-white'}`}><Coins className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> <span className="hidden xs:inline">Caisse</span></button>}
+                        {staff?.can_view_kitchen && <button onClick={() => setCurrentTab('kitchen')} className={`px-3 lg:px-5 py-1.5 lg:py-2 rounded-lg lg:rounded-xl text-[8px] lg:text-[10px] font-black uppercase flex items-center gap-1.5 lg:gap-2 transition-all shrink-0 ${currentTab === 'kitchen' ? 'bg-blue-500 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><Utensils className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> <span className="hidden xs:inline">Cuisine</span> {orders.length > 0 && <span className="w-3.5 h-3.5 bg-white/20 rounded-full flex items-center justify-center text-[7px]">{orders.length}</span>}</button>}
+                        {staff?.can_manage_stocks && <button onClick={() => setCurrentTab('stocks')} className={`px-3 lg:px-5 py-1.5 lg:py-2 rounded-lg lg:rounded-xl text-[8px] lg:text-[10px] font-black uppercase flex items-center gap-1.5 lg:gap-2 transition-all shrink-0 ${currentTab === 'stocks' ? 'bg-amber-600 text-white shadow-lg' : 'text-white/40 hover:text-white'}`}><Layers className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> <span className="hidden xs:inline">Stocks</span></button>}
+                        {staff?.can_view_transactions && <button onClick={() => setCurrentTab('transactions')} className={`px-3 lg:px-5 py-1.5 lg:py-2 rounded-lg lg:rounded-xl text-[8px] lg:text-[10px] font-black uppercase flex items-center gap-1.5 lg:gap-2 transition-all shrink-0 ${currentTab === 'transactions' ? 'bg-zinc-100 text-zinc-900 shadow-lg' : 'text-white/40 hover:text-white'}`}><History className="w-3.5 h-3.5 lg:w-4 lg:h-4" /> <span className="hidden xs:inline">Ventes</span></button>}
                     </nav>
                 </div>
-                <div className="flex items-center gap-4">
-                    <div className={`px-3 py-1.5 rounded-full border hidden md:flex items-center gap-2 ${paymentLogic === 'pay_before' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-amber-500/10 border-amber-500/20 text-amber-400'}`}>
-                        <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${paymentLogic === 'pay_before' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                        <span className="text-[8px] font-black uppercase tracking-widest">{paymentLogic === 'pay_before' ? 'Paiement à la commande' : 'Paiement après service'}</span>
+                <div className="flex items-center gap-2 lg:gap-4">
+                    <div className={`px-2 py-1 lg:px-3 lg:py-1.5 rounded-full border hidden sm:flex items-center gap-1.5 lg:gap-2 ${paymentLogic === 'pay_before' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-amber-500/10 border-amber-500/20 text-amber-400'}`}>
+                        <div className={`w-1 lg:w-1.5 h-1 lg:h-1.5 rounded-full animate-pulse ${paymentLogic === 'pay_before' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                        <span className="text-[7px] lg:text-[8px] font-black uppercase tracking-widest">{paymentLogic === 'pay_before' ? 'Pré-payé' : 'Post-payé'}</span>
                     </div>
-                    <div className={`px-3 py-1.5 rounded-full border flex items-center gap-2 ${connectionStatus === 'connected' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : connectionStatus === 'connecting' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${connectionStatus === 'connected' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : connectionStatus === 'connecting' ? 'bg-amber-500 animate-pulse' : 'bg-red-500 animate-bounce'}`} />
-                        <span className="text-[8px] font-black uppercase tracking-widest">{connectionStatus === 'connected' ? 'Live' : connectionStatus === 'connecting' ? 'Synchro...' : 'Déconnecté'}</span>
+                    <div className={`px-2 py-1 lg:px-3 lg:py-1.5 rounded-full border flex items-center gap-1.5 lg:gap-2 ${connectionStatus === 'connected' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : connectionStatus === 'connecting' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                        <div className={`w-1 lg:w-1.5 h-1 lg:h-1.5 rounded-full ${connectionStatus === 'connected' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : connectionStatus === 'connecting' ? 'bg-amber-500 animate-pulse' : 'bg-red-500 animate-bounce'}`} />
+                        <span className="text-[7px] lg:text-[8px] font-black uppercase tracking-widest">{connectionStatus === 'connected' ? 'Live' : 'Synchro'}</span>
                     </div>
-                    <span className="text-[10px] font-black uppercase text-emerald-100/40 hidden lg:block">{staff?.display_name}</span>
-                    <button onClick={handleLogout} className="p-3 bg-white/5 hover:bg-red-500/20 text-white rounded-2xl transition-all"><LogOut className="w-5 h-5 text-red-400" /></button>
+                    <button onClick={handleLogout} className="p-2 lg:p-3 bg-white/5 hover:bg-red-500/20 text-white rounded-xl lg:rounded-2xl transition-all"><LogOut className="w-4 h-4 lg:w-5 lg:h-5 text-red-400" /></button>
                 </div>
             </header>
 
             <main className="flex-1 relative overflow-hidden">
                 {/* WHATSAPP */}
                 {currentTab === 'whatsapp' && (
-                    <div className="absolute inset-0 p-8 overflow-y-auto no-scrollbar animate-in fade-in duration-300">
-                        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="absolute inset-0 p-4 lg:p-8 overflow-y-auto no-scrollbar animate-in fade-in duration-300">
+                        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                             {whatsappOrders.map(order => (
-                                <div key={order.id} className="bg-white rounded-[2.5rem] border border-zinc-100 p-8 shadow-sm flex flex-col hover:border-emerald-200 transition-all">
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div><span className="font-black text-zinc-900 block text-lg">#{order.id.slice(0, 6)}</span><p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{order.customer_name || 'WhatsApp'}</p></div>
+                                <div key={order.id} className="bg-white rounded-2xl lg:rounded-[2.5rem] border border-zinc-100 p-5 lg:p-8 shadow-sm flex flex-col hover:border-emerald-200 transition-all">
+                                    <div className="flex justify-between items-start mb-4 lg:mb-6">
+                                        <div><span className="font-black text-zinc-900 block text-base lg:text-lg">#{order.id.slice(0, 6)}</span><p className="text-[9px] lg:text-[10px] font-black text-zinc-400 uppercase tracking-widest truncate max-w-[100px]">{order.customer_name || 'WhatsApp'}</p></div>
                                         <div className="flex flex-col gap-1 items-end">
-                                            <span className="bg-emerald-50 text-emerald-700 text-[8px] font-black px-2 py-1 rounded border border-emerald-100 uppercase tracking-widest flex items-center gap-1">{typeIcon(order.order_type)} {order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span>
-                                            {order.table_number && <span className="text-[10px] font-black text-zinc-900">Table {order.table_number}</span>}
+                                            <span className="bg-emerald-50 text-emerald-700 text-[7px] lg:text-[8px] font-black px-1.5 lg:px-2 py-0.5 lg:py-1 rounded border border-emerald-100 uppercase tracking-widest flex items-center gap-1">{typeIcon(order.order_type)} {order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span>
+                                            {order.table_number && <span className="text-[9px] lg:text-[10px] font-black text-zinc-900">Table {order.table_number}</span>}
                                         </div>
                                     </div>
-                                    {order.delivery_address && <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2"><MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /><p className="text-[10px] font-bold text-blue-900">{order.delivery_address}</p></div>}
-                                    <div className="space-y-3 mb-8 flex-1 bg-zinc-50/50 p-6 rounded-3xl">{order.items.map((item: any, i: number) => (<p key={i} className="text-sm text-zinc-600 font-bold"><span className="font-black text-zinc-900 mr-2">{item.quantity}x</span> {item.name}</p>))}</div>
-                                    <div className="flex items-center justify-between pt-6 border-t border-zinc-50">
-                                        <span className="text-2xl font-black text-emerald-600">{order.total_price.toLocaleString()} {currency}</span>
+                                    {order.delivery_address && <div className="mb-4 p-2 lg:p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2"><MapPin className="w-3.5 h-3.5 lg:w-4 h-4 text-blue-500 shrink-0 mt-0.5" /><p className="text-[9px] lg:text-[10px] font-bold text-blue-900 line-clamp-2">{order.delivery_address}</p></div>}
+                                    <div className="space-y-2 lg:space-y-3 mb-6 lg:mb-8 flex-1 bg-zinc-50/50 p-4 lg:p-6 rounded-2xl lg:rounded-3xl">{order.items.map((item: any, i: number) => (<p key={i} className="text-xs lg:text-sm text-zinc-600 font-bold"><span className="font-black text-zinc-900 mr-2">{item.quantity}x</span> {item.name}</p>))}</div>
+                                    <div className="flex items-center justify-between pt-4 lg:pt-6 border-t border-zinc-50">
+                                        <span className="text-xl lg:text-2xl font-black text-emerald-600">{order.total_price.toLocaleString()} {currency}</span>
                                         {order.status === 'PENDING' ? (
                                             <div className="flex gap-2">
                                                 {staff?.can_cancel_orders !== false && (
-                                                    <button onClick={() => updateWhatsAppStatus(order.id, 'CANCELLED')} className="p-3 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><XCircle className="w-6 h-6" /></button>
+                                                    <button onClick={() => updateWhatsAppStatus(order.id, 'CANCELLED')} className="p-2.5 lg:p-3 text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-xl lg:rounded-2xl transition-all"><XCircle className="w-5 h-5 lg:w-6 h-6" /></button>
                                                 )}
                                                 {staff?.can_validate_orders !== false && (
                                                     <button 
@@ -371,9 +371,9 @@ export default function POSDashboardPage() {
                                                             setCustomerName(order.customer_name || '');
                                                             setDeliveryAddress(order.delivery_address || '');
                                                         }} 
-                                                        className="bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
+                                                        className="bg-emerald-500 text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl font-black uppercase text-[10px] lg:text-xs flex items-center gap-2 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all"
                                                     >
-                                                        <CheckCircle2 className="w-4 h-4" /> Confirmer
+                                                        <CheckCircle2 className="w-3.5 h-3.5 lg:w-4 h-4" /> Confirmer
                                                     </button>
                                                 )}
                                             </div>
@@ -399,34 +399,52 @@ export default function POSDashboardPage() {
 
                 {/* CASHIER */}
                 {currentTab === 'cashier' && (
-                    <div className="absolute inset-0 flex animate-in fade-in duration-300">
+                    <div className="absolute inset-0 flex flex-col lg:flex-row animate-in fade-in duration-300">
                         <div className="flex-1 flex flex-col bg-[#fafafa] border-r overflow-hidden">
-                            <header className="bg-white p-6 border-b flex gap-2 overflow-x-auto no-scrollbar shrink-0">{categories.map(cat => (<button key={cat.id} onClick={() => setActiveCategory(cat.id)} className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase border-2 transition-all ${activeCategory === cat.id ? 'bg-[#c5a059] border-[#c5a059] text-[#064e3b]' : 'bg-white border-zinc-100 text-zinc-400'}`}>{cat.name}</button>))}</header>
-                            <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 no-scrollbar pb-32">
+                            <header className="bg-white p-4 lg:p-6 border-b flex gap-2 overflow-x-auto no-scrollbar shrink-0">{categories.map(cat => (<button key={cat.id} onClick={() => setActiveCategory(cat.id)} className={`px-4 lg:px-6 py-2 lg:py-3 rounded-xl text-[9px] lg:text-[10px] font-black uppercase border-2 transition-all shrink-0 ${activeCategory === cat.id ? 'bg-[#c5a059] border-[#c5a059] text-[#064e3b]' : 'bg-white border-zinc-100 text-zinc-400'}`}>{cat.name}</button>))}</header>
+                            <div className="flex-1 overflow-y-auto p-4 lg:p-8 grid grid-cols-2 md:grid-cols-2 2xl:grid-cols-3 gap-3 lg:gap-6 no-scrollbar pb-32">
                                 {categories.find(c => c.id === activeCategory)?.dishes?.map((dish: any) => (
-                                    <div key={dish.id} onClick={() => dish.is_available !== false && updateCart(dish.id, 1)} className={`group bg-white rounded-[2.5rem] border-2 transition-all cursor-pointer overflow-hidden flex flex-col relative ${dish.is_available === false ? 'opacity-50 grayscale' : ''} ${cart[dish.id] ? 'border-[#c5a059] shadow-xl' : 'border-white hover:border-zinc-200'}`}>
+                                    <div key={dish.id} onClick={() => dish.is_available !== false && updateCart(dish.id, 1)} className={`group bg-white rounded-2xl lg:rounded-[2.5rem] border-2 transition-all cursor-pointer overflow-hidden flex flex-col relative ${dish.is_available === false ? 'opacity-50 grayscale' : ''} ${cart[dish.id] ? 'border-[#c5a059] shadow-xl' : 'border-white hover:border-zinc-200'}`}>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); toggleDishAvailability(dish.id, dish.is_available !== false); }}
-                                            className={`absolute top-4 right-4 z-10 p-2 rounded-xl transition-all ${dish.is_available === false ? 'bg-red-500 text-white' : 'bg-white/90 text-zinc-400 hover:text-emerald-500 shadow-lg'}`}
+                                            className={`absolute top-2 right-2 lg:top-4 lg:right-4 z-10 p-1.5 lg:p-2 rounded-lg lg:rounded-xl transition-all ${dish.is_available === false ? 'bg-red-500 text-white' : 'bg-white/90 text-zinc-400 hover:text-emerald-500 shadow-lg'}`}
                                             title={dish.is_available === false ? "Réactiver le plat" : "Marquer comme épuisé"}
                                         >
-                                            <PackageCheck className="w-4 h-4" />
+                                            <PackageCheck className="w-3.5 h-3.5 lg:w-4 h-4" />
                                         </button>
-                                        {dish.image_url && <div className="aspect-video relative overflow-hidden"><img src={dish.image_url} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" /></div>}
-                                        <div className="p-6 flex-1 flex flex-col">
-                                            <h4 className="font-black text-lg text-zinc-900 leading-tight mb-2 truncate">{dish.name}</h4>
+                                        {dish.image_url && <div className="aspect-[4/3] lg:aspect-video relative overflow-hidden"><img src={dish.image_url} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" /></div>}
+                                        <div className="p-3 lg:p-6 flex-1 flex flex-col">
+                                            <h4 className="font-black text-xs lg:text-lg text-zinc-900 leading-tight mb-1 lg:mb-2 line-clamp-2">{dish.name}</h4>
                                             <div className="mt-auto flex items-center justify-between">
-                                                <span className="text-xl font-black text-[#c5a059]">{dish.price.toLocaleString()} {currency}</span>
-                                                {cart[dish.id] && <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-black animate-pop-in">{cart[dish.id]}</div>}
+                                                <span className="text-sm lg:text-xl font-black text-[#c5a059]">{dish.price.toLocaleString()} {currency}</span>
+                                                {cart[dish.id] && <div className="w-6 h-6 lg:w-10 lg:h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px] lg:text-base font-black animate-pop-in">{cart[dish.id]}</div>}
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
+
+                            {/* MOBILE CART TOGGLE */}
+                            <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] w-full px-6">
+                                <button 
+                                    onClick={() => setIsCartOpen(true)}
+                                    className="w-full py-5 bg-[#064e3b] text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl flex items-center justify-center gap-3 active:scale-95 transition-all"
+                                >
+                                    <ShoppingBag className="w-5 h-5" />
+                                    Voir Panier ({Object.values(cart).reduce((a, b) => a + b, 0)})
+                                    <span className="ml-2 px-3 py-1 bg-white/20 rounded-lg">{cartTotal.toLocaleString()} {currency}</span>
+                                </button>
+                            </div>
                         </div>
-                        <div className="w-[480px] bg-white border-l shadow-2xl flex flex-col">
-                            <div className="flex-1 overflow-y-auto p-8 space-y-10 no-scrollbar">
-                                <section><h3 className="font-black text-[10px] uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2"><ShoppingBag className="w-4 h-4 text-[#c5a059]" /> Panier Vente</h3><div className="space-y-3">{categories.flatMap(c => c.dishes).filter(d => cart[d.id]).map(dish => (<div key={dish.id} className="bg-zinc-50 p-5 rounded-[1.5rem] border border-zinc-100 flex items-center justify-between"><div className="flex-1 min-w-0"><p className="font-black text-zinc-900 text-sm truncate">{dish.name}</p><p className="text-[10px] font-bold text-[#c5a059]">{dish.price.toLocaleString()} {currency}</p></div><div className="flex items-center bg-white rounded-xl p-1 gap-2 shadow-sm"><button onClick={() => updateCart(dish.id, -1)} className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-900"><Minus className="w-4 h-4" /></button><span className="w-4 text-center font-black text-xs">{cart[dish.id]}</span><button onClick={() => updateCart(dish.id, 1)} className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-900"><Plus className="w-4 h-4" /></button></div></div>))}</div></section>
+
+                        {/* CART SIDEBAR / MODAL */}
+                        <div className={`fixed lg:relative inset-0 lg:inset-auto z-[100] lg:z-auto w-full lg:w-[480px] bg-white border-l shadow-2xl flex flex-col transition-transform duration-500 ${isCartOpen ? 'translate-y-0' : 'translate-y-full lg:translate-y-0'}`}>
+                            <header className="lg:hidden p-6 border-b flex justify-between items-center bg-zinc-50">
+                                <h3 className="font-black uppercase text-xs tracking-widest">Votre Panier</h3>
+                                <button onClick={() => setIsCartOpen(false)} className="p-2 bg-white rounded-xl shadow-sm"><X className="w-6 h-6" /></button>
+                            </header>
+                            <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-10 no-scrollbar">
+                                <section><h3 className="hidden lg:flex font-black text-[10px] uppercase tracking-widest text-zinc-400 mb-6 items-center gap-2"><ShoppingBag className="w-4 h-4 text-[#c5a059]" /> Panier Vente</h3><div className="space-y-3">{categories.flatMap(c => c.dishes).filter(d => cart[d.id]).map(dish => (<div key={dish.id} className="bg-zinc-50 p-4 lg:p-5 rounded-2xl lg:rounded-[1.5rem] border border-zinc-100 flex items-center justify-between"><div className="flex-1 min-w-0"><p className="font-black text-zinc-900 text-xs lg:text-sm truncate">{dish.name}</p><p className="text-[10px] font-bold text-[#c5a059]">{dish.price.toLocaleString()} {currency}</p></div><div className="flex items-center bg-white rounded-xl p-1 gap-2 shadow-sm"><button onClick={() => updateCart(dish.id, -1)} className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-900"><Minus className="w-4 h-4" /></button><span className="w-4 text-center font-black text-xs">{cart[dish.id]}</span><button onClick={() => updateCart(dish.id, 1)} className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-900"><Plus className="w-4 h-4" /></button></div></div>))}</div></section>
 
                                 {paymentLogic === 'pay_before' && orders.filter(o => !o.is_paid && o.production_status === 'RECEIVED').length > 0 && (
                                     <section><h3 className="font-black text-[10px] uppercase tracking-widest text-emerald-500 mb-6 flex items-center gap-2"><MessageCircle className="w-4 h-4" /> WhatsApp à encaisser</h3><div className="space-y-3">{orders.filter(o => !o.is_paid && o.production_status === 'RECEIVED').map(order => (<div key={order.id} className="bg-white border-2 border-emerald-100 rounded-3xl p-5 shadow-sm flex items-center justify-between animate-in slide-in-from-right-4">
@@ -448,23 +466,27 @@ export default function POSDashboardPage() {
                                     )}
                                 </div></div>))}</div></section>
                             </div>
-                            <div className="p-8 border-t bg-zinc-50/50 space-y-6 shrink-0">
+                            <div className="p-6 lg:p-8 border-t bg-zinc-50/50 space-y-4 lg:space-y-6 shrink-0 pb-10 lg:pb-8">
                                 <div className="flex bg-white p-1 rounded-2xl border">
-                                    <button onClick={() => setManualType('dine_in')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${manualType === 'dine_in' ? 'bg-[#c5a059] text-white shadow-lg' : 'text-zinc-400'}`}>Sur place</button>
-                                    <button onClick={() => setManualType('takeaway')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${manualType === 'takeaway' ? 'bg-zinc-900 text-white shadow-lg' : 'text-zinc-400'}`}>Emporter</button>
-                                    <button onClick={() => setManualType('delivery')} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all ${manualType === 'delivery' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400'}`}>Livraison</button>
+                                    <button onClick={() => setManualType('dine_in')} className={`flex-1 py-3 rounded-xl text-[9px] lg:text-[10px] font-black uppercase transition-all ${manualType === 'dine_in' ? 'bg-[#c5a059] text-white shadow-lg' : 'text-zinc-400'}`}>Sur place</button>
+                                    <button onClick={() => setManualType('takeaway')} className={`flex-1 py-3 rounded-xl text-[9px] lg:text-[10px] font-black uppercase transition-all ${manualType === 'takeaway' ? 'bg-zinc-900 text-white shadow-lg' : 'text-zinc-400'}`}>Emporter</button>
+                                    <button onClick={() => setManualType('delivery')} className={`flex-1 py-3 rounded-xl text-[9px] lg:text-[10px] font-black uppercase transition-all ${manualType === 'delivery' ? 'bg-blue-600 text-white shadow-lg' : 'text-zinc-400'}`}>Livraison</button>
                                 </div>
-                                <div className="space-y-3">
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <input type="text" placeholder="Table" value={manualTable} onChange={e => setManualTable(e.target.value)} disabled={manualType !== 'dine_in'} className="w-full px-5 py-4 rounded-2xl border border-zinc-200 outline-none font-black text-center disabled:opacity-30 shadow-inner focus:bg-white transition-all" />
-                                        <input type="text" placeholder="Client" value={manualName} onChange={e => setManualName(e.target.value)} className="w-full px-5 py-4 rounded-2xl border border-zinc-200 outline-none font-black shadow-inner focus:bg-white transition-all" />
+                                <div className="space-y-2 lg:space-y-3">
+                                    <div className="grid grid-cols-2 gap-2 lg:gap-3">
+                                        <input type="text" placeholder="Table" value={manualTable} onChange={e => setManualTable(e.target.value)} disabled={manualType !== 'dine_in'} className="w-full px-4 lg:px-5 py-3 lg:py-4 rounded-xl lg:rounded-2xl border border-zinc-200 outline-none font-black text-center text-xs lg:text-base disabled:opacity-30 shadow-inner focus:bg-white transition-all" />
+                                        <input type="text" placeholder="Client" value={manualName} onChange={e => setManualName(e.target.value)} className="w-full px-4 lg:px-5 py-3 lg:py-4 rounded-xl lg:rounded-2xl border border-zinc-200 outline-none font-black text-xs lg:text-base shadow-inner focus:bg-white transition-all" />
                                     </div>
-                                    {manualType === 'delivery' && <input type="text" placeholder="Adresse de livraison..." value={manualAddress} onChange={e => setManualAddress(e.target.value)} className="w-full px-5 py-4 rounded-2xl border border-zinc-200 outline-none font-black shadow-inner focus:bg-white transition-all" />}
+                                    {manualType === 'delivery' && <input type="text" placeholder="Adresse de livraison..." value={manualAddress} onChange={e => setManualAddress(e.target.value)} className="w-full px-4 lg:px-5 py-3 lg:py-4 rounded-xl lg:rounded-2xl border border-zinc-200 outline-none font-black text-xs lg:text-base shadow-inner focus:bg-white transition-all" />}
                                 </div>
-                                <div className="flex justify-between items-center"><span className="text-[10px] font-black uppercase text-zinc-400">Total</span><span className="text-3xl font-black text-blue-900">{cartTotal.toLocaleString()} {currency}</span></div>
+                                <div className="flex justify-between items-center"><span className="text-[10px] font-black uppercase text-zinc-400">Total</span><span className="text-2xl lg:text-3xl font-black text-blue-900">{cartTotal.toLocaleString()} {currency}</span></div>
                                 {staff?.can_validate_orders !== false && (
-                                    <button disabled={cartTotal === 0} onClick={submitManualOrder} className={`w-full py-6 text-white rounded-[2.5rem] font-black uppercase tracking-[0.2em] shadow-2xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-20 transition-all ${paymentLogic === 'pay_before' ? 'bg-emerald-600' : 'bg-blue-600'}`}>
-                                        {paymentLogic === 'pay_before' ? <><CreditCard className="w-6 h-6" /> Encaisser & Envoyer</> : <><Send className="w-6 h-6" /> Envoyer Cuisine</>}
+                                    <button 
+                                        disabled={cartTotal === 0} 
+                                        onClick={async () => { await submitManualOrder(); setIsCartOpen(false); }} 
+                                        className={`w-full py-5 lg:py-6 text-white rounded-2xl lg:rounded-[2.5rem] font-black uppercase tracking-[0.1em] lg:tracking-[0.2em] shadow-2xl flex items-center justify-center gap-3 active:scale-95 disabled:opacity-20 transition-all ${paymentLogic === 'pay_before' ? 'bg-emerald-600' : 'bg-blue-600'}`}
+                                    >
+                                        {paymentLogic === 'pay_before' ? <><CreditCard className="w-5 h-5 lg:w-6 h-6" /> Encaisser</> : <><Send className="w-5 h-5 lg:w-6 h-6" /> Envoyer</>}
                                     </button>
                                 )}
                             </div>
@@ -474,21 +496,23 @@ export default function POSDashboardPage() {
 
                 {/* KITCHEN */}
                 {currentTab === 'kitchen' && (
-                    <div className="absolute inset-0 p-8 flex gap-8 overflow-x-auto no-scrollbar animate-in fade-in duration-300">
+                    <div className="absolute inset-0 p-4 lg:p-8 flex gap-4 lg:gap-8 overflow-x-auto no-scrollbar animate-in fade-in duration-300">
                         {COLUMNS_KITCHEN.map(column => {
                             const columnOrders = orders.filter(o => o.production_status === column.id && (paymentLogic === 'pay_after' || o.is_paid))
                             return (
-                                <div key={column.id} className={`flex-shrink-0 w-[480px] flex flex-col ${column.bgColor} rounded-[3rem] border ${column.borderColor} p-8 shadow-sm`}>
-                                    <div className="flex items-center justify-between mb-8 px-2"><h3 className={`font-black text-xs uppercase tracking-widest ${column.textColor} flex items-center gap-3`}><span className={`w-3 h-3 rounded-full ${column.accentColor} shadow-lg`} />{column.title}</h3><span className="bg-white border border-zinc-100 text-zinc-900 text-[10px] font-black px-4 py-1.5 rounded-full shadow-sm">{columnOrders.length}</span></div>
-                                    <div className="flex-1 overflow-y-auto no-scrollbar space-y-6 pr-1">
+                                <div key={column.id} className={`flex-shrink-0 w-[85vw] lg:w-[480px] flex flex-col ${column.bgColor} rounded-[2rem] lg:rounded-[3rem] border ${column.borderColor} p-6 lg:p-8 shadow-sm`}>
+                                    <div className="flex items-center justify-between mb-6 lg:mb-8 px-2"><h3 className={`font-black text-[10px] lg:text-xs uppercase tracking-widest ${column.textColor} flex items-center gap-2 lg:gap-3`}><span className={`w-2 h-2 lg:w-3 lg:h-3 rounded-full ${column.accentColor} shadow-lg`} />{column.title}</h3><span className="bg-white border border-zinc-100 text-zinc-900 text-[9px] lg:text-[10px] font-black px-3 py-1 lg:px-4 lg:py-1.5 rounded-full shadow-sm">{columnOrders.length}</span></div>
+                                    <div className="flex-1 overflow-y-auto no-scrollbar space-y-4 lg:space-y-6 pr-1">
                                         {columnOrders.map(order => (
-                                            <div key={order.id} className="bg-white rounded-[2.5rem] border border-zinc-100 shadow-sm p-8 flex flex-col border-l-[16px] transition-all hover:shadow-xl" style={{ borderLeftColor: order.order_type === 'dine_in' ? '#c5a059' : order.order_type === 'takeaway' ? '#1e293b' : '#3b82f6' }}>
-                                                <div className="flex justify-between items-start mb-6"><div><div className="flex items-center gap-2 mb-1"><span className="font-black text-2xl">#{order.id.slice(0, 6)}</span><span className="bg-zinc-50 text-zinc-700 text-[8px] font-black uppercase px-2 py-1 rounded border flex items-center gap-1">{typeIcon(order.order_type)} {order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span></div><p className="text-xs font-black text-zinc-900 uppercase tracking-widest">{order.customer_name || 'Client'}</p></div><span className="text-[10px] font-black text-zinc-400 bg-zinc-50 px-3 py-1.5 rounded-xl">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>
-                                                {order.delivery_address && <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2"><MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /><p className="text-[10px] font-bold text-blue-900">{order.delivery_address}</p></div>}
-                                                <div className="space-y-3 mb-8 bg-zinc-50/50 p-6 rounded-3xl">{order.items.map((item: any, idx: number) => (<div key={idx} className="flex flex-col gap-1"><div className="flex justify-between text-sm"><span className="font-bold text-zinc-800"><span className="text-zinc-400 mr-2">{item.quantity}x</span> {item.name}</span></div>{item.note && <p className="text-[10px] italic text-[#c5a059] bg-white p-3 rounded-2xl border border-amber-100/50">"{item.note}"</p>}</div>))}</div>
-                                                <div className="flex gap-3"><button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-5 bg-red-50 text-red-500 rounded-[1.5rem] hover:bg-red-100 transition-all"><XCircle className="w-7 h-7" /></button>
-                                                    <button onClick={() => handlePrint(order)} className="p-5 bg-zinc-100 text-zinc-900 rounded-[1.5rem] hover:bg-zinc-200 transition-all"><Printer className="w-7 h-7" /></button>
-                                                    {order.production_status === 'RECEIVED' ? <button onClick={() => updateOrderStatus(order.id, 'COOKING')} className="flex-1 py-6 bg-blue-600 text-white rounded-[1.5rem] font-black uppercase text-xs shadow-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-3">LANCER CUISINE <ChevronRight className="w-6 h-6" /></button> : <button onClick={() => updateOrderStatus(order.id, paymentLogic === 'pay_before' ? 'SERVED' : 'READY')} className="flex-1 py-6 bg-emerald-600 text-white rounded-[1.5rem] font-black uppercase text-xs shadow-xl hover:bg-emerald-700 transition-all flex items-center justify-center gap-3">{paymentLogic === 'pay_before' ? "TERMINER" : "C'EST PRÊT !"} <PackageCheck className="w-6 h-6" /></button>}</div>
+                                            <div key={order.id} className="bg-white rounded-[1.5rem] lg:rounded-[2.5rem] border border-zinc-100 shadow-sm p-5 lg:p-8 flex flex-col border-l-[8px] lg:border-l-[16px] transition-all hover:shadow-xl" style={{ borderLeftColor: order.order_type === 'dine_in' ? '#c5a059' : order.order_type === 'takeaway' ? '#1e293b' : '#3b82f6' }}>
+                                                <div className="flex justify-between items-start mb-4 lg:mb-6"><div><div className="flex items-center gap-2 mb-1"><span className="font-black text-lg lg:text-2xl">#{order.id.slice(0, 6)}</span><span className="bg-zinc-50 text-zinc-700 text-[7px] lg:text-[8px] font-black uppercase px-1.5 py-0.5 rounded border flex items-center gap-1">{typeIcon(order.order_type)}</span></div><p className="text-[10px] lg:text-xs font-black text-zinc-900 uppercase tracking-widest truncate max-w-[120px]">{order.customer_name || 'Client'}</p></div><span className="text-[8px] lg:text-[10px] font-black text-zinc-400 bg-zinc-50 px-2 py-1 rounded-lg">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>
+                                                {order.delivery_address && <div className="mb-4 p-2 lg:p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2"><MapPin className="w-3 h-3 lg:w-4 lg:h-4 text-blue-500 shrink-0 mt-0.5" /><p className="text-[9px] lg:text-[10px] font-bold text-blue-900 line-clamp-2">{order.delivery_address}</p></div>}
+                                                <div className="space-y-2 lg:space-y-3 mb-6 lg:mb-8 bg-zinc-50/50 p-4 lg:p-6 rounded-2xl lg:rounded-3xl">{order.items.map((item: any, idx: number) => (<div key={idx} className="flex flex-col gap-1"><div className="flex justify-between text-xs lg:text-sm"><span className="font-bold text-zinc-800"><span className="text-zinc-400 mr-2">{item.quantity}x</span> {item.name}</span></div>{item.note && <p className="text-[9px] italic text-[#c5a059] bg-white p-2 rounded-xl border border-amber-100/50">"{item.note}"</p>}</div>))}</div>
+                                                <div className="flex gap-2 lg:gap-3">
+                                                    {staff?.can_cancel_orders !== false && <button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-3 lg:p-5 bg-red-50 text-red-500 rounded-xl lg:rounded-[1.5rem] hover:bg-red-100 transition-all"><XCircle className="w-5 h-5 lg:w-7 h-7" /></button>}
+                                                    <button onClick={() => handlePrint(order)} className="p-3 lg:p-5 bg-zinc-100 text-zinc-900 rounded-xl lg:rounded-[1.5rem] hover:bg-zinc-200 transition-all"><Printer className="w-5 h-5 lg:w-7 h-7" /></button>
+                                                    {order.production_status === 'RECEIVED' ? <button onClick={() => updateOrderStatus(order.id, 'COOKING')} className="flex-1 py-4 lg:py-6 bg-blue-600 text-white rounded-xl lg:rounded-[1.5rem] font-black uppercase text-[10px] lg:text-xs shadow-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 lg:gap-3">LANCER</button> : <button onClick={() => updateOrderStatus(order.id, paymentLogic === 'pay_before' ? 'SERVED' : 'READY')} className="flex-1 py-4 lg:py-6 bg-emerald-600 text-white rounded-xl lg:rounded-[1.5rem] font-black uppercase text-[10px] lg:text-xs shadow-xl hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 lg:gap-3">PRÊT</button>}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
