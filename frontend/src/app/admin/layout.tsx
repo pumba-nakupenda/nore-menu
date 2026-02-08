@@ -51,6 +51,7 @@ export default function AdminLayout({
     const handleSignOut = async () => {
         await supabase.auth.signOut()
         router.push('/login')
+        router.refresh()
     }
 
     const isActive = (path: string) => pathname === path
