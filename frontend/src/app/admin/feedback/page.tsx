@@ -37,7 +37,7 @@ export default function FeedbackAdminPage() {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/${id}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
-            if (!res.ok) throw new Error('Failed to fetch feedbacks')
+            if (!res.ok) throw new Error('Échec du chargement des avis')
             const data = await res.json()
             setFeedbacks(data)
         } catch (err: any) {
@@ -54,7 +54,7 @@ export default function FeedbackAdminPage() {
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
-            <p className="font-medium animate-pulse">Reading guest feedback...</p>
+            <p className="font-medium animate-pulse">Chargement des avis clients...</p>
         </div>
     )
 
@@ -62,10 +62,10 @@ export default function FeedbackAdminPage() {
         <div className="space-y-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Guest <span className="text-[#064e3b] italic">Feedback</span></h2>
+                    <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Avis <span className="text-[#064e3b] italic">Clients</span></h2>
                     <p className="text-zinc-500 mt-2 flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]"></span>
-                        Listen to your customers to improve your service
+                        Écoutez vos clients pour améliorer votre service
                     </p>
                 </div>
             </div>
@@ -77,10 +77,10 @@ export default function FeedbackAdminPage() {
                         <div className="p-3 bg-white/10 rounded-2xl border border-white/10">
                             <Star className="w-6 h-6 text-[#c5a059] fill-current" />
                         </div>
-                        <span className="text-[10px] font-black bg-[#c5a059] text-[#064e3b] px-2 py-1 rounded-full uppercase">Average</span>
+                        <span className="text-[10px] font-black bg-[#c5a059] text-[#064e3b] px-2 py-1 rounded-full uppercase">Moyenne</span>
                     </div>
                     <div className="text-5xl font-serif font-bold mb-2 tracking-tighter">{averageRating}</div>
-                    <p className="text-emerald-100/60 text-xs font-black uppercase tracking-widest">Global Guest Satisfaction</p>
+                    <p className="text-emerald-100/60 text-xs font-black uppercase tracking-widest">Satisfaction Globale</p>
                 </div>
 
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
@@ -90,7 +90,7 @@ export default function FeedbackAdminPage() {
                         </div>
                     </div>
                     <div className="text-5xl font-serif font-bold mb-2 tracking-tighter text-zinc-900">{feedbacks.length}</div>
-                    <p className="text-zinc-400 text-[10px] font-black uppercase tracking-widest">Total Reviews Received</p>
+                    <p className="text-zinc-400 text-[10px] font-black uppercase tracking-widest">Total des Avis Reçus</p>
                 </div>
 
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
@@ -99,18 +99,18 @@ export default function FeedbackAdminPage() {
                             <TrendingUp className="w-6 h-6" />
                         </div>
                     </div>
-                    <div className="text-xl font-bold text-zinc-900 mb-2 leading-tight">Response Rate</div>
-                    <p className="text-zinc-400 text-sm font-medium">100% of guests can express themselves directly.</p>
+                    <div className="text-xl font-bold text-zinc-900 mb-2 leading-tight">Taux de Réponse</div>
+                    <p className="text-zinc-400 text-sm font-medium">100% des clients peuvent s'exprimer directement.</p>
                 </div>
             </div>
 
             {/* Feedback List */}
             <div className="space-y-6">
-                <h3 className="text-xl font-serif font-bold text-zinc-900 px-2">Recent Reviews</h3>
+                <h3 className="text-xl font-serif font-bold text-zinc-900 px-2">Avis Récents</h3>
                 {feedbacks.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-[3rem] border border-dashed border-black/10">
                         <MessageSquare className="w-12 h-12 text-zinc-200 mx-auto mb-4" />
-                        <p className="text-zinc-400 font-medium">No reviews yet. Your feedback tool is active!</p>
+                        <p className="text-zinc-400 font-medium">Aucun avis pour le moment. Votre outil est actif !</p>
                     </div>
                 ) : (
                     <div className="grid gap-6">
@@ -130,19 +130,19 @@ export default function FeedbackAdminPage() {
                                     <div className="flex justify-between items-start">
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-sm font-bold text-zinc-900">Guest Review</span>
+                                                <span className="text-sm font-bold text-zinc-900">Avis Client</span>
                                                 {f.table_number && (
                                                     <span className="px-2 py-0.5 bg-emerald-50 text-[#064e3b] text-[8px] font-black uppercase rounded-md border border-emerald-100">Table {f.table_number}</span>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2 text-zinc-400 text-xs">
                                                 <Calendar className="w-3 h-3" />
-                                                <span>{new Date(f.created_at).toLocaleDateString()} at {new Date(f.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                                <span>Le {new Date(f.created_at).toLocaleDateString()} à {new Date(f.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <p className="text-zinc-600 leading-relaxed italic font-medium">
-                                        "{f.comment || (f.rating >= 4 ? "Great experience!" : "No specific comment left.")}"
+                                        "{f.comment || (f.rating >= 4 ? "Excellente expérience !" : "Aucun commentaire laissé.")}"
                                     </p>
                                 </div>
                             </div>

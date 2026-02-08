@@ -180,13 +180,13 @@ export default function QrPage() {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ qr_settings })
             })
-            if (!res.ok) throw new Error('Failed to save settings')
+            if (!res.ok) throw new Error('Échec de la sauvegarde')
             setLogoFile(null)
             setLogoSrc(finalLogoUrl)
-            toast.success('Settings saved successfully! ✨')
+            toast.success('Réglages enregistrés ! ✨')
         } catch (err: any) {
             console.error(err)
-            toast.error(`Error: ${err.message}`)
+            toast.error(`Erreur: ${err.message}`)
         } finally {
             setSaving(false)
         }
@@ -204,7 +204,7 @@ export default function QrPage() {
                     link.href = dataUrl
                     link.click()
                 } catch (err) {
-                    toast.error('Download failed.')
+                    toast.error('Échec du téléchargement.')
                 } finally {
                     setSaving(false)
                 }
@@ -232,7 +232,7 @@ export default function QrPage() {
                     link.click()
                 } catch (err) {
                     console.error('Download failed:', err)
-                    toast.error('Download failed. Please try again or use the Print button.')
+                    toast.error('Échec du téléchargement.')
                 } finally {
                     setSaving(false)
                 }
@@ -265,7 +265,7 @@ export default function QrPage() {
             pdf.save(`menu-${printFormat.toLowerCase()}-${restaurantName.replace(/\s+/g, '-').toLowerCase()}.pdf`)
         } catch (err) {
             console.error('PDF Download failed:', err)
-            toast.error('PDF generation failed.')
+            toast.error('Échec de la génération PDF.')
         } finally {
             setSaving(false)
         }
@@ -277,7 +277,7 @@ export default function QrPage() {
             if (component) {
                 const printWindow = window.open('', '', 'height=600,width=800')
                 if (printWindow) {
-                    printWindow.document.write('<html><head><title>Print QR</title><style>body { font-family: serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }</style></head><body>')
+                    printWindow.document.write('<html><head><title>Imprimer QR</title><style>body { font-family: serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }</style></head><body>')
                     const svg = component.querySelector('svg')
                     if (svg) printWindow.document.write(svg.outerHTML)
                     else {
@@ -294,7 +294,7 @@ export default function QrPage() {
             if (poster) {
                 const printWindow = window.open('', '', 'height=800,width=600')
                 if (printWindow) {
-                    printWindow.document.write(`<html><head><title>Print Poster ${printFormat}</title>`)
+                    printWindow.document.write(`<html><head><title>Imprimer Poster ${printFormat}</title>`)
                     printWindow.document.write(`<script src="https://cdn.tailwindcss.com"></script>`)
                     printWindow.document.write(`<style>
                         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
@@ -317,7 +317,7 @@ export default function QrPage() {
     const generateBatchTables = async () => {
         if (!restaurantId || !qrCode) return
         setSaving(true)
-        const toastId = toast.loading(`Generating ${tableBatchCount} table QR codes...`)
+        const toastId = toast.loading(`Génération de ${tableBatchCount} QR codes tables...`)
         
         try {
             const pdf = new jsPDF({
@@ -343,14 +343,14 @@ export default function QrPage() {
                     pdf.addImage(dataUrl, 'PNG', 0, 0, width, height)
                 }
                 
-                toast.loading(`Processing table ${i}/${tableBatchCount}...`, { id: toastId })
+                toast.loading(`Traitement table ${i}/${tableBatchCount}...`, { id: toastId })
             }
 
-            pdf.save(`${restaurantName.replace(/\s+/g, '-')}-tables-1-to-${tableBatchCount}.pdf`)
-            toast.success(`Success! ${tableBatchCount} tables generated.`, { id: toastId })
+            pdf.save(`${restaurantName.replace(/\s+/g, '-')}-tables-1-a-${tableBatchCount}.pdf`)
+            toast.success(`Succès ! ${tableBatchCount} tables générées.`, { id: toastId })
         } catch (err) {
             console.error(err)
-            toast.error("Batch generation failed.", { id: toastId })
+            toast.error("Échec de la génération en lot.", { id: toastId })
         } finally {
             setSaving(false)
         }
@@ -368,7 +368,7 @@ export default function QrPage() {
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
-            <p className="font-medium animate-pulse">Initializing QR Designer...</p>
+            <p className="font-medium animate-pulse">Initialisation du QR Designer...</p>
         </div>
     )
 
@@ -378,7 +378,7 @@ export default function QrPage() {
                 <h2 className="text-3xl md:text-4xl font-serif font-bold text-zinc-900 tracking-tight text-center lg:text-left">QR Design Studio</h2>
                 <p className="text-zinc-500 mt-2 flex items-center justify-center lg:justify-start gap-2 text-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]"></span>
-                    Create a unique physical gateway to your digital menu
+                    Créez une porte d'entrée physique unique vers votre menu digital
                 </p>
             </div>
 
@@ -414,7 +414,7 @@ export default function QrPage() {
                                         ${printFormat === 'A4' ? 'w-24 h-24 mb-10' : 'w-16 h-16 mb-6'}
                                     `}><ChefHat className={printFormat === 'A4' ? 'w-14 h-14' : 'w-10 h-10'} /></div>
                                     <h3 className={`font-bold tracking-tight italic ${posterTemplate === 'modern' ? 'font-sans uppercase tracking-[0.1em] text-zinc-900' : 'font-serif'} ${posterTemplate === 'luxury' ? 'text-[#c5a059] underline decoration-[#c5a059]/20 underline-offset-8' : ''} ${posterTemplate === 'classic' ? 'text-white underline decoration-[#c5a059]/30 underline-offset-8' : ''} ${posterTemplate === 'midnight' ? '!text-white underline decoration-[#c5a059]/20 underline-offset-8' : ''} ${posterTemplate === 'rustic' ? 'text-[#44403c]' : ''} ${posterTemplate === 'ocean' ? '!text-white' : ''} ${printFormat === 'A4' ? 'text-7xl mb-4' : 'text-5xl mb-2'}`}>{restaurantName || 'NOUR'}</h3>
-                                    <p className={`font-black tracking-[0.6em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/60' : ''} ${posterTemplate === 'modern' ? 'text-zinc-400' : ''} ${posterTemplate === 'luxury' ? 'text-zinc-400' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-500' : ''} ${posterTemplate === 'rustic' ? 'text-[#78716c]' : ''} ${posterTemplate === 'ocean' ? 'text-sky-200/60' : ''} ${printFormat === 'A4' ? 'text-[14px] mt-6' : 'text-[10px] mt-4'}`}>Digital Menu Experience</p>
+                                    <p className={`font-black tracking-[0.6em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/60' : ''} ${posterTemplate === 'modern' ? 'text-zinc-400' : ''} ${posterTemplate === 'luxury' ? 'text-zinc-400' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-500' : ''} ${posterTemplate === 'rustic' ? 'text-[#78716c]' : ''} ${posterTemplate === 'ocean' ? 'text-sky-200/60' : ''} ${printFormat === 'A4' ? 'text-[14px] mt-6' : 'text-[10px] mt-4'}`}>Expérience Menu Digital</p>
                                 </div>
                             )}
                             <div id="qr-card-to-capture" className={`relative transition-all duration-700 flex flex-col items-center justify-center ${printFormat === 'QR' && qrStyle === 'simple' ? 'bg-white p-12 shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5' : ''} ${printFormat === 'QR' && qrStyle === 'rounded' ? 'bg-white p-12 rounded-[5rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5' : ''} ${printFormat === 'QR' && qrStyle === 'card' ? 'bg-white p-12 pb-20 rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5 min-w-[440px]' : ''} ${printFormat === 'QR' && qrStyle === 'frame' ? 'bg-[#053e2f] p-16 pb-24 rounded-[6rem] shadow-[0_70px_140px_rgba(0,0,0,0.2)] border-[12px] border-[#064e3b]/20' : ''} ${printFormat !== 'QR' ? 'my-auto bg-white shadow-2xl transition-all' : ''} ${printFormat === 'A4' ? 'p-10 rounded-[4rem] scale-[1.4]' : printFormat === 'A5' ? 'p-6 rounded-[3rem] scale-[1.1]' : ''}`}>
@@ -432,14 +432,14 @@ export default function QrPage() {
                                 </div>
                             </div>
                             {printFormat !== 'QR' && (
-                                <div className={`text-center w-full ${printFormat === 'A4' ? 'space-y-4' : 'space-y-2'}`}><p className={`font-serif font-bold italic tracking-wide ${printFormat === 'A4' ? 'text-2xl' : 'text-xl'}`}>Scan to discover our menu</p><div className="flex items-center justify-center gap-3"><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div><p className={`font-black tracking-[0.3em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/40' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-600' : ''} ${posterTemplate === 'rustic' ? 'text-stone-400' : ''} ${posterTemplate === 'ocean' ? 'text-sky-300/40' : 'text-zinc-400'} ${printFormat === 'A4' ? 'text-[10px]' : 'text-[8px]'}`}>noremenu.com</p><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div></div></div>
+                                <div className={`text-center w-full ${printFormat === 'A4' ? 'space-y-4' : 'space-y-2'}`}><p className={`font-serif font-bold italic tracking-wide ${printFormat === 'A4' ? 'text-2xl' : 'text-xl'}`}>Scannez pour découvrir notre carte</p><div className="flex items-center justify-center gap-3"><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div><p className={`font-black tracking-[0.3em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/40' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-600' : ''} ${posterTemplate === 'rustic' ? 'text-stone-400' : ''} ${posterTemplate === 'ocean' ? 'text-sky-300/40' : 'text-zinc-400'} ${printFormat === 'A4' ? 'text-[10px]' : 'text-[8px]'}`}>noremenu.com</p><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div></div></div>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* SETTINGS PANEL - Bottom on Mobile, Left on Desktop */}
-                <div className="order-2 lg:order-1 lg:col-span-5 space-y-8 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto pr-0 lg:pr-4 custom-scrollbar pb-10">
+                <div className="order-2 lg:order-1 lg:col-span-5 space-y-8 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto pr-0 lg:pr-4 custom-scrollbar pb-10 w-full">
                     
                     {/* SECTION: MODE SELECTOR */}
                     <div className="bg-white p-2 rounded-[2rem] border border-black/5 flex gap-2 shadow-sm">
@@ -448,14 +448,14 @@ export default function QrPage() {
                             onClick={() => setQrMode('global')}
                             className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${qrMode === 'global' ? 'bg-[#064e3b] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-50'}`}
                         >
-                            Global QR
+                            QR Global
                         </button>
                         <button 
                             type="button"
                             onClick={() => setQrMode('tables')}
                             className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${qrMode === 'tables' ? 'bg-[#c5a059] text-[#064e3b] shadow-lg' : 'text-zinc-400 hover:bg-zinc-50'}`}
                         >
-                            Table QR Codes
+                            QR Codes Tables
                         </button>
                     </div>
 
@@ -464,11 +464,11 @@ export default function QrPage() {
                         <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm animate-in slide-in-from-top-4 duration-500">
                             <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                                 <Layers className="w-5 h-5 mr-3 text-[#c5a059]" />
-                                <h3>Table Setup</h3>
+                                <h3>Configuration Tables</h3>
                             </div>
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Live Preview (Table #)</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Aperçu Live (N° Table)</label>
                                     <input 
                                         type="text" 
                                         value={tableNumber}
@@ -477,7 +477,7 @@ export default function QrPage() {
                                     />
                                 </div>
                                 <div className="pt-4 border-t border-black/5">
-                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Export All Tables</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Exporter toutes les tables</label>
                                     <div className="flex gap-2">
                                         <input 
                                             type="number" 
@@ -492,7 +492,7 @@ export default function QrPage() {
                                             className="flex-1 bg-[#064e3b] text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#053e2f] transition-all flex items-center justify-center gap-2 shadow-xl shadow-emerald-900/10 disabled:opacity-50"
                                         >
                                             <Download className="w-4 h-4" />
-                                            Generate 1 to {tableBatchCount}
+                                            Générer 1 à {tableBatchCount}
                                         </button>
                                     </div>
                                 </div>
@@ -503,13 +503,13 @@ export default function QrPage() {
                     <div className="bg-[#064e3b] p-8 rounded-[2.5rem] shadow-xl shadow-emerald-900/20 text-white">
                         <div className="flex items-center mb-4 text-[#c5a059] font-black uppercase tracking-[0.2em] text-[10px]">
                             <Layers className="w-4 h-4 mr-2" />
-                            <h3>Direct Menu Link</h3>
+                            <h3>Lien Direct du Menu</h3>
                         </div>
                         <div className="flex flex-col sm:flex-row items-center gap-2 bg-white/10 p-2 rounded-2xl border border-white/10">
                             <input type="text" readOnly value={`${baseUrl}/${restaurantId}`} className="bg-transparent border-none text-[10px] font-medium flex-1 px-2 outline-none text-emerald-50 truncate w-full" />
                             <button onClick={handleCopyLink} className={`w-full sm:w-auto p-3 rounded-xl transition-all flex items-center justify-center gap-2 ${copied ? 'bg-emerald-500 text-white' : 'bg-[#c5a059] text-[#064e3b] hover:scale-105'}`}>
                                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                <span className="text-[10px] font-bold uppercase">{copied ? 'Copied' : 'Copy'}</span>
+                                <span className="text-[10px] font-bold uppercase">{copied ? 'Copié' : 'Copier'}</span>
                             </button>
                         </div>
                     </div>
@@ -517,11 +517,11 @@ export default function QrPage() {
                     <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                         <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <LayoutTemplate className="w-5 h-5 mr-3 text-[#c5a059]" />
-                            <h3>1. Premium Layout</h3>
+                            <h3>1. Style de Mise en Page</h3>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             {['simple', 'rounded', 'card', 'frame'].map((style) => (
-                                <button key={style} onClick={() => setQrStyle(style as any)} className={`py-4 px-3 text-[10px] md:text-sm font-bold rounded-2xl border capitalize transition-all duration-300 ${qrStyle === style ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-xl' : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:bg-white'}`}>{style}</button>
+                                <button key={style} onClick={() => setQrStyle(style as any)} className={`py-4 px-3 text-[10px] md:text-sm font-bold rounded-2xl border capitalize transition-all duration-300 ${qrStyle === style ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-xl' : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:border-emerald-200 hover:bg-white'}`}>{style}</button>
                             ))}
                         </div>
                     </div>
@@ -529,11 +529,11 @@ export default function QrPage() {
                     <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                         <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <Shapes className="w-5 h-5 mr-3 text-[#c5a059]" />
-                            <h3>2. Geometric Details</h3>
+                            <h3>2. Détails Géométriques</h3>
                         </div>
                         <div className="space-y-8">
                             <div>
-                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Dot Architecture</label>
+                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Architecture des Points</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded'].map((type) => (
                                         <button key={type} onClick={() => setDotType(type as DotType)} className={`py-2.5 px-1 text-[9px] font-black rounded-xl border truncate transition-all ${dotType === type ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-md' : 'bg-white text-zinc-500 border-zinc-100 hover:bg-zinc-50'}`}>{type.replace('-', ' ')}</button>
@@ -542,7 +542,7 @@ export default function QrPage() {
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Corner Frame</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Cadre des Coins</label>
                                     <div className="flex gap-2">
                                         {['square', 'dot', 'extra-rounded'].map((type) => (
                                             <button key={type} onClick={() => setCornerType(type as CornerSquareType)} className={`flex-1 py-4 px-1 rounded-2xl border transition-all ${cornerType === type ? 'bg-[#064e3b] border-[#064e3b]' : 'bg-white border-zinc-100 hover:bg-zinc-50'}`}><div className={`w-5 h-5 mx-auto border-2 ${cornerType === type ? 'border-[#c5a059]' : 'border-zinc-300'} ${type === 'dot' ? 'rounded-full' : type === 'extra-rounded' ? 'rounded-lg' : ''}`}></div></button>
@@ -550,7 +550,7 @@ export default function QrPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Inner Eye</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Oeil Interne</label>
                                     <div className="flex gap-2">
                                         {['square', 'dot'].map((type) => (
                                             <button key={type} onClick={() => setCornerDotType(type as CornerDotType)} className={`flex-1 py-4 px-1 rounded-2xl border transition-all ${cornerDotType === type ? 'bg-[#064e3b] border-[#064e3b]' : 'bg-white border-zinc-100 hover:bg-zinc-50'}`}><div className={`w-3.5 h-3.5 mx-auto ${cornerDotType === type ? 'bg-[#c5a059]' : 'bg-zinc-300'} ${type === 'dot' ? 'rounded-full' : ''}`}></div></button>
@@ -564,21 +564,21 @@ export default function QrPage() {
                     <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                         <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <Palette className="w-5 h-5 mr-3 text-[#c5a059]" />
-                            <h3>3. Brand Identity</h3>
+                            <h3>3. Identité de Marque</h3>
                         </div>
                         <div className="space-y-8">
                             <div className="grid grid-cols-2 gap-4">
-                                <label className="relative flex flex-col items-center gap-3 cursor-pointer p-4 bg-zinc-50 rounded-[2rem] border border-zinc-100 hover:border-emerald-200 transition-all group"><div style={{ backgroundColor: bgColor }} className="w-12 h-12 rounded-full border border-white shadow-md group-hover:scale-110 transition-transform"></div><span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Paper</span><input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="opacity-0 absolute inset-0 cursor-pointer w-full h-full" /></label>
-                                <label className="relative flex flex-col items-center gap-3 cursor-pointer p-4 bg-zinc-50 rounded-[2rem] border border-zinc-100 hover:border-emerald-200 transition-all group"><div style={{ backgroundColor: fgColor }} className="w-12 h-12 rounded-full border border-white shadow-md group-hover:scale-110 transition-transform"></div><span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Ink Color</span><input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="opacity-0 absolute inset-0 cursor-pointer w-full h-full" /></label>
+                                <label className="relative flex flex-col items-center gap-3 cursor-pointer p-4 bg-zinc-50 rounded-[2rem] border border-zinc-100 hover:border-emerald-200 transition-all group"><div style={{ backgroundColor: bgColor }} className="w-12 h-12 rounded-full border border-white shadow-md group-hover:scale-110 transition-transform"></div><span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Fond (Papier)</span><input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="opacity-0 absolute inset-0 cursor-pointer w-full h-full" /></label>
+                                <label className="relative flex flex-col items-center gap-3 cursor-pointer p-4 bg-zinc-50 rounded-[2rem] border border-zinc-100 hover:border-emerald-200 transition-all group"><div style={{ backgroundColor: fgColor }} className="w-12 h-12 rounded-full border border-white shadow-md group-hover:scale-110 transition-transform"></div><span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Couleur (Encre)</span><input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="opacity-0 absolute inset-0 cursor-pointer w-full h-full" /></label>
                             </div>
                             <div className="pt-2">
-                                <div className="flex items-center justify-between mb-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Logo Overlay {includeLogo && <button onClick={() => { setIncludeLogo(false); setLogoSrc('') }} className="text-red-500 hover:underline">Remove</button>}</div>
+                                <div className="flex items-center justify-between mb-4 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Incrustation Logo {includeLogo && <button onClick={() => { setIncludeLogo(false); setLogoSrc('') }} className="text-red-500 hover:underline">Supprimer</button>}</div>
                                 {!includeLogo ? (
-                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-zinc-100 border-dashed rounded-[2rem] cursor-pointer hover:bg-emerald-50/30 hover:border-emerald-200 transition-all group"><Upload className="w-8 h-8 mb-2 text-zinc-200 group-hover:text-[#064e3b]" /><p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest">Drop PNG Logo</p><input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} /></label>
+                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-zinc-100 border-dashed rounded-[2rem] cursor-pointer hover:bg-emerald-50/30 hover:border-emerald-200 transition-all group"><Upload className="w-8 h-8 mb-2 text-zinc-200 group-hover:text-[#064e3b]" /><p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest">Déposer un Logo PNG</p><input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} /></label>
                                 ) : (
                                     <div className="bg-zinc-50 p-6 rounded-[2rem] border border-zinc-100 flex items-center gap-6 shadow-inner">
-                                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden border border-black/5 shadow-sm shrink-0">{logoSrc && <img src={logoSrc} className="w-full h-full object-contain" alt="Logo preview" />}</div>
-                                        <div className="flex-1 space-y-3"><label className="block text-[9px] font-black text-zinc-400 uppercase tracking-widest">Logo Scaling</label><input type="range" min="20" max="60" value={logoSize} onChange={(e) => setLogoSize(Number(e.target.value))} className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#c5a059]" /></div>
+                                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center overflow-hidden border border-black/5 shadow-sm shrink-0">{logoSrc && <img src={logoSrc} className="w-full h-full object-contain" alt="Aperçu logo" />}</div>
+                                        <div className="flex-1 space-y-3"><label className="block text-[9px] font-black text-zinc-400 uppercase tracking-widest">Taille du Logo</label><input type="range" min="20" max="60" value={logoSize} onChange={(e) => setLogoSize(Number(e.target.value))} className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-[#c5a059]" /></div>
                                     </div>
                                 )}
                             </div>
@@ -592,12 +592,12 @@ export default function QrPage() {
                         </div>
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Output Format</label>
+                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Format de Sortie</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
-                                        { id: 'QR', icon: QrCode, label: 'QR Only' },
-                                        { id: 'A5', icon: FileText, label: 'A5 Poster' },
-                                        { id: 'A4', icon: Maximize, label: 'A4 Poster' }
+                                        { id: 'QR', icon: QrCode, label: 'QR Seul' },
+                                        { id: 'A5', icon: FileText, label: 'Poster A5' },
+                                        { id: 'A4', icon: Maximize, label: 'Poster A4' }
                                     ].map((f) => (
                                         <button key={f.id} onClick={() => setPrintFormat(f.id as any)} className={`py-3 px-1 flex flex-col items-center gap-2 rounded-xl border transition-all ${printFormat === f.id ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-md scale-105' : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:bg-white'}`}><f.icon className="w-4 h-4" /><span className="text-[9px] font-bold">{f.label}</span></button>
                                     ))}
@@ -605,7 +605,7 @@ export default function QrPage() {
                             </div>
                             {printFormat !== 'QR' && (
                                 <div className="animate-in slide-in-from-top-2 duration-300 space-y-4">
-                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest">Poster Theme</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest">Thème du Poster</label>
                                     <div className="grid grid-cols-3 gap-2">
                                         {['classic', 'modern', 'luxury', 'midnight', 'rustic', 'ocean'].map((t) => (
                                             <button key={t} onClick={() => setPosterTemplate(t as any)} className={`py-2.5 px-1 text-[9px] font-black rounded-xl border transition-all ${posterTemplate === t ? 'bg-[#c5a059] text-[#064e3b] border-[#c5a059] shadow-sm' : 'bg-white text-zinc-400 border-zinc-100 hover:bg-zinc-50'}`}>{t}</button>
@@ -623,9 +623,9 @@ export default function QrPage() {
                  <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
                     <button onClick={downloadQr} className="bg-zinc-900 text-white py-4 px-2 md:px-8 rounded-2xl font-bold text-xs tracking-wide hover:bg-black transition shadow-xl flex items-center justify-center group"><Download className="w-4 h-4 mr-2" /> PNG</button>
                     <button onClick={downloadPdf} className="bg-[#064e3b] text-white py-4 px-2 md:px-8 rounded-2xl font-bold text-xs tracking-wide hover:bg-[#053e2f] transition shadow-xl flex items-center justify-center group"><FileText className="w-4 h-4 mr-2" /> PDF</button>
-                    <button onClick={printQr} className="bg-white text-zinc-800 border-2 border-zinc-100 py-4 px-2 md:px-8 rounded-2xl font-bold text-xs tracking-wide hover:bg-zinc-50 transition flex items-center justify-center"><Printer className="w-4 h-4 mr-2" /> Print</button>
+                    <button onClick={printQr} className="bg-white text-zinc-800 border-2 border-zinc-100 py-4 px-2 md:px-8 rounded-2xl font-bold text-xs tracking-wide hover:bg-zinc-50 transition flex items-center justify-center"><Printer className="w-4 h-4 mr-2" /> Imprimer</button>
                  </div>
-                 <button disabled={saving} onClick={saveSettings} className="w-full md:w-auto bg-[#c5a059] text-[#064e3b] px-12 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-[#b59049] transition-all shadow-2xl flex items-center justify-center disabled:opacity-50 active:scale-95">{saving ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Check className="w-5 h-5 mr-3" />}{saving ? 'Saving...' : 'Save Design'}</button>
+                 <button disabled={saving} onClick={saveSettings} className="w-full md:w-auto bg-[#c5a059] text-[#064e3b] px-12 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-[#b59049] transition-all shadow-2xl flex items-center justify-center disabled:opacity-50 active:scale-95">{saving ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Check className="w-5 h-5 mr-3" />}{saving ? 'Sauvegarde...' : 'Enregistrer le Design'}</button>
             </div>
         </div>
     )

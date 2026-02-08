@@ -142,9 +142,9 @@ export default function SettingsPage() {
                 .getPublicUrl(filePath)
 
             setLogoUrl(publicUrl)
-            toast.success('✅ Logo uploadé avec succès!')
+            toast.success('✅ Logo mis à jour !')
         } catch (error: any) {
-            toast.error('Error uploading logo: ' + error.message)
+            toast.error('Erreur lors de l\'upload du logo: ' + error.message)
         } finally {
             setUploadingLogo(false)
         }
@@ -205,10 +205,10 @@ export default function SettingsPage() {
                 body: JSON.stringify(info)
             })
 
-            if (!res.ok) throw new Error('Failed to save settings')
-            toast.success('Settings saved successfully! ✨')
+            if (!res.ok) throw new Error('Échec de la sauvegarde')
+            toast.success('Réglages enregistrés ! ✨')
         } catch (err: any) {
-            toast.error(err.message || 'Failed to save settings')
+            toast.error(err.message || 'Erreur lors de l\'enregistrement')
         } finally {
             setSaving(false)
         }
@@ -217,15 +217,15 @@ export default function SettingsPage() {
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
-            <p className="font-medium animate-pulse">Loading settings...</p>
+            <p className="font-medium animate-pulse">Chargement des réglages...</p>
         </div>
     )
 
     return (
         <div className="max-w-4xl mx-auto px-4 space-y-10 pb-20 animate-in fade-in duration-700">
             <div className="mb-8">
-                <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Restaurant Settings</h2>
-                <p className="text-zinc-500 mt-2 text-lg">Manage your restaurant info and public menu appearance.</p>
+                <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Réglages Restaurant</h2>
+                <p className="text-zinc-500 mt-2 text-lg">Gérez vos informations et l'apparence de votre menu public.</p>
             </div>
 
             <form onSubmit={handleSave} className="space-y-8">
@@ -233,12 +233,12 @@ export default function SettingsPage() {
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                     <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                         <Globe className="w-5 h-5 mr-3 text-[#c5a059]" />
-                        <h3>Restaurant Information</h3>
+                        <h3>Informations Générales</h3>
                     </div>
 
                     <div className="space-y-6">
                         <div>
-                            <label className="block text-sm font-bold text-zinc-700 mb-2">Restaurant Name</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2">Nom de l'établissement</label>
                             <input
                                 type="text"
                                 value={restaurantName}
@@ -259,7 +259,7 @@ export default function SettingsPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">About Us (EN)</label>
+                                <label className="block text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">À propos (EN)</label>
                                 <textarea
                                     value={aboutEn}
                                     onChange={(e) => setAboutEn(e.target.value)}
@@ -272,7 +272,7 @@ export default function SettingsPage() {
                         <div className="pt-4 border-t border-black/5 grid md:grid-cols-2 gap-6">
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 mb-3">
-                                    <Coins className="w-4 h-4 text-[#c5a059]" /> Currency
+                                    <Coins className="w-4 h-4 text-[#c5a059]" /> Devise
                                 </label>
                                 <select
                                     value={currency}
@@ -287,7 +287,7 @@ export default function SettingsPage() {
                             </div>
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 mb-3">
-                                    <Percent className="w-4 h-4 text-[#c5a059]" /> Tax Rate (%)
+                                    <Percent className="w-4 h-4 text-[#c5a059]" /> Taux de taxe (%)
                                 </label>
                                 <div className="flex items-center gap-3">
                                     <input
@@ -314,7 +314,7 @@ export default function SettingsPage() {
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                     <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                         <MessageSquare className="w-5 h-5 mr-3 text-emerald-600" />
-                        <h3>Contact Methods</h3>
+                        <h3>Méthodes de Contact</h3>
                     </div>
 
                     <div className="space-y-6">
@@ -333,7 +333,7 @@ export default function SettingsPage() {
                                 className={`p-4 rounded-2xl border-2 transition-all text-center ${contactMethod === 'call' ? 'border-blue-600 bg-blue-50' : 'border-zinc-200 bg-zinc-50'}`}
                             >
                                 <Smartphone className={`w-6 h-6 mx-auto mb-2 ${contactMethod === 'call' ? 'text-blue-600' : 'text-zinc-400'}`} />
-                                <p className="text-xs font-bold">Call</p>
+                                <p className="text-xs font-bold">Appel</p>
                             </button>
                             <button
                                 type="button"
@@ -344,14 +344,14 @@ export default function SettingsPage() {
                                     <MessageSquare className={`w-5 h-5 ${contactMethod === 'both' ? 'text-purple-600' : 'text-zinc-400'}`} />
                                     <Smartphone className={`w-5 h-5 ${contactMethod === 'both' ? 'text-purple-600' : 'text-zinc-400'}`} />
                                 </div>
-                                <p className="text-xs font-bold">Both</p>
+                                <p className="text-xs font-bold">Les deux</p>
                             </button>
                         </div>
 
                         {(contactMethod === 'whatsapp' || contactMethod === 'both') && (
                             <input
                                 type="text"
-                                placeholder="WhatsApp Number (+221...)"
+                                placeholder="Numéro WhatsApp (+221...)"
                                 value={whatsappNumber}
                                 onChange={(e) => setWhatsappNumber(e.target.value)}
                                 className="w-full px-5 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white outline-none text-zinc-900 font-bold"
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                         {(contactMethod === 'call' || contactMethod === 'both') && (
                             <input
                                 type="text"
-                                placeholder="Phone Number"
+                                placeholder="Numéro de Téléphone"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                                 className="w-full px-5 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white outline-none text-zinc-900 font-bold"
@@ -374,14 +374,14 @@ export default function SettingsPage() {
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                     <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                         <Palette className="w-5 h-5 mr-3 text-[#c5a059]" />
-                        <h3>Public Menu Theme</h3>
+                        <h3>Thème du Menu Public</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {[
-                            { id: 'light', name: 'Emerald White', desc: 'Clair & Épuré', color: '#064e3b' },
+                            { id: 'light', name: 'Blanc Émeraude', desc: 'Clair & Épuré', color: '#064e3b' },
                             { id: 'dark', name: 'Onyx Green', desc: 'Sombre & Luxueux', color: '#10b981' },
-                            { id: 'neutral', name: 'Warm Ivory', desc: 'Doux & Chaleureux', color: '#c5a059' }
+                            { id: 'neutral', name: 'Ivoire Chaud', desc: 'Doux & Chaleureux', color: '#c5a059' }
                         ].map((t) => (
                             <button
                                 key={t.id}
@@ -456,7 +456,7 @@ export default function SettingsPage() {
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                     <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                         <Palette className="w-5 h-5 mr-3 text-[#c5a059]" />
-                        <h3>Premium Customization</h3>
+                        <h3>Personnalisation Premium</h3>
                     </div>
 
                     <div className="space-y-10">
@@ -489,7 +489,7 @@ export default function SettingsPage() {
                                 {[
                                     { id: 'minimal', name: 'Minimal', color: 'bg-zinc-100' },
                                     { id: 'glassmorphism', name: 'Glass', color: 'bg-emerald-100/30 backdrop-blur-md' },
-                                    { id: 'gradient', name: 'Gradient', color: 'bg-gradient-to-r from-emerald-600 to-emerald-800 opacity-20' }
+                                    { id: 'gradient', name: 'Dégradé', color: 'bg-gradient-to-r from-emerald-600 to-emerald-800 opacity-20' }
                                 ].map(h => (
                                     <button
                                         key={h.id}
@@ -527,7 +527,7 @@ export default function SettingsPage() {
                                 <div className="relative group shrink-0">
                                     <div className={`w-32 h-32 rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl flex items-center justify-center transition-all bg-white relative`}>
                                         {logoUrl ? (
-                                            <Image src={logoUrl} alt="Logo Preview" fill className="object-cover" />
+                                            <Image src={logoUrl} alt="Aperçu Logo" fill className="object-cover" />
                                         ) : (
                                             <Upload className="w-10 h-10 text-zinc-200" />
                                         )}
@@ -613,7 +613,7 @@ export default function SettingsPage() {
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm space-y-8">
                     <div className="flex items-center gap-3 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                         <Clock className="w-5 h-5 text-[#c5a059]" />
-                        <h3>Operating Hours</h3>
+                        <h3>Horaires d'Ouverture</h3>
                     </div>
 
                     <div className="space-y-4">
@@ -655,7 +655,7 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <Wifi className="w-5 h-5 mr-3 text-emerald-600" />
-                            <h3>Guest WiFi Connectivity</h3>
+                            <h3>Connectivité WiFi Client</h3>
                         </div>
                         <button
                             type="button"
@@ -671,7 +671,7 @@ export default function SettingsPage() {
 
                     <div className={`grid md:grid-cols-2 gap-6 transition-all duration-300 ${isWifiEnabled ? 'opacity-100 translate-y-0' : 'opacity-30 pointer-events-none grayscale translate-y-2'}`}>
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Network Name (SSID)</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Nom du Réseau (SSID)</label>
                             <input
                                 type="text"
                                 value={wifiSsid}
@@ -680,7 +680,7 @@ export default function SettingsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">WiFi Password</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Mot de Passe WiFi</label>
                             <input
                                 type="text"
                                 value={wifiPassword}
@@ -689,7 +689,7 @@ export default function SettingsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Security Type</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Type de Sécurité</label>
                             <select
                                 value={wifiSecurity}
                                 onChange={(e) => setWifiSecurity(e.target.value)}
@@ -697,7 +697,7 @@ export default function SettingsPage() {
                             >
                                 <option value="WPA2">WPA/WPA2</option>
                                 <option value="WEP">WEP</option>
-                                <option value="nopass">No Password</option>
+                                <option value="nopass">Sans Mot de Passe</option>
                             </select>
                         </div>
                     </div>
@@ -708,7 +708,7 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <Globe className="w-5 h-5 mr-3 text-emerald-600" />
-                            <h3>Social Media & Website</h3>
+                            <h3>Réseaux Sociaux & Web</h3>
                         </div>
                         <button
                             type="button"
@@ -860,7 +860,7 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <MapPin className="w-5 h-5 mr-3 text-emerald-600" />
-                            <h3>Location & Address</h3>
+                            <h3>Localisation & Adresse</h3>
                         </div>
                         <button
                             type="button"
@@ -876,7 +876,7 @@ export default function SettingsPage() {
 
                     <div className={`grid gap-6 transition-all duration-300 ${isLocationEnabled ? 'opacity-100 translate-y-0' : 'opacity-30 pointer-events-none grayscale translate-y-2'}`}>
                         <div>
-                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Physical Address</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Adresse Physique</label>
                             <input
                                 type="text"
                                 value={address}
@@ -885,7 +885,7 @@ export default function SettingsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Google Maps Link</label>
+                            <label className="block text-sm font-bold text-zinc-700 mb-2 ml-1">Lien Google Maps</label>
                             <input
                                 type="text"
                                 value={googleMapsUrl}
@@ -903,7 +903,7 @@ export default function SettingsPage() {
                         onClick={() => router.back()}
                         className="px-8 py-4 rounded-2xl font-bold text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-all text-sm"
                     >
-                        Cancel
+                        Annuler
                     </button>
                     <button
                         type="submit"
@@ -915,7 +915,7 @@ export default function SettingsPage() {
                         ) : (
                             <Save className="w-5 h-5 mr-3" />
                         )}
-                        {saving ? 'Saving...' : 'Save All Settings'}
+                        {saving ? 'Sauvegarde...' : 'Enregistrer tous les réglages'}
                     </button>
                 </div>
             </form>

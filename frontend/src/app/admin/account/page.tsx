@@ -38,7 +38,7 @@ export default function AccountPage() {
         if (error) {
             toast.error(error.message)
         } else {
-            toast.success("Check your new email for a confirmation link!")
+            toast.success("Vérifiez votre nouvel email pour le lien de confirmation !")
         }
         setUpdating(false)
     }
@@ -46,7 +46,7 @@ export default function AccountPage() {
     const handleChangePassword = async (e: React.FormEvent) => {
         e.preventDefault()
         if (newPassword !== confirmPassword) {
-            toast.error("Passwords do not match")
+            toast.error("Les mots de passe ne correspondent pas")
             return
         }
         setUpdating(true)
@@ -54,7 +54,7 @@ export default function AccountPage() {
         if (error) {
             toast.error(error.message)
         } else {
-            toast.success("Password updated successfully!")
+            toast.success("Mot de passe mis à jour avec succès !")
             setNewPassword('')
             setNewConfirmPassword('')
         }
@@ -62,25 +62,24 @@ export default function AccountPage() {
     }
 
     const handleDeleteAccount = async () => {
-        const confirmed = confirm("⚠️ DANGER: Are you sure you want to delete your account? This action is permanent and will delete your restaurant and all dishes.")
+        const confirmed = confirm("⚠️ DANGER : Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est permanente et supprimera votre restaurant et tous vos plats.")
         if (!confirmed) return
 
-        toast.error("Account deletion requires administrative contact for security.")
-        // In a full production app, you'd call a backend function to cleanup everything
+        toast.error("La suppression de compte nécessite un contact administratif pour des raisons de sécurité.")
     }
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
-            <p className="font-medium animate-pulse">Loading profile...</p>
+            <p className="font-medium animate-pulse">Chargement du profil...</p>
         </div>
     )
 
     return (
         <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-700">
             <div>
-                <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Account Management</h2>
-                <p className="text-zinc-500 mt-2 text-lg">Secure your access and manage your administrative profile.</p>
+                <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Gestion du Compte</h2>
+                <p className="text-zinc-500 mt-2 text-lg">Sécurisez votre accès et gérez votre profil administrateur.</p>
             </div>
 
             <div className="grid md:grid-cols-12 gap-8">
@@ -92,10 +91,10 @@ export default function AccountPage() {
                             <User className="w-10 h-10 text-[#064e3b]" />
                         </div>
                         <h3 className="font-bold text-lg truncate px-2">{user.email?.split('@')[0]}</h3>
-                        <p className="text-emerald-100/60 text-xs uppercase tracking-widest font-black mt-1">Premium Member</p>
+                        <p className="text-emerald-100/60 text-xs uppercase tracking-widest font-black mt-1">Membre Premium</p>
                         
                         <div className="mt-8 pt-8 border-t border-white/10 space-y-2">
-                            <p className="text-[10px] text-emerald-100/40 uppercase font-bold tracking-tighter">Last sign in</p>
+                            <p className="text-[10px] text-emerald-100/40 uppercase font-bold tracking-tighter">Dernière connexion</p>
                             <p className="text-xs font-medium">{new Date(user.last_sign_in_at).toLocaleDateString()}</p>
                         </div>
                     </div>
@@ -104,7 +103,7 @@ export default function AccountPage() {
                         onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
                         className="w-full py-4 rounded-2xl bg-zinc-100 text-zinc-600 font-bold text-sm flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all"
                     >
-                        <LogOut className="w-4 h-4" /> Sign Out from everywhere
+                        <LogOut className="w-4 h-4" /> Se déconnecter partout
                     </button>
                 </div>
 
@@ -114,13 +113,13 @@ export default function AccountPage() {
                     <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm space-y-8">
                         <div className="flex items-center gap-3 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <Shield className="w-5 h-5 text-[#c5a059]" />
-                            <h3>Login & Security</h3>
+                            <h3>Connexion & Sécurité</h3>
                         </div>
 
                         {/* Email Update */}
                         <form onSubmit={handleUpdateEmail} className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Email Address</label>
+                                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Adresse Email</label>
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
                                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
@@ -136,7 +135,7 @@ export default function AccountPage() {
                                         disabled={updating || newEmail === user.email}
                                         className="px-6 rounded-xl bg-zinc-900 text-white font-bold text-xs hover:bg-black transition-all disabled:opacity-30 shadow-lg"
                                     >
-                                        Update
+                                        Modifier
                                     </button>
                                 </div>
                             </div>
@@ -148,7 +147,7 @@ export default function AccountPage() {
                         <form onSubmit={handleChangePassword} className="space-y-6">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">New Password</label>
+                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Nouveau Mot de Passe</label>
                                     <div className="relative">
                                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
                                         <input 
@@ -161,7 +160,7 @@ export default function AccountPage() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                                    <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Confirmer le Mot de Passe</label>
                                     <div className="relative">
                                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-300" />
                                         <input 
@@ -180,7 +179,7 @@ export default function AccountPage() {
                                 className="w-full py-4 rounded-xl bg-[#064e3b] text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-emerald-900/10 hover:bg-[#053e2f] transition-all flex items-center justify-center gap-2"
                             >
                                 {updating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
-                                Update Security Credentials
+                                Mettre à jour les identifiants
                             </button>
                         </form>
                     </div>
@@ -189,18 +188,18 @@ export default function AccountPage() {
                     <div className="bg-red-50/50 p-8 rounded-[2.5rem] border border-red-100 space-y-6">
                         <div className="flex items-center gap-3 text-red-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <AlertTriangle className="w-5 h-5 text-red-600" />
-                            <h3>Danger Zone</h3>
+                            <h3>Zone de Danger</h3>
                         </div>
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-red-100 shadow-sm">
                             <div>
-                                <p className="text-sm font-bold text-red-900">Delete Account</p>
-                                <p className="text-xs text-red-700/60 mt-1">Permanently remove your restaurant data.</p>
+                                <p className="text-sm font-bold text-red-900">Supprimer le Compte</p>
+                                <p className="text-xs text-red-700/60 mt-1">Supprime définitivement votre restaurant et ses données.</p>
                             </div>
                             <button 
                                 onClick={handleDeleteAccount}
                                 className="px-6 py-3 rounded-xl bg-red-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-900/10 flex items-center gap-2"
                             >
-                                <Trash2 className="w-4 h-4" /> Delete Permanently
+                                <Trash2 className="w-4 h-4" /> Supprimer Définitivement
                             </button>
                         </div>
                     </div>

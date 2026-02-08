@@ -43,10 +43,10 @@ export default function POSDashboardPage() {
 
     useEffect(() => {
         const sessionStr = localStorage.getItem('nore_pos_session')
-        console.log('POS Session check:', sessionStr ? 'Found' : 'Not Found')
+        console.log('POS Session check:', sessionStr ? 'Trouvée' : 'Non trouvée')
         
         if (!sessionStr) { 
-            console.log('No POS session found, redirecting to login...')
+            console.log('Aucune session POS, redirection vers login...')
             router.push('/pos/login')
             return 
         }
@@ -55,11 +55,11 @@ export default function POSDashboardPage() {
         try {
             staffData = JSON.parse(sessionStr)
             if (!staffData || !staffData.id || !staffData.restaurant_id) {
-                throw new Error('Incomplete session data')
+                throw new Error('Données de session incomplètes')
             }
             setStaff(staffData)
         } catch (e) {
-            console.error('Invalid POS session data:', e)
+            console.error('Session POS invalide:', e)
             localStorage.removeItem('nore_pos_session')
             router.push('/pos/login')
             return
@@ -78,7 +78,7 @@ export default function POSDashboardPage() {
                 await fetchWhatsappOrders(staffData.restaurant_id)
                 await fetchTransactions(staffData.id)
             } catch (err) {
-                console.error('Error loading initial data:', err)
+                console.error('Erreur lors du chargement initial:', err)
             } finally {
                 setLoading(false)
             }
@@ -197,7 +197,7 @@ export default function POSDashboardPage() {
                 },
                 body: JSON.stringify({ isPaid, staffId: staff.id })
             })
-            if (!res.ok) throw new Error('Failed to update payment')
+            if (!res.ok) throw new Error('Échec mise à jour paiement')
 
             // Optimistic update
             setWhatsappOrders(prev => prev.map(o => o.id === id ? { ...o, is_paid: isPaid, payment_status: isPaid ? 'PAID' : 'UNPAID' } : o))
@@ -321,7 +321,7 @@ export default function POSDashboardPage() {
                                     <div className="flex justify-between items-start mb-6">
                                         <div><span className="font-black text-zinc-900 block text-lg">#{order.id.slice(0, 6)}</span><p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{order.customer_name || 'WhatsApp'}</p></div>
                                         <div className="flex flex-col gap-1 items-end">
-                                            <span className="bg-emerald-50 text-emerald-700 text-[8px] font-black px-2 py-1 rounded border border-emerald-100 uppercase tracking-widest flex items-center gap-1">{typeIcon(order.order_type)} {order.order_type}</span>
+                                            <span className="bg-emerald-50 text-emerald-700 text-[8px] font-black px-2 py-1 rounded border border-emerald-100 uppercase tracking-widest flex items-center gap-1">{typeIcon(order.order_type)} {order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span>
                                             {order.table_number && <span className="text-[10px] font-black text-zinc-900">Table {order.table_number}</span>}
                                         </div>
                                     </div>
@@ -384,11 +384,11 @@ export default function POSDashboardPage() {
 
                                 {paymentLogic === 'pay_before' && orders.filter(o => !o.is_paid && o.production_status === 'RECEIVED').length > 0 && (
                                     <section><h3 className="font-black text-[10px] uppercase tracking-widest text-emerald-500 mb-6 flex items-center gap-2"><MessageCircle className="w-4 h-4" /> WhatsApp à encaisser</h3><div className="space-y-3">{orders.filter(o => !o.is_paid && o.production_status === 'RECEIVED').map(order => (<div key={order.id} className="bg-white border-2 border-emerald-100 rounded-3xl p-5 shadow-sm flex items-center justify-between animate-in slide-in-from-right-4">
-                                        <div className="min-w-0 flex-1"><div className="flex items-center gap-2 mb-1"><p className="font-black text-zinc-900 text-sm truncate">{order.customer_name || 'Client'}</p><span className="text-[8px] font-black bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100">{order.order_type}</span></div><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div>
+                                        <div className="min-w-0 flex-1"><div className="flex items-center gap-2 mb-1"><p className="font-black text-zinc-900 text-sm truncate">{order.customer_name || 'Client'}</p><span className="text-[8px] font-black bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100">{order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span></div><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div>
                                         <div className="flex gap-2"><button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-50 rounded-xl"><XCircle className="w-5 h-5" /></button><button onClick={() => updateOrderStatus(order.id, 'RECEIVED', true)} className="bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg flex items-center gap-2 transition-all"><CreditCard className="w-4 h-4" /> Encaisser</button></div></div>))}</div></section>
                                 )}
 
-                                <section><h3 className="font-black text-[10px] uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2"><LayoutGrid className="w-4 h-4 text-blue-500" /> Prêt à servir</h3><div className="space-y-3">{orders.filter(o => o.production_status === 'READY').map(order => (<div key={order.id} className="bg-emerald-50 border border-emerald-100 rounded-3xl p-5 flex items-center justify-between"><div><p className="font-black text-emerald-900 text-sm">{order.order_type === 'dine_in' ? `Table ${order.table_number}` : order.order_type}</p><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div><div className="flex gap-2"><button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-100 rounded-xl"><XCircle className="w-5 h-5" /></button><button onClick={() => updateOrderStatus(order.id, 'SERVED', true)} className="bg-zinc-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-black/10">Encaisser</button></div></div>))}</div></section>
+                                <section><h3 className="font-black text-[10px] uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2"><LayoutGrid className="w-4 h-4 text-blue-500" /> Prêt à servir</h3><div className="space-y-3">{orders.filter(o => o.production_status === 'READY').map(order => (<div key={order.id} className="bg-emerald-50 border border-emerald-100 rounded-3xl p-5 flex items-center justify-between"><div><p className="font-black text-emerald-900 text-sm">{order.order_type === 'dine_in' ? `Table ${order.table_number}` : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</p><p className="text-[10px] font-bold text-emerald-600 uppercase">#{order.id.slice(0, 6)} • {order.total_price.toLocaleString()} {currency}</p></div><div className="flex gap-2"><button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-2 text-red-400 hover:bg-red-100 rounded-xl"><XCircle className="w-5 h-5" /></button><button onClick={() => updateOrderStatus(order.id, 'SERVED', true)} className="bg-zinc-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-black/10">Encaisser</button></div></div>))}</div></section>
                             </div>
                             <div className="p-8 border-t bg-zinc-50/50 space-y-6 shrink-0">
                                 <div className="flex bg-white p-1 rounded-2xl border">
@@ -423,7 +423,7 @@ export default function POSDashboardPage() {
                                     <div className="flex-1 overflow-y-auto no-scrollbar space-y-6 pr-1">
                                         {columnOrders.map(order => (
                                             <div key={order.id} className="bg-white rounded-[2.5rem] border border-zinc-100 shadow-sm p-8 flex flex-col border-l-[16px] transition-all hover:shadow-xl" style={{ borderLeftColor: order.order_type === 'dine_in' ? '#c5a059' : order.order_type === 'takeaway' ? '#1e293b' : '#3b82f6' }}>
-                                                <div className="flex justify-between items-start mb-6"><div><div className="flex items-center gap-2 mb-1"><span className="font-black text-2xl">#{order.id.slice(0, 6)}</span><span className="bg-zinc-50 text-zinc-700 text-[8px] font-black uppercase px-2 py-1 rounded border flex items-center gap-1">{typeIcon(order.order_type)} {order.order_type}</span></div><p className="text-xs font-black text-zinc-900 uppercase tracking-widest">{order.customer_name || 'Client'}</p></div><span className="text-[10px] font-black text-zinc-400 bg-zinc-50 px-3 py-1.5 rounded-xl">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>
+                                                <div className="flex justify-between items-start mb-6"><div><div className="flex items-center gap-2 mb-1"><span className="font-black text-2xl">#{order.id.slice(0, 6)}</span><span className="bg-zinc-50 text-zinc-700 text-[8px] font-black uppercase px-2 py-1 rounded border flex items-center gap-1">{typeIcon(order.order_type)} {order.order_type === 'dine_in' ? 'Sur Place' : order.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span></div><p className="text-xs font-black text-zinc-900 uppercase tracking-widest">{order.customer_name || 'Client'}</p></div><span className="text-[10px] font-black text-zinc-400 bg-zinc-50 px-3 py-1.5 rounded-xl">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>
                                                 {order.delivery_address && <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2"><MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /><p className="text-[10px] font-bold text-blue-900">{order.delivery_address}</p></div>}
                                                 <div className="space-y-3 mb-8 bg-zinc-50/50 p-6 rounded-3xl">{order.items.map((item: any, idx: number) => (<div key={idx} className="flex flex-col gap-1"><div className="flex justify-between text-sm"><span className="font-bold text-zinc-800"><span className="text-zinc-400 mr-2">{item.quantity}x</span> {item.name}</span></div>{item.note && <p className="text-[10px] italic text-[#c5a059] bg-white p-3 rounded-2xl border border-amber-100/50">"{item.note}"</p>}</div>))}</div>
                                                 <div className="flex gap-3"><button onClick={() => updateOrderStatus(order.id, 'CANCELLED')} className="p-5 bg-red-50 text-red-500 rounded-[1.5rem] hover:bg-red-100 transition-all"><XCircle className="w-7 h-7" /></button>
@@ -460,7 +460,7 @@ export default function POSDashboardPage() {
                                         {transactions.filter(t => transFilter === 'ALL' || t.production_status === transFilter).map(t => (
                                             <tr key={t.id} className="hover:bg-zinc-50/30 transition-colors">
                                                 <td className="px-8 py-6"><div className="font-black text-zinc-900 text-sm">#{t.id.slice(0, 6)}</div><div className="text-[10px] text-zinc-400 font-bold">{new Date(t.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div></td>
-                                                <td className="px-8 py-6"><div className="flex items-center gap-2 mb-1"><span className="bg-zinc-100 text-zinc-700 text-[8px] font-black px-2 py-0.5 rounded border border-zinc-200 uppercase flex items-center gap-1">{typeIcon(t.order_type)} {t.order_type}</span></div><div className="text-xs font-bold text-zinc-900">{t.customer_name || 'Anonyme'}</div></td>
+                                                <td className="px-8 py-6"><div className="flex items-center gap-2 mb-1"><span className="bg-zinc-100 text-zinc-700 text-[8px] font-black px-2 py-0.5 rounded border border-zinc-200 uppercase flex items-center gap-1">{typeIcon(t.order_type)} {t.order_type === 'dine_in' ? 'Sur Place' : t.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</span></div><div className="text-xs font-bold text-zinc-900">{t.customer_name || 'Anonyme'}</div></td>
                                                 <td className="px-8 py-6 max-w-[200px]"><div className="truncate text-[10px] font-medium text-zinc-500">{t.items?.map((i: any) => `${i.quantity}x ${i.name}`).join(', ')}</div></td>
                                                 <td className="px-8 py-6"><div className="font-black text-zinc-900 text-sm">{t.total_price.toLocaleString()} {currency}</div></td>
                                                 <td className="px-8 py-6 flex items-center gap-3">
@@ -562,7 +562,7 @@ export default function POSDashboardPage() {
 
                         <div className="border-b border-dashed border-black pb-2 mb-4">
                             <p className="font-bold uppercase mb-1">Cde #{printingOrder.id.slice(0, 6)}</p>
-                            <p className="text-[10px]">Type: {printingOrder.order_type}</p>
+                            <p className="text-[10px]">Type: {printingOrder.order_type === 'dine_in' ? 'Sur Place' : printingOrder.order_type === 'takeaway' ? 'Emporter' : 'Livraison'}</p>
                             {printingOrder.table_number && <p className="text-[10px]">Table: {printingOrder.table_number}</p>}
                             <p className="text-[10px]">Client: {printingOrder.customer_name || 'Anonyme'}</p>
                         </div>
