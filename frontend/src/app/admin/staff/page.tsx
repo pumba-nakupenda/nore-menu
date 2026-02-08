@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 export default function StaffManagementPage() {
     const [restaurantId, setRestaurantId] = useState<string | null>(null)
+    const [restaurantName, setRestaurantName] = useState<string>('')
     const [staff, setStaff] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -33,9 +34,10 @@ export default function StaffManagementPage() {
         const fetchUserRestaurant = async () => {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
-            const { data: restaurant } = await supabase.from('restaurants').select('id').eq('owner_id', user.id).single()
+            const { data: restaurant } = await supabase.from('restaurants').select('id, name').eq('owner_id', user.id).single()
             if (restaurant) {
                 setRestaurantId(restaurant.id)
+                setRestaurantName(restaurant.name || '')
                 fetchStaff(restaurant.id)
             }
         }
