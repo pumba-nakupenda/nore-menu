@@ -134,7 +134,7 @@ export default function QrPage() {
             image: includeLogo && logoSrc ? logoSrc : "",
             imageOptions: {
                 hideBackgroundDots: true,
-                imageSize: 0.4,
+                imageSize: logoSize / 100, // Convert 20-60 range to 0.2-0.6
                 margin: 10,
                 crossOrigin: "anonymous"
             }
