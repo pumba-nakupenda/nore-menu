@@ -373,17 +373,73 @@ export default function QrPage() {
     )
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-20">
             <div>
-                <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">QR Design Studio</h2>
-                <p className="text-zinc-500 mt-2 flex items-center gap-2">
+                <h2 className="text-3xl md:text-4xl font-serif font-bold text-zinc-900 tracking-tight text-center lg:text-left">QR Design Studio</h2>
+                <p className="text-zinc-500 mt-2 flex items-center justify-center lg:justify-start gap-2 text-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]"></span>
                     Create a unique physical gateway to your digital menu
                 </p>
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-10 items-start">
-                <div className="lg:col-span-5 space-y-8 max-h-[calc(100vh-200px)] overflow-y-auto pr-4 custom-scrollbar pb-20">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+                
+                {/* PREVIEW PANEL - Top on Mobile, Right on Desktop */}
+                <div className="order-1 lg:order-2 lg:col-span-7 w-full bg-white/50 lg:bg-[#fdfcfb] rounded-[3rem] p-4 lg:p-8 flex flex-col items-center justify-center border-4 border-white shadow-inner min-h-[450px] lg:min-h-[700px] relative overflow-hidden group/preview">
+                    <div className={`transition-all duration-700 ease-out transform group-hover/preview:scale-[1.01] z-10 
+                        ${printFormat === 'A4' ? 'scale-[0.3] xs:scale-[0.4] sm:scale-[0.45]' : 
+                          printFormat === 'A5' ? 'scale-[0.4] xs:scale-[0.5] sm:scale-[0.6]' : 
+                          'scale-[0.7] xs:scale-[0.85] sm:scale-100'}`}>
+                        
+                        <div id="printable-area" className={`relative transition-all duration-700 overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.1)]
+                            ${printFormat === 'A4' ? 'w-[794px] h-[1123px]' : printFormat === 'A5' ? 'w-[561px] h-[794px]' : ''}
+                            ${printFormat !== 'QR' && posterTemplate === 'classic' ? 'bg-[#064e3b] text-white border-none' : ''}
+                            ${printFormat !== 'QR' && posterTemplate === 'modern' ? 'bg-[#fffcf0] text-zinc-800 border-none' : ''}
+                            ${printFormat !== 'QR' && posterTemplate === 'luxury' ? 'bg-white text-zinc-900 border-[24px] border-[#c5a059] outline-[1px] outline-dashed outline-[#c5a059] outline-offset-[-12px]' : ''}
+                            ${printFormat !== 'QR' && posterTemplate === 'midnight' ? 'bg-[#09090b] text-white border-none' : ''}
+                            ${printFormat !== 'QR' && posterTemplate === 'rustic' ? 'bg-[#f5f5f4] text-[#44403c] border-[16px] border-[#d6d3d1]' : ''}
+                            ${printFormat !== 'QR' && posterTemplate === 'ocean' ? 'bg-[#0c4a6e] text-white border-none' : ''}
+                            ${printFormat === 'QR' ? 'contents' : 'flex flex-col items-center justify-between'}
+                            ${printFormat === 'A4' ? 'py-24 px-16' : printFormat === 'A5' ? 'py-16 px-10' : ''}
+                        `}>
+                            {printFormat !== 'QR' && (
+                                <div className="text-center w-full animate-in fade-in duration-1000">
+                                    <div className={`mx-auto rounded-[2rem] flex items-center justify-center shadow-2xl 
+                                        ${posterTemplate === 'classic' ? 'bg-[#c5a059] text-[#064e3b]' : ''}
+                                        ${posterTemplate === 'modern' ? 'bg-[#064e3b] text-white' : ''}
+                                        ${posterTemplate === 'luxury' ? 'bg-[#064e3b] text-white' : ''}
+                                        ${posterTemplate === 'midnight' ? 'bg-[#c5a059] text-[#09090b]' : ''}
+                                        ${posterTemplate === 'rustic' ? 'bg-[#44403c] text-[#f5f5f4]' : ''}
+                                        ${posterTemplate === 'ocean' ? 'bg-[#c5a059] text-[#0c4a6e]' : ''}
+                                        ${printFormat === 'A4' ? 'w-24 h-24 mb-10' : 'w-16 h-16 mb-6'}
+                                    `}><ChefHat className={printFormat === 'A4' ? 'w-14 h-14' : 'w-10 h-10'} /></div>
+                                    <h3 className={`font-bold tracking-tight italic ${posterTemplate === 'modern' ? 'font-sans uppercase tracking-[0.1em] text-zinc-900' : 'font-serif'} ${posterTemplate === 'luxury' ? 'text-[#c5a059] underline decoration-[#c5a059]/20 underline-offset-8' : ''} ${posterTemplate === 'classic' ? 'text-white underline decoration-[#c5a059]/30 underline-offset-8' : ''} ${posterTemplate === 'midnight' ? '!text-white underline decoration-[#c5a059]/20 underline-offset-8' : ''} ${posterTemplate === 'rustic' ? 'text-[#44403c]' : ''} ${posterTemplate === 'ocean' ? '!text-white' : ''} ${printFormat === 'A4' ? 'text-7xl mb-4' : 'text-5xl mb-2'}`}>{restaurantName || 'NOUR'}</h3>
+                                    <p className={`font-black tracking-[0.6em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/60' : ''} ${posterTemplate === 'modern' ? 'text-zinc-400' : ''} ${posterTemplate === 'luxury' ? 'text-zinc-400' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-500' : ''} ${posterTemplate === 'rustic' ? 'text-[#78716c]' : ''} ${posterTemplate === 'ocean' ? 'text-sky-200/60' : ''} ${printFormat === 'A4' ? 'text-[14px] mt-6' : 'text-[10px] mt-4'}`}>Digital Menu Experience</p>
+                                </div>
+                            )}
+                            <div id="qr-card-to-capture" className={`relative transition-all duration-700 flex flex-col items-center justify-center ${printFormat === 'QR' && qrStyle === 'simple' ? 'bg-white p-12 shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5' : ''} ${printFormat === 'QR' && qrStyle === 'rounded' ? 'bg-white p-12 rounded-[5rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5' : ''} ${printFormat === 'QR' && qrStyle === 'card' ? 'bg-white p-12 pb-20 rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5 min-w-[440px]' : ''} ${printFormat === 'QR' && qrStyle === 'frame' ? 'bg-[#053e2f] p-16 pb-24 rounded-[6rem] shadow-[0_70px_140px_rgba(0,0,0,0.2)] border-[12px] border-[#064e3b]/20' : ''} ${printFormat !== 'QR' ? 'my-auto bg-white shadow-2xl transition-all' : ''} ${printFormat === 'A4' ? 'p-10 rounded-[4rem] scale-[1.4]' : printFormat === 'A5' ? 'p-6 rounded-[3rem] scale-[1.1]' : ''}`}>
+                                {qrMode === 'tables' && (
+                                    <div className="mb-6 flex flex-col items-center animate-in fade-in zoom-in duration-500">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-[1px] w-6 bg-[#c5a059]/40"></div>
+                                            <span className="text-[14px] font-black text-[#064e3b] uppercase tracking-[0.3em]">Table</span>
+                                            <div className="h-[1px] w-6 bg-[#c5a059]/40"></div>
+                                        </div>
+                                        <span className="text-5xl font-serif font-bold text-[#064e3b] mt-1">{tableNumber}</span>
+                                    </div>
+                                )}
+                                <div className={`overflow-hidden transition-all duration-700 ${printFormat === 'QR' && qrStyle === 'frame' ? 'p-6 bg-white rounded-[3.5rem] shadow-2xl' : ''} ${printFormat === 'QR' && qrStyle === 'rounded' ? 'rounded-[3.5rem]' : ''} ${printFormat !== 'QR' ? 'rounded-[2.5rem]' : ''} relative`} ref={qrRef}>
+                                </div>
+                            </div>
+                            {printFormat !== 'QR' && (
+                                <div className={`text-center w-full ${printFormat === 'A4' ? 'space-y-4' : 'space-y-2'}`}><p className={`font-serif font-bold italic tracking-wide ${printFormat === 'A4' ? 'text-2xl' : 'text-xl'}`}>Scan to discover our menu</p><div className="flex items-center justify-center gap-3"><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div><p className={`font-black tracking-[0.3em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/40' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-600' : ''} ${posterTemplate === 'rustic' ? 'text-stone-400' : ''} ${posterTemplate === 'ocean' ? 'text-sky-300/40' : 'text-zinc-400'} ${printFormat === 'A4' ? 'text-[10px]' : 'text-[8px]'}`}>noremenu.com</p><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div></div></div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* SETTINGS PANEL - Bottom on Mobile, Left on Desktop */}
+                <div className="order-2 lg:order-1 lg:col-span-5 space-y-8 lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto pr-0 lg:pr-4 custom-scrollbar pb-10">
                     
                     {/* SECTION: MODE SELECTOR */}
                     <div className="bg-white p-2 rounded-[2rem] border border-black/5 flex gap-2 shadow-sm">
@@ -449,9 +505,9 @@ export default function QrPage() {
                             <Layers className="w-4 h-4 mr-2" />
                             <h3>Direct Menu Link</h3>
                         </div>
-                        <div className="flex items-center gap-2 bg-white/10 p-2 rounded-2xl border border-white/10">
-                            <input type="text" readOnly value={`${baseUrl}/${restaurantId}`} className="bg-transparent border-none text-xs font-medium flex-1 px-2 outline-none text-emerald-50 truncate" />
-                            <button onClick={handleCopyLink} className={`p-3 rounded-xl transition-all flex items-center gap-2 ${copied ? 'bg-emerald-500 text-white' : 'bg-[#c5a059] text-[#064e3b] hover:scale-105'}`}>
+                        <div className="flex flex-col sm:flex-row items-center gap-2 bg-white/10 p-2 rounded-2xl border border-white/10">
+                            <input type="text" readOnly value={`${baseUrl}/${restaurantId}`} className="bg-transparent border-none text-[10px] font-medium flex-1 px-2 outline-none text-emerald-50 truncate w-full" />
+                            <button onClick={handleCopyLink} className={`w-full sm:w-auto p-3 rounded-xl transition-all flex items-center justify-center gap-2 ${copied ? 'bg-emerald-500 text-white' : 'bg-[#c5a059] text-[#064e3b] hover:scale-105'}`}>
                                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                 <span className="text-[10px] font-bold uppercase">{copied ? 'Copied' : 'Copy'}</span>
                             </button>
@@ -465,7 +521,7 @@ export default function QrPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             {['simple', 'rounded', 'card', 'frame'].map((style) => (
-                                <button key={style} onClick={() => setQrStyle(style as any)} className={`py-4 px-3 text-sm font-bold rounded-2xl border capitalize transition-all duration-300 ${qrStyle === style ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-xl shadow-emerald-900/20 scale-[1.02]' : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:border-emerald-200 hover:bg-white'}`}>{style}</button>
+                                <button key={style} onClick={() => setQrStyle(style as any)} className={`py-4 px-3 text-[10px] md:text-sm font-bold rounded-2xl border capitalize transition-all duration-300 ${qrStyle === style ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-xl' : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:bg-white'}`}>{style}</button>
                             ))}
                         </div>
                     </div>
@@ -480,7 +536,7 @@ export default function QrPage() {
                                 <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Dot Architecture</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {['square', 'dots', 'rounded', 'extra-rounded', 'classy', 'classy-rounded'].map((type) => (
-                                        <button key={type} onClick={() => setDotType(type as DotType)} className={`py-2.5 px-1 text-[10px] font-black rounded-xl border truncate transition-all ${dotType === type ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-md' : 'bg-white text-zinc-500 border-zinc-100 hover:bg-zinc-50'}`}>{type.replace('-', ' ')}</button>
+                                        <button key={type} onClick={() => setDotType(type as DotType)} className={`py-2.5 px-1 text-[9px] font-black rounded-xl border truncate transition-all ${dotType === type ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-md' : 'bg-white text-zinc-500 border-zinc-100 hover:bg-zinc-50'}`}>{type.replace('-', ' ')}</button>
                                     ))}
                                 </div>
                             </div>
@@ -529,7 +585,7 @@ export default function QrPage() {
                         </div>
                     </div>
 
-                    <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
+                    <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                         <div className="flex items-center mb-6 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
                             <FileText className="w-5 h-5 mr-3 text-[#c5a059]" />
                             <h3>4. Format & Poster</h3>
@@ -543,7 +599,7 @@ export default function QrPage() {
                                         { id: 'A5', icon: FileText, label: 'A5 Poster' },
                                         { id: 'A4', icon: Maximize, label: 'A4 Poster' }
                                     ].map((f) => (
-                                        <button key={f.id} onClick={() => setPrintFormat(f.id as any)} className={`py-3 px-1 flex flex-col items-center gap-2 rounded-xl border transition-all ${printFormat === f.id ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-md scale-105' : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:bg-white'}`}><f.icon className="w-4 h-4" /><span className="text-[10px] font-bold">{f.label}</span></button>
+                                        <button key={f.id} onClick={() => setPrintFormat(f.id as any)} className={`py-3 px-1 flex flex-col items-center gap-2 rounded-xl border transition-all ${printFormat === f.id ? 'bg-[#064e3b] text-white border-[#064e3b] shadow-md scale-105' : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:bg-white'}`}><f.icon className="w-4 h-4" /><span className="text-[9px] font-bold">{f.label}</span></button>
                                     ))}
                                 </div>
                             </div>
@@ -552,7 +608,7 @@ export default function QrPage() {
                                     <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest">Poster Theme</label>
                                     <div className="grid grid-cols-3 gap-2">
                                         {['classic', 'modern', 'luxury', 'midnight', 'rustic', 'ocean'].map((t) => (
-                                            <button key={t} onClick={() => setPosterTemplate(t as any)} className={`py-2.5 px-1 text-[10px] font-black rounded-xl border transition-all ${posterTemplate === t ? 'bg-[#c5a059] text-[#064e3b] border-[#c5a059] shadow-sm' : 'bg-white text-zinc-400 border-zinc-100 hover:bg-zinc-50'}`}>{t}</button>
+                                            <button key={t} onClick={() => setPosterTemplate(t as any)} className={`py-2.5 px-1 text-[9px] font-black rounded-xl border transition-all ${posterTemplate === t ? 'bg-[#c5a059] text-[#064e3b] border-[#c5a059] shadow-sm' : 'bg-white text-zinc-400 border-zinc-100 hover:bg-zinc-50'}`}>{t}</button>
                                         ))}
                                     </div>
                                 </div>
@@ -560,64 +616,16 @@ export default function QrPage() {
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div className="lg:col-span-7 bg-[#fdfcfb] rounded-[4rem] p-8 flex flex-col items-center justify-center border-4 border-white shadow-inner min-h-[700px] relative overflow-hidden group/preview">
-                    <div className={`transition-all duration-700 ease-out transform group-hover/preview:scale-[1.01] z-10 ${printFormat === 'A4' ? 'scale-[0.45]' : printFormat === 'A5' ? 'scale-[0.6]' : ''}`}>
-                        <div id="printable-area" className={`relative transition-all duration-700 overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.1)]
-                            ${printFormat === 'A4' ? 'w-[794px] h-[1123px]' : printFormat === 'A5' ? 'w-[561px] h-[794px]' : ''}
-                            ${printFormat !== 'QR' && posterTemplate === 'classic' ? 'bg-[#064e3b] text-white border-none' : ''}
-                            ${printFormat !== 'QR' && posterTemplate === 'modern' ? 'bg-[#fffcf0] text-zinc-800 border-none' : ''}
-                            ${printFormat !== 'QR' && posterTemplate === 'luxury' ? 'bg-white text-zinc-900 border-[24px] border-[#c5a059] outline-[1px] outline-dashed outline-[#c5a059] outline-offset-[-12px]' : ''}
-                            ${printFormat !== 'QR' && posterTemplate === 'midnight' ? 'bg-[#09090b] text-white border-none' : ''}
-                            ${printFormat !== 'QR' && posterTemplate === 'rustic' ? 'bg-[#f5f5f4] text-[#44403c] border-[16px] border-[#d6d3d1]' : ''}
-                            ${printFormat !== 'QR' && posterTemplate === 'ocean' ? 'bg-[#0c4a6e] text-white border-none' : ''}
-                            ${printFormat === 'QR' ? 'contents' : 'flex flex-col items-center justify-between'}
-                            ${printFormat === 'A4' ? 'py-24 px-16' : printFormat === 'A5' ? 'py-16 px-10' : ''}
-                        `}>
-                            {printFormat !== 'QR' && (
-                                <div className="text-center w-full animate-in fade-in duration-1000">
-                                    <div className={`mx-auto rounded-[2rem] flex items-center justify-center shadow-2xl 
-                                        ${posterTemplate === 'classic' ? 'bg-[#c5a059] text-[#064e3b]' : ''}
-                                        ${posterTemplate === 'modern' ? 'bg-[#064e3b] text-white' : ''}
-                                        ${posterTemplate === 'luxury' ? 'bg-[#064e3b] text-white' : ''}
-                                        ${posterTemplate === 'midnight' ? 'bg-[#c5a059] text-[#09090b]' : ''}
-                                        ${posterTemplate === 'rustic' ? 'bg-[#44403c] text-[#f5f5f4]' : ''}
-                                        ${posterTemplate === 'ocean' ? 'bg-[#c5a059] text-[#0c4a6e]' : ''}
-                                        ${printFormat === 'A4' ? 'w-24 h-24 mb-10' : 'w-16 h-16 mb-6'}
-                                    `}><ChefHat className={printFormat === 'A4' ? 'w-14 h-14' : 'w-10 h-10'} /></div>
-                                    <h3 className={`font-bold tracking-tight italic ${posterTemplate === 'modern' ? 'font-sans uppercase tracking-[0.1em] text-zinc-900' : 'font-serif'} ${posterTemplate === 'luxury' ? 'text-[#c5a059] underline decoration-[#c5a059]/20 underline-offset-8' : ''} ${posterTemplate === 'classic' ? 'text-white underline decoration-[#c5a059]/30 underline-offset-8' : ''} ${posterTemplate === 'midnight' ? '!text-white underline decoration-[#c5a059]/20 underline-offset-8' : ''} ${posterTemplate === 'rustic' ? 'text-[#44403c]' : ''} ${posterTemplate === 'ocean' ? '!text-white' : ''} ${printFormat === 'A4' ? 'text-7xl mb-4' : 'text-5xl mb-2'}`}>{restaurantName || 'NOUR'}</h3>
-                                    <p className={`font-black tracking-[0.6em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/60' : ''} ${posterTemplate === 'modern' ? 'text-zinc-400' : ''} ${posterTemplate === 'luxury' ? 'text-zinc-400' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-500' : ''} ${posterTemplate === 'rustic' ? 'text-[#78716c]' : ''} ${posterTemplate === 'ocean' ? 'text-sky-200/60' : ''} ${printFormat === 'A4' ? 'text-[14px] mt-6' : 'text-[10px] mt-4'}`}>Digital Menu Experience</p>
-                                </div>
-                            )}
-                            <div id="qr-card-to-capture" className={`relative transition-all duration-700 flex flex-col items-center justify-center ${printFormat === 'QR' && qrStyle === 'simple' ? 'bg-white p-12 shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5' : ''} ${printFormat === 'QR' && qrStyle === 'rounded' ? 'bg-white p-12 rounded-[5rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5' : ''} ${printFormat === 'QR' && qrStyle === 'card' ? 'bg-white p-12 pb-20 rounded-[4rem] shadow-[0_50px_100px_rgba(0,0,0,0.06)] border border-black/5 min-w-[440px]' : ''} ${printFormat === 'QR' && qrStyle === 'frame' ? 'bg-[#053e2f] p-16 pb-24 rounded-[6rem] shadow-[0_70px_140px_rgba(0,0,0,0.2)] border-[12px] border-[#064e3b]/20' : ''} ${printFormat !== 'QR' ? 'my-auto bg-white shadow-2xl transition-all' : ''} ${printFormat === 'A4' ? 'p-10 rounded-[4rem] scale-[1.4]' : printFormat === 'A5' ? 'p-6 rounded-[3rem] scale-[1.1]' : ''}`}>
-                                {qrMode === 'tables' && (
-                                    <div className="mb-6 flex flex-col items-center animate-in fade-in zoom-in duration-500">
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-[1px] w-6 bg-[#c5a059]/40"></div>
-                                            <span className="text-[14px] font-black text-[#064e3b] uppercase tracking-[0.3em]">Table</span>
-                                            <div className="h-[1px] w-6 bg-[#c5a059]/40"></div>
-                                        </div>
-                                        <span className="text-5xl font-serif font-bold text-[#064e3b] mt-1">{tableNumber}</span>
-                                    </div>
-                                )}
-                                <div className={`overflow-hidden transition-all duration-700 ${printFormat === 'QR' && qrStyle === 'frame' ? 'p-6 bg-white rounded-[3.5rem] shadow-2xl' : ''} ${printFormat === 'QR' && qrStyle === 'rounded' ? 'rounded-[3.5rem]' : ''} ${printFormat !== 'QR' ? 'rounded-[2.5rem]' : ''} relative`} ref={qrRef}>
-                                </div>
-                            </div>
-                            {printFormat !== 'QR' && (
-                                <div className={`text-center w-full ${printFormat === 'A4' ? 'space-y-4' : 'space-y-2'}`}><p className={`font-serif font-bold italic tracking-wide ${printFormat === 'A4' ? 'text-2xl' : 'text-xl'}`}>Scan to discover our menu</p><div className="flex items-center justify-center gap-3"><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div><p className={`font-black tracking-[0.3em] uppercase ${posterTemplate === 'classic' ? 'text-emerald-100/40' : ''} ${posterTemplate === 'midnight' ? 'text-zinc-600' : ''} ${posterTemplate === 'rustic' ? 'text-stone-400' : ''} ${posterTemplate === 'ocean' ? 'text-sky-300/40' : 'text-zinc-400'} ${printFormat === 'A4' ? 'text-[10px]' : 'text-[8px]'}`}>noremenu.com</p><div className={`h-px w-8 ${posterTemplate === 'classic' ? 'bg-emerald-100/20' : ''} ${posterTemplate === 'midnight' ? 'bg-zinc-800' : ''} ${posterTemplate === 'rustic' ? 'bg-stone-300' : ''} ${posterTemplate === 'ocean' ? 'bg-sky-900/40' : 'bg-zinc-200'}`}></div></div></div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="lg:col-span-12 flex flex-col md:flex-row gap-6 items-center justify-between bg-white p-8 rounded-[3rem] border border-black/5 shadow-sm mt-4">
-                     <div className="flex gap-4 w-full md:w-auto">
-                        <button onClick={downloadQr} className="flex-1 md:flex-none bg-zinc-900 text-white px-8 py-5 rounded-2xl font-bold text-sm tracking-wide hover:bg-black transition shadow-xl shadow-black/10 flex items-center justify-center group"><Download className="w-5 h-5 mr-3 group-hover:translate-y-0.5 transition-transform" /> PNG</button>
-                        <button onClick={downloadPdf} className="flex-1 md:flex-none bg-[#064e3b] text-white px-8 py-5 rounded-2xl font-bold text-sm tracking-wide hover:bg-[#053e2f] transition shadow-xl shadow-emerald-900/10 flex items-center justify-center group"><FileText className="w-5 h-5 mr-3 group-hover:translate-y-0.5 transition-transform" /> PDF</button>
-                        <button onClick={printQr} className="flex-1 md:flex-none bg-white text-zinc-800 border-2 border-zinc-100 px-8 py-5 rounded-2xl font-bold text-sm tracking-wide hover:bg-zinc-50 transition flex items-center justify-center"><Printer className="w-5 h-5 mr-3" /> Print</button>
-                     </div>
-                     <button disabled={saving} onClick={saveSettings} className="w-full md:w-auto bg-[#c5a059] text-[#064e3b] px-12 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-[#b59049] transition-all shadow-2xl shadow-amber-900/10 flex items-center justify-center disabled:opacity-50 hover:-translate-y-1 active:translate-y-0">{saving ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Check className="w-5 h-5 mr-3" />}{saving ? 'Saving...' : 'Confirm & Save Design'}</button>
-                </div>
+            {/* ACTION BAR - Fixed on Desktop, Scrollable Bottom on Mobile */}
+            <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center justify-between bg-white p-6 md:p-8 rounded-[3rem] border border-black/5 shadow-2xl mt-4">
+                 <div className="grid grid-cols-3 gap-3 w-full md:w-auto">
+                    <button onClick={downloadQr} className="bg-zinc-900 text-white py-4 px-2 md:px-8 rounded-2xl font-bold text-xs tracking-wide hover:bg-black transition shadow-xl flex items-center justify-center group"><Download className="w-4 h-4 mr-2" /> PNG</button>
+                    <button onClick={downloadPdf} className="bg-[#064e3b] text-white py-4 px-2 md:px-8 rounded-2xl font-bold text-xs tracking-wide hover:bg-[#053e2f] transition shadow-xl flex items-center justify-center group"><FileText className="w-4 h-4 mr-2" /> PDF</button>
+                    <button onClick={printQr} className="bg-white text-zinc-800 border-2 border-zinc-100 py-4 px-2 md:px-8 rounded-2xl font-bold text-xs tracking-wide hover:bg-zinc-50 transition flex items-center justify-center"><Printer className="w-4 h-4 mr-2" /> Print</button>
+                 </div>
+                 <button disabled={saving} onClick={saveSettings} className="w-full md:w-auto bg-[#c5a059] text-[#064e3b] px-12 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-[#b59049] transition-all shadow-2xl flex items-center justify-center disabled:opacity-50 active:scale-95">{saving ? <Loader2 className="w-5 h-5 mr-3 animate-spin" /> : <Check className="w-5 h-5 mr-3" />}{saving ? 'Saving...' : 'Save Design'}</button>
             </div>
         </div>
     )
