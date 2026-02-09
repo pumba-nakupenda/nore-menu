@@ -272,6 +272,29 @@ export class MenuService {
         return data;
     }
 
+    async checkIfMaster(ownerId: string): Promise<boolean> {
+        const { data, error } = await this.supabase.getClient()
+            .from('restaurants')
+            .select('is_master')
+            .eq('owner_id', ownerId)
+            .eq('is_master', true)
+            .maybeSingle();
+        
+        return !!data;
+    }
+
+    async masterUpdateRestaurant(id: string, info: any) {
+        const { data, error } = await this.supabase.getClient()
+            .from('restaurants')
+            .update(info)
+            .eq('id', id)
+            .select()
+            .single();
+        
+        if (error) throw new InternalServerErrorException(error.message);
+        return data;
+    }
+
     async getAllRestaurants(token: string) {
         // This check should ideally be in a Guard, but adding here for safety
         const { data: restaurants, error } = await this.supabase.getClient(token)

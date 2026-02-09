@@ -89,12 +89,18 @@ export default function MasterAdmin() {
 
     const toggleApproval = async (shopId: string, currentStatus: boolean) => {
         try {
-            const { error } = await supabase
-                .from('restaurants')
-                .update({ is_approved: !currentStatus })
-                .eq('id', shopId)
+            const { data: { session } } = await supabase.auth.getSession()
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/master/approve/${shopId}`, {
+                method: 'PATCH',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token}` 
+                },
+                body: JSON.stringify({ is_approved: !currentStatus })
+            })
             
-            if (error) throw error
+            if (!response.ok) throw new Error("Erreur serveur")
+            
             toast.success(currentStatus ? "Accès suspendu" : "Établissement validé !")
             fetchData() // Refresh list
         } catch (err) {

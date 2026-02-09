@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards, ForbiddenException } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { QrCodeService } from './qrcode.service';
 import { EmailService } from '../email/email.service';
@@ -12,6 +12,16 @@ export class MenuController {
         private readonly qrCodeService: QrCodeService,
         private readonly emailService: EmailService
     ) { }
+
+    @UseGuards(SupabaseGuard)
+    @Patch('master/approve/:id')
+    async approveRestaurant(@Req() req: any, @Param('id') id: string, @Body() body: { is_approved: boolean }) {
+        const requesterId = req.user.id;
+        const isMaster = await this.menuService.checkIfMaster(requesterId);
+        if (!isMaster) throw new ForbiddenException('Only masters can approve restaurants');
+        
+        return this.menuService.masterUpdateRestaurant(id, { is_approved: body.is_approved });
+    }
 
     @UseGuards(SupabaseGuard)
     @Post('onboard')

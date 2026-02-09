@@ -342,7 +342,7 @@ export class AnalyticsService {
         const totalRevenue = revenueData?.reduce((sum, order) => sum + (Number(order.total_price) || 0), 0) || 0;
 
         const { data: shops } = await client.from('restaurants')
-            .select('id, name, created_at, is_master, owner_id')
+            .select('id, name, created_at, is_master, is_approved, owner_id')
             .order('created_at', { ascending: false });
 
         // Calculate Revenue per Shop for Ranking
