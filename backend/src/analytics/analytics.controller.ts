@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Patch, Query, Req, UseGuards } from
 import { AnalyticsService } from './analytics.service';
 import { SupabaseGuard } from '../auth/supabase.guard';
 import { StaffGuard } from '../auth/staff.guard';
+import { MasterGuard } from '../auth/master.guard';
 import { TrackLikeDto, TrackQrScanDto, TrackDishViewDto, TrackWhatsAppOrderDto, UpdateWhatsAppStatusDto, UpdateWhatsAppPaymentDto } from '../dto/analytics.dto';
 
 @Controller('analytics')
@@ -107,8 +108,8 @@ export class AnalyticsController {
         );
     }
 
-    // Protected endpoint - Trigger aggregation (admin only)
-    @UseGuards(SupabaseGuard)
+    // Protected endpoint - Trigger aggregation (master admin only)
+    @UseGuards(SupabaseGuard, MasterGuard)
     @Post('aggregate')
     async triggerAggregation(@Req() req: any, @Query('date') date?: string) {
         return this.analyticsService.runDailyAggregation(date);
@@ -126,7 +127,7 @@ export class AnalyticsController {
     }
 
     // Protected endpoint - Global stats (master admin only)
-    @UseGuards(SupabaseGuard)
+    @UseGuards(SupabaseGuard, MasterGuard)
     @Get('global-stats')
     async getGlobalStats(@Req() req: any) {
         const token = this.extractToken(req);

@@ -1,10 +1,12 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 
 import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
 export class MenuService {
+    private readonly logger = new Logger(MenuService.name);
+
     constructor(
         private readonly supabase: SupabaseService,
         private readonly analytics: AnalyticsService
@@ -259,8 +261,8 @@ export class MenuService {
 
             const filePath = parts[1];
             await this.supabase.getClient(token).storage.from(bucket).remove([filePath]);
-        } catch {
-            // Storage cleanup is best-effort — failure is non-critical
+        } catch (error) {
+            this.logger.warn(`Storage cleanup failed for ${url}: ${error.message}`);
         }
     }
 

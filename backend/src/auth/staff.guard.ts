@@ -8,18 +8,24 @@ export class StaffGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
-        // In this architecture, staff sessions are simplified for the MVP.
-        // We expect a x-staff-id header or staffId/processedBy in body for sensitive operations.
-        const staffId = request.headers['x-staff-id'] || request.body?.staffId || request.body?.processedBy;
+        // Staff ID must come from the x-staff-id header (not from body to prevent spoofing)
+        const staffId = request.headers['x-staff-id'];
         const restaurantId = request.params.restaurantId || request.body?.restaurantId;
 
         if (!staffId) {
-            throw new UnauthorizedException('Staff ID required');
+            throw new UnauthorizedException('Staff ID required via x-staff-id header');
         }
 
+        // Validate UUID format to prevent injection
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(staffId)) {
+            throw new UnauthorizedException('Invalid staff ID format');
+        }
+
+        // Verify the staff account exists in the database
         const { data: staff, error } = await this.supabase.getClient()
             .from('staff_accounts')
-            .select('restaurant_id')
+            .select('id, restaurant_id')
             .eq('id', staffId)
             .single();
 

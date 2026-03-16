@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { StaffGuard } from '../auth/staff.guard';
 import { SupabaseGuard } from '../auth/supabase.guard';
@@ -14,9 +14,10 @@ export class OrdersController {
     return this.ordersService.createOrder(restaurantId, orderData);
   }
 
+  // Order status check - public but requires valid UUID
   @Get(':orderId/status')
   async getOrderStatus(@Param('orderId') orderId: string) {
-    return this.ordersService.getOrderById(orderId);
+    return this.ordersService.getOrderStatus(orderId);
   }
 
   @UseGuards(StaffGuard)

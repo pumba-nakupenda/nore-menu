@@ -1,8 +1,12 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
+
+const TERMINAL_STATUSES = ['DELIVERED', 'CANCELLED'];
 
 @Injectable()
 export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
+
   constructor(private readonly supabase: SupabaseService) { }
 
   async createOrder(restaurantId: string, orderData: any) {
@@ -23,12 +27,26 @@ export class OrdersService {
       })
       .select().single();
 
-    if (error) throw new InternalServerErrorException(error.message);
+    if (error) {
+      this.logger.error(`Failed to create order: ${error.message}`);
+      throw new InternalServerErrorException(error.message);
+    }
     return data;
   }
 
   async getOrderById(orderId: string) {
     const { data, error } = await this.supabase.getClient().from('orders').select('*').eq('id', orderId).single();
+    if (error) throw new InternalServerErrorException(error.message);
+    return data;
+  }
+
+  // Public-facing: only return safe fields for order status checks
+  async getOrderStatus(orderId: string) {
+    const { data, error } = await this.supabase.getClient()
+      .from('orders')
+      .select('id, production_status, payment_status, created_at')
+      .eq('id', orderId)
+      .single();
     if (error) throw new InternalServerErrorException(error.message);
     return data;
   }
@@ -46,7 +64,7 @@ export class OrdersService {
   async getStaffTransactions(staffId: string) {
     const { data, error } = await this.supabase.getClient()
       .from('orders')
-      .select('*')
+      .select('id, items, total_price, production_status, payment_status, table_number, customer_name, order_type, created_at')
       .eq('processed_by', staffId)
       .order('created_at', { ascending: false })
       .limit(100);
@@ -71,7 +89,7 @@ export class OrdersService {
       .from('orders')
       .select('*, staff_accounts:processed_by(display_name)')
       .eq('restaurant_id', restaurantId)
-      .not('production_status', 'in', '("DELIVERED","CANCELLED")')
+      .not('production_status', 'in', `(${TERMINAL_STATUSES.map(s => `"${s}"`).join(',')})`)
       .order('created_at', { ascending: false });
 
     if (error) throw new InternalServerErrorException(error.message);

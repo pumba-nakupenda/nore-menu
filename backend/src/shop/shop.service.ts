@@ -19,8 +19,8 @@ export class ShopService {
     }
 
     // Get all items including unavailable (superadmin only)
-    async getAllItemsAdmin(token: string) {
-        const client = this.supabase.getClient(token);
+    async getAllItemsAdmin() {
+        const client = this.supabase.getClient();
         const { data, error } = await client
             .from('shop_items')
             .select('*')

@@ -1,8 +1,10 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
 export class SupabaseGuard implements CanActivate {
+    private readonly logger = new Logger(SupabaseGuard.name);
+
     constructor(private readonly supabase: SupabaseService) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -10,17 +12,19 @@ export class SupabaseGuard implements CanActivate {
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException('Missing or invalid bearer token');
         }
 
         try {
             const { data: { user }, error } = await this.supabase.getClient().auth.getUser(token);
             if (error || !user) {
-                throw new UnauthorizedException();
+                throw new UnauthorizedException('Invalid or expired token');
             }
             request['user'] = user;
-        } catch {
-            throw new UnauthorizedException();
+        } catch (error) {
+            if (error instanceof UnauthorizedException) throw error;
+            this.logger.warn(`Auth verification failed: ${error.message}`);
+            throw new UnauthorizedException('Authentication failed');
         }
         return true;
     }

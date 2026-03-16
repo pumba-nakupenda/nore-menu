@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards, BadRequestException } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { QrCodeService } from './qrcode.service';
 import { EmailService } from '../email/email.service';
@@ -24,11 +24,13 @@ export class MenuController {
     @Post('onboard')
     async onboardRestaurant(@Req() req: any, @Body() body: { name: string; ownerId: string }) {
         const token = this.extractToken(req);
-        const userEmail = req.user?.email || 'new-user@noremenu.com'; // In prod, get from JWT payload
+        const userEmail = req.user?.email;
+        if (!userEmail) {
+            throw new BadRequestException('User email is required for onboarding');
+        }
 
         const restaurant = await this.menuService.createRestaurant(body.name, body.ownerId, token);
 
-        // Send welcome email
         await this.emailService.sendWelcomeEmail(userEmail, body.name);
 
         return restaurant;
@@ -41,7 +43,8 @@ export class MenuController {
 
     @Get(':restaurantId/qr')
     async generateQr(@Param('restaurantId') restaurantId: string) {
-        const url = `https://nore-menu.vercel.app/menu/${restaurantId}`;
+        const frontendUrl = process.env.FRONTEND_URL || 'https://nore-menu.vercel.app';
+        const url = `${frontendUrl}/menu/${restaurantId}`;
         const qrCode = await this.qrCodeService.generateQrCode(url);
         return { qrCode, url };
     }

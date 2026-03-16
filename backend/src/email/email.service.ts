@@ -1,22 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Resend } from 'resend';
 
 @Injectable()
 export class EmailService {
   private resend: Resend;
+  private readonly logger = new Logger(EmailService.name);
+  private readonly fromEmail: string;
+  private readonly dashboardUrl: string;
 
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
-      console.warn('RESEND_API_KEY is not set. Emails will not be sent.');
+      this.logger.warn('RESEND_API_KEY is not set. Emails will not be sent.');
     }
     this.resend = new Resend(apiKey || '');
+    this.fromEmail = process.env.EMAIL_FROM || 'Nore Menu <welcome@noremenu.com>';
+    this.dashboardUrl = process.env.FRONTEND_URL || 'https://noremenu.com';
   }
 
   async sendWelcomeEmail(to: string, restaurantName: string) {
     try {
       await this.resend.emails.send({
-        from: 'Nore Menu <welcome@noremenu.com>', // You will need to verify your domain on Resend
+        from: this.fromEmail,
         to: [to],
         subject: `Bienvenue chez Nore Menu, ${restaurantName}!`,
         html: `
@@ -25,13 +30,13 @@ export class EmailService {
               <h1 style="color: #064e3b; margin: 0;">Nore Menu</h1>
               <p style="color: #c5a059; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; font-weight: bold;">L'excellence digitale</p>
             </div>
-            
+
             <h2 style="color: #333;">Félicitations pour le lancement de votre menu !</h2>
             <p style="color: #666; line-height: 1.6;">
-              Nous sommes ravis de vous accompagner dans la digitalisation de <strong>${restaurantName}</strong>. 
+              Nous sommes ravis de vous accompagner dans la digitalisation de <strong>${restaurantName}</strong>.
               Votre espace d'administration est désormais prêt.
             </p>
-            
+
             <div style="background: #fdfcfb; padding: 25px; border-radius: 15px; margin: 30px 0; border: 1px solid #eee;">
               <h3 style="margin-top: 0; color: #064e3b;">Prochaines étapes :</h3>
               <ul style="color: #555; padding-left: 20px;">
@@ -40,11 +45,11 @@ export class EmailService {
                 <li>Partagez votre lien sur vos réseaux sociaux.</li>
               </ul>
             </div>
-            
-            <a href="https://noremenu.com/login" style="display: block; background: #064e3b; color: white; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold;">
+
+            <a href="${this.dashboardUrl}/login" style="display: block; background: #064e3b; color: white; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold;">
               Accéder à mon Dashboard
             </a>
-            
+
             <p style="color: #999; font-size: 12px; margin-top: 40px; text-align: center;">
               &copy; ${new Date().getFullYear()} Nore Menu Premium. Tous droits réservés.
             </p>
@@ -52,11 +57,7 @@ export class EmailService {
         `,
       });
     } catch (error) {
-      console.error('Failed to send welcome email:', error);
+      this.logger.error(`Failed to send welcome email to ${to}: ${error.message}`);
     }
-  }
-
-  async sendWeeklyReport(to: string, restaurantName: string, stats: { views: number, scans: number }) {
-    // Logic for weekly report...
   }
 }

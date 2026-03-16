@@ -1,15 +1,11 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
 export class AnalyticsService {
-    constructor(private readonly supabase: SupabaseService) { }
+    private readonly logger = new Logger(AnalyticsService.name);
 
-    // Generate a simple session ID from user agent and timestamp
-    generateSessionId(userAgent: string): string {
-        const hash = Buffer.from(`${userAgent}-${Date.now()}`).toString('base64');
-        return hash.substring(0, 32);
-    }
+    constructor(private readonly supabase: SupabaseService) { }
 
     // Toggle dish like
     async toggleDishLike(restaurantId: string, dishId: string, sessionId: string) {
@@ -22,11 +18,17 @@ export class AnalyticsService {
 
         if (existing) {
             const { error } = await this.supabase.getClient().from('dish_likes').delete().eq('id', existing.id);
-            if (error) throw error;
+            if (error) {
+                this.logger.error(`Failed to unlike dish ${dishId}: ${error.message}`);
+                throw new InternalServerErrorException('Failed to unlike dish');
+            }
             return { liked: false, message: 'Dish unliked' };
         } else {
             const { error } = await this.supabase.getClient().from('dish_likes').insert({ restaurant_id: restaurantId, dish_id: dishId, session_id: sessionId });
-            if (error) throw error;
+            if (error) {
+                this.logger.error(`Failed to like dish ${dishId}: ${error.message}`);
+                throw new InternalServerErrorException('Failed to like dish');
+            }
             return { liked: true, message: 'Dish liked' };
         }
     }
@@ -34,14 +36,20 @@ export class AnalyticsService {
     // Track QR code scan
     async trackQrScan(restaurantId: string, userAgent: string, referrer?: string, tableNumber?: string) {
         const { error } = await this.supabase.getClient().from('qr_scans').insert({ restaurant_id: restaurantId, user_agent: userAgent, referrer: referrer || null, table_number: tableNumber || null });
-        if (error) throw error;
+        if (error) {
+            this.logger.error(`Failed to track QR scan: ${error.message}`);
+            throw new InternalServerErrorException('Failed to track QR scan');
+        }
         return { success: true };
     }
 
     // Track dish view
     async trackDishView(restaurantId: string, dishId: string, sessionId?: string) {
         const { error } = await this.supabase.getClient().from('dish_views').insert({ restaurant_id: restaurantId, dish_id: dishId, session_id: sessionId || null });
-        if (error) throw error;
+        if (error) {
+            this.logger.error(`Failed to track dish view: ${error.message}`);
+            throw new InternalServerErrorException('Failed to track dish view');
+        }
         return { success: true };
     }
 
@@ -57,19 +65,25 @@ export class AnalyticsService {
             delivery_address: orderData.deliveryAddress || null,
             status: 'PENDING'
         });
-        if (error) throw error;
+        if (error) {
+            this.logger.error(`Failed to track WhatsApp order: ${error.message}`);
+            throw new InternalServerErrorException('Failed to track WhatsApp order');
+        }
         return { success: true };
     }
 
     // Activity Logging
     async logActivity(restaurantId: string, staffId: string, actionType: string, description: string, metadata?: any) {
-        await this.supabase.getClient().from('activity_logs').insert({
+        const { error } = await this.supabase.getClient().from('activity_logs').insert({
             restaurant_id: restaurantId,
             staff_id: staffId,
             action_type: actionType,
             description,
             metadata: metadata || {}
         });
+        if (error) {
+            this.logger.warn(`Failed to log activity: ${error.message}`);
+        }
     }
 
     // Get WhatsApp orders for admin dashboard
@@ -79,19 +93,20 @@ export class AnalyticsService {
             .select('*, staff_accounts(display_name)')
             .eq('restaurant_id', restaurantId)
             .order('created_at', { ascending: false });
-        if (error) throw error;
+        if (error) {
+            this.logger.error(`Failed to get WhatsApp orders: ${error.message}`);
+            throw new InternalServerErrorException('Failed to get WhatsApp orders');
+        }
         return data;
     }
 
-
     async updateWhatsAppOrderStatus(orderId: string, status: 'VALIDATED' | 'CANCELLED', staffId?: string, extraData?: { customerName?: string; deliveryAddress?: string; }) {
         const client = this.supabase.getClient();
-        
-        // 1. Update the WhatsApp order record
+
         const { data, error } = await client
             .from('whatsapp_orders')
-            .update({ 
-                status, 
+            .update({
+                status,
                 processed_by: staffId,
                 customer_name: extraData?.customerName,
                 delivery_address: extraData?.deliveryAddress
@@ -102,7 +117,7 @@ export class AnalyticsService {
 
         if (error) throw new InternalServerErrorException(error.message);
 
-        // 2. If validated, CREATE a real order for the kitchen/POS
+        // If validated, CREATE a real order for the kitchen/POS
         if (status === 'VALIDATED' && data) {
             const { error: kitchenError } = await client.from('orders').insert({
                 restaurant_id: data.restaurant_id,
@@ -118,7 +133,10 @@ export class AnalyticsService {
                 source: 'WHATSAPP'
             });
 
-            if (kitchenError) throw new InternalServerErrorException(`Kitchen conversion failed: ${kitchenError.message}`);
+            if (kitchenError) {
+                this.logger.error(`Kitchen conversion failed for order ${orderId}: ${kitchenError.message}`);
+                throw new InternalServerErrorException(`Kitchen conversion failed: ${kitchenError.message}`);
+            }
         }
 
         // Log activity
@@ -148,7 +166,6 @@ export class AnalyticsService {
 
         if (error) throw new InternalServerErrorException(error.message);
 
-        // Log activity for audit trail
         if (staffId && data) {
             await this.logActivity(
                 data.restaurant_id,
@@ -165,7 +182,6 @@ export class AnalyticsService {
     async getStaffActivity(staffId: string, restaurantId: string, token: string) {
         const client = this.supabase.getClient(token);
 
-        // Get activity logs for this staff member
         const { data: logs, error: logsError } = await client
             .from('activity_logs')
             .select('*')
@@ -174,16 +190,21 @@ export class AnalyticsService {
             .order('created_at', { ascending: false })
             .limit(100);
 
-        if (logsError) throw logsError;
+        if (logsError) {
+            this.logger.error(`Failed to get staff activity logs: ${logsError.message}`);
+            throw new InternalServerErrorException('Failed to get staff activity logs');
+        }
 
-        // Get staff's transaction stats from orders table
         const { data: orders, error: ordersError } = await client
             .from('orders')
             .select('id, total_price, production_status, created_at')
             .eq('processed_by', staffId)
             .eq('restaurant_id', restaurantId);
 
-        if (ordersError) throw ordersError;
+        if (ordersError) {
+            this.logger.error(`Failed to get staff orders: ${ordersError.message}`);
+            throw new InternalServerErrorException('Failed to get staff orders');
+        }
 
         const stats = {
             totalSales: orders?.filter(o => o.production_status === 'SERVED').length || 0,
@@ -204,34 +225,33 @@ export class AnalyticsService {
         const stats = await this.getDashboardStats(restaurantId, token, 30);
         const client = this.supabase.getClient(token);
 
-        // 1. Fetch Order Stats (Full count for KPIs)
+        // Fetch Order Stats (Full count for KPIs)
         const { data: emitted } = await client.from('whatsapp_orders').select('id, status, total_price').eq('restaurant_id', restaurantId);
         const { data: allRealOrders } = await client.from('orders').select('id, production_status, total_price').eq('restaurant_id', restaurantId);
 
         const orderStats = {
             emitted: emitted?.length || 0,
             validated: emitted?.filter(o => o.status === 'VALIDATED').length || 0,
-            served: allRealOrders?.filter(o => o.production_status === 'delivered').length || 0,
+            served: allRealOrders?.filter(o => o.production_status === 'DELIVERED').length || 0,
             cancelled: (emitted?.filter(o => o.status === 'CANCELLED').length || 0) +
-                (allRealOrders?.filter(o => o.production_status === 'cancelled').length || 0),
-            totalRevenue: (allRealOrders?.filter(o => o.production_status === 'delivered').reduce((s, o) => s + (o.total_price || 0), 0) || 0),
+                (allRealOrders?.filter(o => o.production_status === 'CANCELLED').length || 0),
+            totalRevenue: (allRealOrders?.filter(o => o.production_status === 'DELIVERED').reduce((s, o) => s + (o.total_price || 0), 0) || 0),
             whatsappRevenue: (emitted?.filter(o => o.status === 'VALIDATED').reduce((s, o) => s + (o.total_price || 0), 0) || 0)
         };
 
-        // 2. Fetch Paginated Unified Orders (THE SCALABLE PART)
+        // Fetch Paginated Unified Orders
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
         let query = client
             .from('unified_orders')
-            .select(`*`, { count: 'exact' }) // Simplify to verify data first
+            .select(`*`, { count: 'exact' })
             .eq('restaurant_id', restaurantId)
             .order('created_at', { ascending: false });
 
         if (filters?.source && filters.source !== 'ALL') query = query.eq('source', filters.source);
         if (filters?.type && filters.type !== 'ALL') query = query.eq('order_type', filters.type);
         if (filters?.status && filters.status !== 'ALL') {
-            // Handle both POS (lowercase) and WhatsApp (uppercase) status values with case-insensitive matching
             query = query.ilike('current_status', filters.status);
         }
         if (filters?.dateStart) query = query.gte('created_at', `${filters.dateStart}T00:00:00`);
@@ -243,6 +263,7 @@ export class AnalyticsService {
 
         const { data: unifiedOrders, count: totalOrders, error: queryError } = await query.range(from, to);
         if (queryError) {
+            this.logger.error(`Dashboard query failed: ${queryError.message}`);
             throw new InternalServerErrorException(queryError.message);
         }
 
@@ -264,40 +285,36 @@ export class AnalyticsService {
         dateThreshold.setDate(dateThreshold.getDate() - days);
         const today = new Date().toISOString().split('T')[0];
 
-        // 1. Fetch Aggregated Historical Data (Before Today)
+        // Fetch Aggregated Historical Data (Before Today)
         const { data: aggregated } = await client.from('daily_analytics')
             .select('*')
             .eq('restaurant_id', restaurantId)
             .gte('date', dateThreshold.toISOString().split('T')[0])
             .lt('date', today);
 
-        // 2. Fetch Raw Today Data
+        // Fetch Raw Today Data
         const { count: qrToday } = await client.from('qr_scans').select('*', { count: 'exact', head: true }).eq('restaurant_id', restaurantId).gte('scanned_at', `${today}T00:00:00`);
         const { data: viewsToday } = await client.from('dish_views').select('dish_id').eq('restaurant_id', restaurantId).gte('viewed_at', `${today}T00:00:00`);
 
-        // 3. Process QR Scans
+        // Process QR Scans
         const scansByDateMap = new Map<string, number>();
-        // Add historical
         aggregated?.filter(a => a.metric_name === 'qr_scans').forEach(a => {
             scansByDateMap.set(a.date, (scansByDateMap.get(a.date) || 0) + a.value);
         });
-        // Add today
         scansByDateMap.set(today, qrToday || 0);
 
         const totalQrScans = Array.from(scansByDateMap.values()).reduce((a, b) => a + b, 0);
 
-        // 4. Process Dish Views
-        const viewsCountMap = new Map<string, number>(); // dish_id -> total_views
-        // Add historical
+        // Process Dish Views
+        const viewsCountMap = new Map<string, number>();
         aggregated?.filter(a => a.metric_name === 'dish_view' && a.dish_id).forEach(a => {
             viewsCountMap.set(a.dish_id, (viewsCountMap.get(a.dish_id) || 0) + a.value);
         });
-        // Add today
         viewsToday?.forEach((v: any) => {
             viewsCountMap.set(v.dish_id, (viewsCountMap.get(v.dish_id) || 0) + 1);
         });
 
-        // 5. Build Top Viewed Dishes (requires fetching dish details if we want full objects)
+        // Build Top Viewed Dishes
         const topViewedIds = Array.from(viewsCountMap.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
         const { data: dishes } = await client.from('dishes').select('id, name, image_url, price').in('id', topViewedIds.map(v => v[0]));
 
@@ -306,7 +323,7 @@ export class AnalyticsService {
             return dish ? { ...dish, views: v[1] } : null;
         }).filter(Boolean);
 
-        // 6. Process Likes (Remain Raw for now as volume is lower)
+        // Process Likes
         const { data: mostLikedDishes } = await client.from('dish_likes').select('dish_id, dishes(id, name, image_url, price)').eq('restaurant_id', restaurantId).gte('created_at', dateThreshold.toISOString());
         const likesMap = new Map<string, any>();
         mostLikedDishes?.forEach((like: any) => {
@@ -328,27 +345,30 @@ export class AnalyticsService {
 
     async getLikedDishes(restaurantId: string, sessionId: string) {
         const { data, error } = await this.supabase.getClient().from('dish_likes').select('dish_id').eq('restaurant_id', restaurantId).eq('session_id', sessionId);
-        if (error) throw error;
+        if (error) {
+            this.logger.error(`Failed to get liked dishes: ${error.message}`);
+            throw new InternalServerErrorException('Failed to get liked dishes');
+        }
         return data?.map(like => like.dish_id) || [];
     }
 
     async getGlobalStats(token?: string) {
         const client = token ? this.supabase.getClient(token) : this.supabase.getClient();
-        
+
         const { count: totalRestaurants } = await client.from('restaurants').select('*', { count: 'exact', head: true });
         const { count: totalDishes } = await client.from('dishes').select('*', { count: 'exact', head: true });
         const { count: totalScans } = await client.from('qr_scans').select('*', { count: 'exact', head: true });
         const { count: totalWhatsAppOrdersRaw } = await client.from('whatsapp_orders').select('*', { count: 'exact', head: true });
         const totalWhatsAppOrders = totalWhatsAppOrdersRaw || 0;
-        
-        const { data: revenueData } = await client.from('orders').select('total_price, restaurant_id').eq('production_status', 'delivered');
+
+        const { data: revenueData } = await client.from('orders').select('total_price, restaurant_id').eq('production_status', 'DELIVERED');
         const totalRevenue = revenueData?.reduce((sum, order) => sum + (Number(order.total_price) || 0), 0) || 0;
 
         const { data: shops } = await client.from('restaurants')
             .select('id, name, created_at, is_master, is_approved, owner_id')
             .order('created_at', { ascending: false });
 
-        // Calculate Revenue per Shop for Ranking
+        // Calculate Revenue per Shop for Ranking (uses already-fetched data, no N+1)
         const shopPerformance = shops?.map(shop => {
             const shopOrders = revenueData?.filter(o => o.restaurant_id === shop.id) || [];
             const revenue = shopOrders.reduce((sum, o) => sum + (Number(o.total_price) || 0), 0);
@@ -381,7 +401,6 @@ export class AnalyticsService {
 
         const results = [];
         for (const res of restaurants) {
-            // Aggregate QR Scans
             const { count: qrCount } = await client.from('qr_scans')
                 .select('*', { count: 'exact', head: true })
                 .eq('restaurant_id', res.id)
@@ -395,7 +414,6 @@ export class AnalyticsService {
                 value: qrCount || 0
             }, { onConflict: 'restaurant_id, date, metric_name' });
 
-            // Aggregate Dish Views
             const { data: views } = await client.from('dish_views')
                 .select('dish_id')
                 .eq('restaurant_id', res.id)

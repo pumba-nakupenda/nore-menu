@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsArray, IsOptional, IsBoolean, IsIn } from 'class-validator';
+import { IsString, IsNumber, IsArray, IsOptional, IsBoolean, IsIn, Min, ArrayMaxSize } from 'class-validator';
 
 export class TrackLikeDto {
   @IsString()
@@ -35,9 +35,11 @@ export class TrackWhatsAppOrderDto {
   restaurantId: string;
 
   @IsArray()
+  @ArrayMaxSize(200)
   items: any[];
 
   @IsNumber()
+  @Min(0)
   totalPrice: number;
 
   @IsString() @IsOptional()
@@ -47,6 +49,7 @@ export class TrackWhatsAppOrderDto {
   tableNumber?: string;
 
   @IsString() @IsOptional()
+  @IsIn(['dine_in', 'takeaway', 'delivery'])
   orderType?: string;
 
   @IsString() @IsOptional()

@@ -12,6 +12,7 @@ export class ContentController {
     return this.contentService.getSiteContent();
   }
 
+  // Static routes MUST be before parameterized routes
   @Get('hardware')
   async getHardwareProducts() {
     return this.contentService.getHardwareProducts();
@@ -21,12 +22,6 @@ export class ContentController {
   @Get('hardware/all')
   async getAllHardwareProducts() {
     return this.contentService.getAllHardwareProducts();
-  }
-
-  @UseGuards(SupabaseGuard, MasterGuard)
-  @Post(':key')
-  async upsertContent(@Param('key') key: string, @Body() body: { value: any }) {
-    return this.contentService.upsertContent(key, body.value);
   }
 
   @UseGuards(SupabaseGuard, MasterGuard)
@@ -45,5 +40,12 @@ export class ContentController {
   @Delete('hardware/:id')
   async deleteHardwareProduct(@Param('id') id: string) {
     return this.contentService.deleteHardwareProduct(id);
+  }
+
+  // Parameterized route MUST be after all static routes
+  @UseGuards(SupabaseGuard, MasterGuard)
+  @Post(':key')
+  async upsertContent(@Param('key') key: string, @Body() body: { value: any }) {
+    return this.contentService.upsertContent(key, body.value);
   }
 }
