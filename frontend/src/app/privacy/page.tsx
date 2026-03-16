@@ -5,14 +5,14 @@ import { ArrowLeft, ChefHat, ShieldCheck, Eye, Lock } from 'lucide-react'
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#fdfcfb] text-zinc-900 font-sans">
+    <div className="min-h-screen bg-background text-zinc-900 font-sans">
       <header className="border-b border-black/5 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 h-20 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="bg-[#064e3b] text-white p-2 rounded-xl shadow-lg">
+            <div className="bg-brand text-white p-2 rounded-xl shadow-lg">
               <ChefHat className="w-5 h-5" />
             </div>
-            <span className="text-xl font-serif font-bold tracking-tight text-[#064e3b]">Nore Menu</span>
+            <span className="text-xl font-serif font-bold tracking-tight text-brand">Nore Menu</span>
           </Link>
           <Link href="/" className="text-sm font-bold text-zinc-400 hover:text-zinc-900 transition-colors flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" /> Retour
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
 
       <main className="max-w-4xl mx-auto px-6 py-20">
         <div className="space-y-4 mb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-[#064e3b] rounded-full">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-brand rounded-full">
             <ShieldCheck className="w-3 h-3" />
             <span className="text-[10px] font-black uppercase tracking-widest">Confidentialité</span>
           </div>
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
         </div>
       </main>
 
-      <footer className="bg-[#053e2f] py-12 px-6 text-center border-t border-white/5">
+      <footer className="bg-brand-dark py-12 px-6 text-center border-t border-white/5">
         <p className="text-emerald-100/40 text-xs tracking-widest uppercase font-bold">&copy; 2026 Nore Menu Premium - Votre vie privée, notre priorité</p>
       </footer>
     </div>

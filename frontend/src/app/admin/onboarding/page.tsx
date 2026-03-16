@@ -129,13 +129,13 @@ export default function OnboardingPage() {
     }
 
     if (checking) return (
-        <div className="min-h-screen bg-[#fdfcfb] flex items-center justify-center">
-            <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
+        <div className="min-h-screen bg-background flex items-center justify-center">
+            <Loader2 className="w-10 h-10 animate-spin text-brand" />
         </div>
     )
 
     return (
-        <div className="min-h-screen bg-[#fdfcfb] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
             {/* Background elements */}
             <div className="absolute top-0 right-0 w-full h-full opacity-[0.03] pointer-events-none">
                 <svg width="100%" height="100%"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="black" strokeWidth="1"/></pattern></defs><rect width="100%" height="100%" fill="url(#grid)" /></svg>
@@ -145,7 +145,7 @@ export default function OnboardingPage() {
                 {/* Stepper Header */}
                 <div className="flex items-center justify-between mb-12">
                     <div className="flex items-center gap-3">
-                        <div className="bg-[#064e3b] text-white p-2.5 rounded-xl shadow-lg shadow-emerald-900/20">
+                        <div className="bg-brand text-white p-2.5 rounded-xl shadow-lg shadow-emerald-900/20">
                             <ChefHat className="w-6 h-6" />
                         </div>
                         <div>
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
                     </div>
                     <div className="flex gap-2">
                         {[1, 2, 3].map((s) => (
-                            <div key={s} className={`h-1.5 rounded-full transition-all duration-500 ${step === s ? 'w-8 bg-[#064e3b]' : 'w-2 bg-zinc-200'}`} />
+                            <div key={s} className={`h-1.5 rounded-full transition-all duration-500 ${step === s ? 'w-8 bg-brand' : 'w-2 bg-zinc-200'}`} />
                         ))}
                     </div>
                 </div>
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
                     {step === 1 && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500 flex-1">
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-serif font-bold text-zinc-900 leading-tight">First, how should we <span className="italic text-[#c5a059]">call your place</span>?</h2>
+                                <h2 className="text-3xl font-serif font-bold text-zinc-900 leading-tight">First, how should we <span className="italic text-gold">call your place</span>?</h2>
                                 <p className="text-zinc-500 text-sm">This name will be displayed on your digital menu and QR posters.</p>
                             </div>
                             
@@ -179,7 +179,7 @@ export default function OnboardingPage() {
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         placeholder="Ex: Le Petit Bistro"
-                                        className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-[#064e3b] outline-none text-zinc-900 font-bold shadow-inner transition-all"
+                                        className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-brand outline-none text-zinc-900 font-bold shadow-inner transition-all"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -187,7 +187,7 @@ export default function OnboardingPage() {
                                     <select 
                                         value={currency}
                                         onChange={(e) => setCurrency(e.target.value)}
-                                        className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-[#064e3b] outline-none text-zinc-900 font-bold shadow-inner"
+                                        className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-brand outline-none text-zinc-900 font-bold shadow-inner"
                                     >
                                         <option value="FCFA">FCFA (XOF)</option>
                                         <option value="€">Euro (€)</option>
@@ -202,7 +202,7 @@ export default function OnboardingPage() {
                     {step === 2 && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500 flex-1">
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-serif font-bold text-zinc-900 leading-tight">Define your <span className="italic text-[#c5a059]">visual identity</span>.</h2>
+                                <h2 className="text-3xl font-serif font-bold text-zinc-900 leading-tight">Define your <span className="italic text-gold">visual identity</span>.</h2>
                                 <p className="text-zinc-500 text-sm">Let's make the digital menu truly yours with your logo and colors.</p>
                             </div>
 
@@ -211,7 +211,7 @@ export default function OnboardingPage() {
                                     <div className="relative group shrink-0">
                                         <div className="w-24 h-24 rounded-[2rem] bg-zinc-50 border-2 border-dashed border-zinc-200 flex items-center justify-center overflow-hidden relative">
                                             {logoUrl ? <img src={logoUrl} className="w-full h-full object-cover" /> : <Upload className="w-6 h-6 text-zinc-300" />}
-                                            {uploadingLogo && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><Loader2 className="w-5 h-5 animate-spin text-[#064e3b]" /></div>}
+                                            {uploadingLogo && <div className="absolute inset-0 bg-white/80 flex items-center justify-center"><Loader2 className="w-5 h-5 animate-spin text-brand" /></div>}
                                         </div>
                                         <input type="file" onChange={handleLogoUpload} className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
                                     </div>
@@ -244,7 +244,7 @@ export default function OnboardingPage() {
                     {step === 3 && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500 flex-1">
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-serif font-bold text-zinc-900 leading-tight">Ready to <span className="italic text-[#c5a059]">receive orders</span>?</h2>
+                                <h2 className="text-3xl font-serif font-bold text-zinc-900 leading-tight">Ready to <span className="italic text-gold">receive orders</span>?</h2>
                                 <p className="text-zinc-500 text-sm">Where should we send your customers' order requests?</p>
                             </div>
 
@@ -258,7 +258,7 @@ export default function OnboardingPage() {
                                         value={whatsapp}
                                         onChange={(e) => setWhatsapp(e.target.value)}
                                         placeholder="Ex: +221 77 000 00 00"
-                                        className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-[#064e3b] outline-none text-zinc-900 font-bold shadow-inner transition-all"
+                                        className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-brand outline-none text-zinc-900 font-bold shadow-inner transition-all"
                                     />
                                     <p className="text-[10px] text-zinc-400 italic">Include country code for seamless WhatsApp connection.</p>
                                 </div>
@@ -291,7 +291,7 @@ export default function OnboardingPage() {
                             <button 
                                 onClick={() => setStep(step + 1)}
                                 disabled={step === 1 && !name}
-                                className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-[#064e3b] text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-900/20 hover:bg-[#053e2f] transition-all disabled:opacity-30 disabled:grayscale"
+                                className="flex items-center gap-2 px-8 py-4 rounded-2xl bg-brand text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-900/20 hover:bg-brand-dark transition-all disabled:opacity-30 disabled:grayscale"
                             >
                                 Next Step <ChevronRight className="w-4 h-4" />
                             </button>
@@ -299,7 +299,7 @@ export default function OnboardingPage() {
                             <button 
                                 onClick={finishOnboarding}
                                 disabled={loading || !whatsapp}
-                                className="flex items-center gap-2 px-10 py-4 rounded-2xl bg-[#c5a059] text-[#064e3b] font-black uppercase tracking-widest text-[10px] shadow-xl shadow-amber-900/10 hover:bg-[#b59049] transition-all disabled:opacity-50"
+                                className="flex items-center gap-2 px-10 py-4 rounded-2xl bg-gold text-brand font-black uppercase tracking-widest text-[10px] shadow-xl shadow-amber-900/10 hover:bg-[#b59049] transition-all disabled:opacity-50"
                             >
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                                 Launch My Menu

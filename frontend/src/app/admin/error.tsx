@@ -25,7 +25,7 @@ export default function AdminError({
             </p>
             <button
                 onClick={reset}
-                className="px-8 py-4 bg-[#064e3b] text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl hover:bg-black transition-all"
+                className="px-8 py-4 bg-brand text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl hover:bg-black transition-all"
             >
                 Réessayer
             </button>

@@ -67,20 +67,20 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#fdfcfb] text-zinc-900 font-sans selection:bg-[#064e3b]/10">
+    <div className="min-h-screen bg-background text-zinc-900 font-sans selection:bg-brand/10">
       
       {/* NAVBAR */}
       <header className="fixed top-0 w-full z-[100] bg-white/80 backdrop-blur-md border-b border-zinc-100">
         <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="bg-[#064e3b] text-white p-2 rounded-xl shadow-lg">
+            <div className="bg-brand text-white p-2 rounded-xl shadow-lg">
               <ChefHat className="w-5 h-5" />
             </div>
             <span className="text-xl font-serif font-bold tracking-tight">Nore Menu</span>
           </Link>
           <nav className="hidden md:flex items-center gap-10">
             {['Solution', 'Fonctionnement', 'Tarifs'].map((item: string) => (
-              <Link key={item} href={`#${item.toLowerCase()}`} className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#064e3b] transition-colors">{item}</Link>
+              <Link key={item} href={`#${item.toLowerCase()}`} className="text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-brand transition-colors">{item}</Link>
             ))}
             <Link href="/shop" className="text-xs font-bold uppercase tracking-widest text-[#b48a4d] flex items-center gap-2">Boutique <ShoppingBag className="w-3 h-3" /></Link>
           </nav>
@@ -90,7 +90,7 @@ export default function Home() {
                 Démarrer <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </Link>
             ) : (
-              <Link href="/admin/menu" className="px-6 py-2.5 bg-[#064e3b] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Tableau de Bord</Link>
+              <Link href="/admin/menu" className="px-6 py-2.5 bg-brand text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">Tableau de Bord</Link>
             )}
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className="space-y-8 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-50 rounded-full border border-emerald-100">
                 <Zap className="w-3 h-3 text-[#b48a4d]" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#064e3b]">L'Allié des Restaurants Premium</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-brand">L'Allié des Restaurants Premium</span>
               </div>
               <h1 className="text-6xl md:text-8xl font-serif font-bold leading-[0.9] tracking-tighter uppercase">
                 {hero.title.split('\n').map((t: string, i: number) => (
@@ -114,7 +114,7 @@ export default function Home() {
                 {hero.subtitle}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/login" className="px-10 py-5 bg-[#064e3b] text-white rounded-2xl font-bold shadow-2xl hover:scale-105 transition-transform text-center">Essayer Gratuitement</Link>
+                <Link href="/login" className="px-10 py-5 bg-brand text-white rounded-2xl font-bold shadow-2xl hover:scale-105 transition-transform text-center">Essayer Gratuitement</Link>
                 <Link href="#solution" className="px-10 py-5 border border-zinc-200 rounded-2xl font-bold hover:bg-zinc-50 transition-all text-center">Voir la démo</Link>
               </div>
             </motion.div>
@@ -138,7 +138,7 @@ export default function Home() {
                 { t: "Contrôle Total", d: "Pilotez vos stocks, votre personnel et vos ventes en temps réel.", i: <Layers className="w-6 h-6" /> }
               ].map((item: any, i: number) => (
                 <motion.div key={i} whileHover={{ y: -5 }} className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm space-y-6">
-                  <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-[#064e3b]">{item.i}</div>
+                  <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-brand">{item.i}</div>
                   <h3 className="text-2xl font-serif font-bold">{item.t}</h3>
                   <p className="text-zinc-500 font-medium leading-relaxed">{item.d}</p>
                 </motion.div>
@@ -175,7 +175,7 @@ export default function Home() {
         </section>
 
         {/* HARDWARE PREVIEW */}
-        <section className="py-32 bg-[#064e3b] text-white px-6 rounded-[4rem] mx-4 mb-32">
+        <section className="py-32 bg-brand text-white px-6 rounded-[4rem] mx-4 mb-32">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-end gap-10 mb-20">
             <div className="max-w-xl">
               <h2 className="text-5xl md:text-7xl font-serif font-bold uppercase leading-[0.9]">Hardware<br/><span className="text-[#b48a4d] italic text-4xl md:text-6xl">Signature</span></h2>
@@ -209,7 +209,7 @@ export default function Home() {
                 <div key={i} className={`p-12 rounded-[3.5rem] border ${i === 1 ? 'bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border-emerald-100 scale-105 relative z-10' : 'bg-zinc-50 border-zinc-100'} space-y-10`}>
                   <div className="space-y-2">
                     <h3 className="text-2xl font-serif font-bold">{plan.t}</h3>
-                    <div className="text-5xl font-serif font-bold text-[#064e3b]">{plan.p}</div>
+                    <div className="text-5xl font-serif font-bold text-brand">{plan.p}</div>
                   </div>
                   <ul className="space-y-4">
                     {plan.f.map((feature: string, j: number) => (
@@ -218,7 +218,7 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-                  <Link href="/login" className={`block w-full py-5 rounded-2xl text-center font-black uppercase text-[10px] tracking-widest transition-all ${i === 1 ? 'bg-[#064e3b] text-white shadow-xl shadow-emerald-900/20' : 'bg-zinc-200 text-zinc-900 hover:bg-zinc-300'}`}>Sélectionner</Link>
+                  <Link href="/login" className={`block w-full py-5 rounded-2xl text-center font-black uppercase text-[10px] tracking-widest transition-all ${i === 1 ? 'bg-brand text-white shadow-xl shadow-emerald-900/20' : 'bg-zinc-200 text-zinc-900 hover:bg-zinc-300'}`}>Sélectionner</Link>
                 </div>
               ))}
             </div>

@@ -70,7 +70,7 @@ export default function AccountPage() {
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
+            <Loader2 className="w-10 h-10 animate-spin text-brand" />
             <p className="font-medium animate-pulse">Chargement du profil...</p>
         </div>
     )
@@ -85,10 +85,10 @@ export default function AccountPage() {
             <div className="grid md:grid-cols-12 gap-8">
                 {/* Profile Card */}
                 <div className="md:col-span-4 space-y-6">
-                    <div className="bg-[#064e3b] p-8 rounded-[2.5rem] text-white shadow-xl shadow-emerald-900/20 text-center relative overflow-hidden">
+                    <div className="bg-brand p-8 rounded-[2.5rem] text-white shadow-xl shadow-emerald-900/20 text-center relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 -rotate-45 translate-x-10 -translate-y-10"></div>
-                        <div className="w-20 h-20 bg-[#c5a059] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg border-4 border-white/10">
-                            <User className="w-10 h-10 text-[#064e3b]" />
+                        <div className="w-20 h-20 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg border-4 border-white/10">
+                            <User className="w-10 h-10 text-brand" />
                         </div>
                         <h3 className="font-bold text-lg truncate px-2">{user.email?.split('@')[0]}</h3>
                         <p className="text-emerald-100/60 text-xs uppercase tracking-widest font-black mt-1">Membre Premium</p>
@@ -112,7 +112,7 @@ export default function AccountPage() {
                     {/* Security Section */}
                     <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm space-y-8">
                         <div className="flex items-center gap-3 text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px]">
-                            <Shield className="w-5 h-5 text-[#c5a059]" />
+                            <Shield className="w-5 h-5 text-gold" />
                             <h3>Connexion & Sécurité</h3>
                         </div>
 
@@ -127,7 +127,7 @@ export default function AccountPage() {
                                             type="email" 
                                             value={newEmail}
                                             onChange={(e) => setNewEmail(e.target.value)}
-                                            className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-[#064e3b] outline-none text-sm font-bold transition-all shadow-inner"
+                                            className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-brand outline-none text-sm font-bold transition-all shadow-inner"
                                         />
                                     </div>
                                     <button 
@@ -155,7 +155,7 @@ export default function AccountPage() {
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="••••••••"
-                                            className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-[#064e3b] outline-none text-sm font-bold transition-all shadow-inner"
+                                            className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-brand outline-none text-sm font-bold transition-all shadow-inner"
                                         />
                                     </div>
                                 </div>
@@ -168,7 +168,7 @@ export default function AccountPage() {
                                             value={confirmPassword}
                                             onChange={(e) => setNewConfirmPassword(e.target.value)}
                                             placeholder="••••••••"
-                                            className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-[#064e3b] outline-none text-sm font-bold transition-all shadow-inner"
+                                            className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-zinc-50 border border-black/5 focus:bg-white focus:border-brand outline-none text-sm font-bold transition-all shadow-inner"
                                         />
                                     </div>
                                 </div>
@@ -176,7 +176,7 @@ export default function AccountPage() {
                             <button 
                                 type="submit" 
                                 disabled={updating || !newPassword}
-                                className="w-full py-4 rounded-xl bg-[#064e3b] text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-emerald-900/10 hover:bg-[#053e2f] transition-all flex items-center justify-center gap-2"
+                                className="w-full py-4 rounded-xl bg-brand text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-emerald-900/10 hover:bg-brand-dark transition-all flex items-center justify-center gap-2"
                             >
                                 {updating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
                                 Mettre à jour les identifiants

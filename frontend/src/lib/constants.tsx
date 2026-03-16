@@ -1,4 +1,8 @@
-import { Leaf, Carrot, Beef, Flame, WheatOff, Medal, Fish, ShieldCheck } from 'lucide-react'
+import { Leaf, Carrot, Beef, Flame, WheatOff, Medal, Fish, ShieldCheck, Sprout, Shrimp, Heart, Star, Sparkles, Zap, Clock, Coffee, Wine, Beer, Martini, GlassWater, Pizza, Cake, IceCream, Cookie, Milk, Egg } from 'lucide-react'
+
+export const BADGE_ICONS: Record<string, typeof Leaf> = {
+    Leaf, Sprout, Carrot, Beef, Flame, WheatOff, Medal, Fish, Shrimp, ShieldCheck, Heart, Star, Sparkles, Zap, Clock, Coffee, Wine, Beer, Martini, GlassWater, Pizza, Cake, IceCream, Cookie, Milk, Egg
+}
 
 export const DIETARY_TAGS = [
     { name: 'Vegan', name_en: 'Vegan', icon: Leaf, color: 'text-green-600', bgColor: 'bg-green-100', borderColor: 'border-green-200' },

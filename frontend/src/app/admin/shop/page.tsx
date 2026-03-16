@@ -151,12 +151,12 @@ export default function ShopManagementPage() {
         <div className="min-h-screen bg-[#fafafa]">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-4xl font-black text-[#064e3b] mb-2">Shop Management</h1>
+                    <h1 className="text-4xl font-black text-brand mb-2">Shop Management</h1>
                     <p className="text-zinc-500 font-bold">Gérer les articles de la boutique</p>
                 </div>
                 <button
                     onClick={() => { resetForm(); setIsModalOpen(true); }}
-                    className="bg-[#c5a059] text-[#064e3b] px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl hover:scale-105 transition-all"
+                    className="bg-gold text-brand px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl hover:scale-105 transition-all"
                 >
                     <Plus className="w-4 h-4" /> Nouvel Article
                 </button>
@@ -164,7 +164,7 @@ export default function ShopManagementPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {items.map(item => (
-                    <div key={item.id} className="bg-white rounded-[2.5rem] border border-zinc-100 p-6 shadow-sm hover:border-[#c5a059] transition-all">
+                    <div key={item.id} className="bg-white rounded-[2.5rem] border border-zinc-100 p-6 shadow-sm hover:border-gold transition-all">
                         {item.image_url && (
                             <div className="aspect-video rounded-2xl overflow-hidden mb-4">
                                 <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
@@ -181,7 +181,7 @@ export default function ShopManagementPage() {
                         </div>
                         <p className="text-sm text-zinc-600 mb-4">{item.description}</p>
                         <div className="flex items-center justify-between pt-4 border-t border-zinc-50">
-                            <span className="text-2xl font-black text-[#c5a059]">{item.price.toLocaleString()} FCFA</span>
+                            <span className="text-2xl font-black text-gold">{item.price.toLocaleString()} FCFA</span>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => toggleAvailability(item.id, !item.is_available)}
@@ -212,7 +212,7 @@ export default function ShopManagementPage() {
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-[3rem] p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-black text-[#064e3b]">
+                            <h2 className="text-2xl font-black text-brand">
                                 {editingItem ? 'Modifier l\'article' : 'Nouvel Article'}
                             </h2>
                             <button onClick={() => setIsModalOpen(false)} className="p-2 text-zinc-400 hover:text-zinc-900">
@@ -226,7 +226,7 @@ export default function ShopManagementPage() {
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#c5a059] focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-gold focus:outline-none"
                                     required
                                 />
                             </div>
@@ -235,7 +235,7 @@ export default function ShopManagementPage() {
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#c5a059] focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-gold focus:outline-none"
                                     rows={3}
                                 />
                             </div>
@@ -246,7 +246,7 @@ export default function ShopManagementPage() {
                                         type="number"
                                         value={formData.price}
                                         onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                                        className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#c5a059] focus:outline-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-gold focus:outline-none"
                                         required
                                     />
                                 </div>
@@ -256,7 +256,7 @@ export default function ShopManagementPage() {
                                         type="number"
                                         value={formData.stock}
                                         onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                                        className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#c5a059] focus:outline-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-gold focus:outline-none"
                                     />
                                 </div>
                             </div>
@@ -265,7 +265,7 @@ export default function ShopManagementPage() {
                                 <select
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#c5a059] focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-gold focus:outline-none"
                                 >
                                     <option value="HARDWARE">Hardware</option>
                                     <option value="POS">POS</option>
@@ -279,7 +279,7 @@ export default function ShopManagementPage() {
                                     type="url"
                                     value={formData.image_url}
                                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#c5a059] focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-gold focus:outline-none"
                                     placeholder="https://..."
                                 />
                             </div>
@@ -293,7 +293,7 @@ export default function ShopManagementPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-6 py-3 rounded-2xl bg-[#c5a059] text-[#064e3b] font-black uppercase text-xs hover:scale-105 transition-all shadow-xl"
+                                    className="flex-1 px-6 py-3 rounded-2xl bg-gold text-brand font-black uppercase text-xs hover:scale-105 transition-all shadow-xl"
                                 >
                                     {editingItem ? 'Mettre à jour' : 'Créer'}
                                 </button>

@@ -21,7 +21,7 @@ export default function POSError({
             </p>
             <button
                 onClick={reset}
-                className="px-8 py-4 bg-[#064e3b] text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-black transition-all"
+                className="px-8 py-4 bg-brand text-white rounded-2xl font-bold text-sm shadow-xl hover:bg-black transition-all"
             >
                 Réessayer
             </button>

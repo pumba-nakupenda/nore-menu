@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { useAuth } from '@/contexts/AuthContext'
 import { Clock, CheckCircle2, Utensils, PackageCheck, XCircle, Search, Filter, Loader2, Bell, MessageSquare, MapPin, ChevronRight, LayoutGrid, List, ShoppingBag, UtensilsCrossed, Trash2, ChefHat } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -13,8 +14,7 @@ const COLUMNS = [
 ]
 
 export default function AdminOrdersPage() {
-    const [restaurantId, setRestaurantId] = useState<string | null>(null)
-    const [userId, setUserId] = useState<string | null>(null)
+    const { restaurantId, token } = useAuth()
     const [orders, setOrders] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
@@ -30,26 +30,6 @@ export default function AdminOrdersPage() {
         activeOrders: orders.filter(o => !['delivered', 'cancelled'].includes(o.status)).length,
         todayCount: orders.filter(o => new Date(o.created_at).toDateString() === new Date().toDateString()).length
     }
-
-    useEffect(() => {
-        const fetchUserRestaurant = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
-
-            setUserId(user.id)
-
-            const { data: restaurant } = await supabase
-                .from('restaurants')
-                .select('id')
-                .eq('owner_id', user.id)
-                .single()
-
-            if (restaurant) {
-                setRestaurantId(restaurant.id)
-            }
-        }
-        fetchUserRestaurant()
-    }, [])
 
     useEffect(() => {
         if (restaurantId) {
@@ -100,9 +80,6 @@ export default function AdminOrdersPage() {
 
     const fetchOrders = async () => {
         try {
-            const session = await supabase.auth.getSession()
-            const token = session.data.session?.access_token
-
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/admin/${restaurantId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
@@ -119,16 +96,13 @@ export default function AdminOrdersPage() {
 
     const updateStatus = async (orderId: string, newStatus: string) => {
         try {
-            const session = await supabase.auth.getSession()
-            const token = session.data.session?.access_token
-
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}/pos-status`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ status: newStatus, staffId: userId })
+                body: JSON.stringify({ status: newStatus })
             })
 
             if (!res.ok) throw new Error('Failed to update status')
@@ -190,7 +164,7 @@ export default function AdminOrdersPage() {
                         {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     {order.staff_accounts?.display_name && (
-                        <span className="text-[8px] font-black text-[#c5a059] uppercase tracking-tighter flex items-center gap-1">
+                        <span className="text-[8px] font-black text-gold uppercase tracking-tighter flex items-center gap-1">
                             <ChefHat className="w-2.5 h-2.5" /> {order.staff_accounts.display_name}
                         </span>
                     )}
@@ -207,14 +181,14 @@ export default function AdminOrdersPage() {
                             </span>
                         </div>
                         {item.note && (
-                            <p className="text-[10px] italic text-[#c5a059] font-medium leading-tight">"{item.note}"</p>
+                            <p className="text-[10px] italic text-gold font-medium leading-tight">"{item.note}"</p>
                         )}
                     </div>
                 ))}
             </div>
 
             <div className="mt-auto pt-3 border-t border-zinc-50 flex items-center justify-between">
-                <span className="font-black text-xs text-[#c5a059]">{order.total_price.toLocaleString()} FCFA</span>
+                <span className="font-black text-xs text-gold">{order.total_price.toLocaleString()} FCFA</span>
                 <div className="flex gap-1">
                     {order.status === 'pending' && (
                         <>
@@ -247,7 +221,7 @@ export default function AdminOrdersPage() {
                     <div className="flex items-center gap-6 mt-2">
                         <div className="flex items-center gap-2">
                             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Aujourd'hui</span>
-                            <span className="bg-[#c5a059]/10 text-[#c5a059] text-[10px] font-black px-2 py-0.5 rounded-lg border border-[#c5a059]/20">{stats.todayCount}</span>
+                            <span className="bg-gold/10 text-gold text-[10px] font-black px-2 py-0.5 rounded-lg border border-gold/20">{stats.todayCount}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Recettes</span>
@@ -292,7 +266,7 @@ export default function AdminOrdersPage() {
                             placeholder="Rechercher #"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-12 pr-6 py-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-[#c5a059]/10 outline-none w-64 transition-all"
+                            className="pl-12 pr-6 py-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-sm font-bold focus:bg-white focus:ring-4 focus:ring-gold/10 outline-none w-64 transition-all"
                         />
                     </div>
                 </div>

@@ -53,7 +53,7 @@ export default function FeedbackAdminPage() {
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-[#064e3b]" />
+            <Loader2 className="w-10 h-10 animate-spin text-brand" />
             <p className="font-medium animate-pulse">Chargement des avis clients...</p>
         </div>
     )
@@ -62,9 +62,9 @@ export default function FeedbackAdminPage() {
         <div className="space-y-10 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Avis <span className="text-[#064e3b] italic">Clients</span></h2>
+                    <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">Avis <span className="text-brand italic">Clients</span></h2>
                     <p className="text-zinc-500 mt-2 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-gold"></span>
                         Écoutez vos clients pour améliorer votre service
                     </p>
                 </div>
@@ -72,12 +72,12 @@ export default function FeedbackAdminPage() {
 
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bg-[#064e3b] p-8 rounded-[2.5rem] text-white shadow-xl shadow-emerald-900/10">
+                <div className="bg-brand p-8 rounded-[2.5rem] text-white shadow-xl shadow-emerald-900/10">
                     <div className="flex items-center justify-between mb-6">
                         <div className="p-3 bg-white/10 rounded-2xl border border-white/10">
-                            <Star className="w-6 h-6 text-[#c5a059] fill-current" />
+                            <Star className="w-6 h-6 text-gold fill-current" />
                         </div>
-                        <span className="text-[10px] font-black bg-[#c5a059] text-[#064e3b] px-2 py-1 rounded-full uppercase">Moyenne</span>
+                        <span className="text-[10px] font-black bg-gold text-brand px-2 py-1 rounded-full uppercase">Moyenne</span>
                     </div>
                     <div className="text-5xl font-serif font-bold mb-2 tracking-tighter">{averageRating}</div>
                     <p className="text-emerald-100/60 text-xs font-black uppercase tracking-widest">Satisfaction Globale</p>
@@ -85,7 +85,7 @@ export default function FeedbackAdminPage() {
 
                 <div className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
-                        <div className="p-3 bg-zinc-50 rounded-2xl border border-black/5 text-[#064e3b]">
+                        <div className="p-3 bg-zinc-50 rounded-2xl border border-black/5 text-brand">
                             <MessageSquare className="w-6 h-6" />
                         </div>
                     </div>
@@ -117,12 +117,12 @@ export default function FeedbackAdminPage() {
                         {feedbacks.map((f) => (
                             <div key={f.id} className="bg-white p-8 rounded-[2.5rem] border border-black/5 shadow-sm flex flex-col md:flex-row gap-8 group hover:shadow-xl hover:shadow-black/5 transition-all">
                                 <div className="flex flex-col items-center gap-2 shrink-0">
-                                    <div className="w-16 h-16 rounded-2xl bg-zinc-50 flex items-center justify-center text-[#c5a059] border border-black/5">
+                                    <div className="w-16 h-16 rounded-2xl bg-zinc-50 flex items-center justify-center text-gold border border-black/5">
                                         <div className="text-2xl font-serif font-bold">{f.rating}</div>
                                     </div>
                                     <div className="flex gap-0.5">
                                         {[1, 2, 3, 4, 5].map((s) => (
-                                            <Star key={s} className={`w-2 h-2 ${f.rating >= s ? 'text-[#c5a059] fill-current' : 'text-zinc-200'}`} />
+                                            <Star key={s} className={`w-2 h-2 ${f.rating >= s ? 'text-gold fill-current' : 'text-zinc-200'}`} />
                                         ))}
                                     </div>
                                 </div>
@@ -132,7 +132,7 @@ export default function FeedbackAdminPage() {
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm font-bold text-zinc-900">Avis Client</span>
                                                 {f.table_number && (
-                                                    <span className="px-2 py-0.5 bg-emerald-50 text-[#064e3b] text-[8px] font-black uppercase rounded-md border border-emerald-100">Table {f.table_number}</span>
+                                                    <span className="px-2 py-0.5 bg-emerald-50 text-brand text-[8px] font-black uppercase rounded-md border border-emerald-100">Table {f.table_number}</span>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2 text-zinc-400 text-xs">

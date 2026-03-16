@@ -65,4 +65,16 @@ export class OrdersService {
     if (error) throw new InternalServerErrorException(error.message);
     return data;
   }
+
+  async getActiveOrders(restaurantId: string) {
+    const { data, error } = await this.supabase.getClient()
+      .from('orders')
+      .select('*, staff_accounts:processed_by(display_name)')
+      .eq('restaurant_id', restaurantId)
+      .not('production_status', 'in', '("DELIVERED","CANCELLED")')
+      .order('created_at', { ascending: false });
+
+    if (error) throw new InternalServerErrorException(error.message);
+    return data;
+  }
 }

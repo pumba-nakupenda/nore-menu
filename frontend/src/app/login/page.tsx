@@ -49,11 +49,11 @@ export default function AuthPage() {
     }
 
     return (
-        <div className="flex min-h-screen bg-[#fdfcfb]">
+        <div className="flex min-h-screen bg-background">
             {/* Left side - Form */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 relative z-10 bg-[#fdfcfb]">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 relative z-10 bg-background">
                 <div className="absolute top-8 left-8">
-                    <Link href="/" className="flex items-center gap-2 text-zinc-500 hover:text-[#064e3b] transition-colors group">
+                    <Link href="/" className="flex items-center gap-2 text-zinc-500 hover:text-brand transition-colors group">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         <span className="text-sm font-medium">Back to Home</span>
                     </Link>
@@ -61,7 +61,7 @@ export default function AuthPage() {
 
                 <div className="w-full max-w-md space-y-10">
                     <div className="text-center space-y-4">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-[#064e3b] text-white rounded-2xl shadow-xl shadow-emerald-900/20 mb-2">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-brand text-white rounded-2xl shadow-xl shadow-emerald-900/20 mb-2">
                             <ChefHat className="w-8 h-8" />
                         </div>
                         <h2 className="text-4xl font-serif font-bold text-zinc-900 tracking-tight">
@@ -109,7 +109,7 @@ export default function AuthPage() {
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-zinc-100"></div>
                             </div>
-                            <span className="relative px-4 bg-[#fdfcfb] text-[10px] font-black uppercase tracking-widest text-zinc-400">or use email</span>
+                            <span className="relative px-4 bg-background text-[10px] font-black uppercase tracking-widest text-zinc-400">or use email</span>
                         </div>
                     </div>
 
@@ -117,7 +117,7 @@ export default function AuthPage() {
                         <div className="space-y-2">
                             <label htmlFor="email" className="block text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">Email Address</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-[#064e3b] transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-brand transition-colors">
                                     <Mail className="w-5 h-5" />
                                 </div>
                                 <input
@@ -126,7 +126,7 @@ export default function AuthPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full pl-11 pr-4 py-4 bg-white border border-zinc-200 rounded-2xl text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#064e3b]/5 focus:border-[#064e3b] transition shadow-sm"
+                                    className="block w-full pl-11 pr-4 py-4 bg-white border border-zinc-200 rounded-2xl text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand/5 focus:border-brand transition shadow-sm"
                                     placeholder="restaurateur@nore.com"
                                 />
                             </div>
@@ -134,7 +134,7 @@ export default function AuthPage() {
                         <div className="space-y-2">
                             <label htmlFor="password" className="block text-xs font-bold text-zinc-400 uppercase tracking-widest ml-1">Password</label>
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-[#064e3b] transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-brand transition-colors">
                                     <Lock className="w-5 h-5" />
                                 </div>
                                 <input
@@ -144,7 +144,7 @@ export default function AuthPage() {
                                     minLength={6}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full pl-11 pr-4 py-4 bg-white border border-zinc-200 rounded-2xl text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#064e3b]/5 focus:border-[#064e3b] transition shadow-sm"
+                                    className="block w-full pl-11 pr-4 py-4 bg-white border border-zinc-200 rounded-2xl text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand/5 focus:border-brand transition shadow-sm"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -153,7 +153,7 @@ export default function AuthPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full flex justify-center items-center py-4 px-4 bg-[#064e3b] text-white rounded-2xl shadow-xl shadow-emerald-900/20 text-lg font-bold hover:bg-[#053e2f] transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed group"
+                            className="w-full flex justify-center items-center py-4 px-4 bg-brand text-white rounded-2xl shadow-xl shadow-emerald-900/20 text-lg font-bold hover:bg-brand-dark transition-all hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed group"
                         >
                             {loading ? (
                                 <Loader2 className="w-6 h-6 animate-spin" />
@@ -169,7 +169,7 @@ export default function AuthPage() {
                         <button
                             type="button"
                             onClick={() => { setIsSignUp(!isSignUp); setMessage(''); }}
-                            className="text-sm font-semibold text-[#c5a059] hover:text-[#b59049] transition-colors"
+                            className="text-sm font-semibold text-gold hover:text-[#b59049] transition-colors"
                         >
                             {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Create one now"}
                         </button>
@@ -182,7 +182,7 @@ export default function AuthPage() {
             </div>
 
             {/* Right side - Visual Content */}
-            <div className="hidden lg:flex flex-1 bg-[#053e2f] relative overflow-hidden items-center justify-center">
+            <div className="hidden lg:flex flex-1 bg-brand-dark relative overflow-hidden items-center justify-center">
                 {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
                     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -195,7 +195,7 @@ export default function AuthPage() {
                     </svg>
                 </div>
                 
-                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#c5a059] rounded-full blur-[120px] opacity-20"></div>
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gold rounded-full blur-[120px] opacity-20"></div>
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-400 rounded-full blur-[120px] opacity-10"></div>
 
                 <div className="max-w-md text-center space-y-8 z-10 px-12">
@@ -209,7 +209,7 @@ export default function AuthPage() {
                     </div>
                     <div className="space-y-4">
                         <h3 className="text-4xl font-serif font-bold text-white leading-tight">
-                            Elevate your <span className="italic text-[#c5a059]">guest experience</span>.
+                            Elevate your <span className="italic text-gold">guest experience</span>.
                         </h3>
                         <p className="text-zinc-300 text-lg leading-relaxed">
                             "The menu is the heart of the restaurant. We make it beat digitally."

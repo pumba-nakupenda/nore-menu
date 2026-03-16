@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { useAuth } from '@/contexts/AuthContext'
 import { UserPlus, Trash2, Key, Shield, User, Loader2, Smartphone, ShieldAlert, Edit2, Utensils, Coins, MessageCircle, Check, X, ArrowRight, Copy, Layers, History, CreditCard, CheckCircle2, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function StaffManagementPage() {
-    const [restaurantId, setRestaurantId] = useState<string | null>(null)
-    const [restaurantName, setRestaurantName] = useState<string>('')
+    const { restaurantId, restaurant, token } = useAuth()
+    const restaurantName = restaurant?.name || ''
     const [staff, setStaff] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -42,24 +43,13 @@ export default function StaffManagementPage() {
     }
 
     useEffect(() => {
-        const fetchUserRestaurant = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
-            const { data: restaurant } = await supabase.from('restaurants').select('id, name').eq('owner_id', user.id).single()
-            if (restaurant) {
-                setRestaurantId(restaurant.id)
-                setRestaurantName(restaurant.name || '')
-                fetchStaff(restaurant.id)
-            }
-        }
-        fetchUserRestaurant()
-    }, [])
+        if (restaurantId) fetchStaff(restaurantId)
+    }, [restaurantId])
 
     const fetchStaff = async (resId: string) => {
         try {
-            const session = await supabase.auth.getSession()
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/staff/${resId}`, {
-                headers: { 'Authorization': `Bearer ${session.data.session?.access_token}` }
+                headers: { 'Authorization': `Bearer ${token}` }
             })
             const data = await res.json()
             setStaff(data)
@@ -70,11 +60,10 @@ export default function StaffManagementPage() {
         e.preventDefault()
         setSaving(true)
         try {
-            const session = await supabase.auth.getSession()
-            const url = editingStaff 
+            const url = editingStaff
                 ? `${process.env.NEXT_PUBLIC_API_URL}/staff/${editingStaff.id}`
                 : `${process.env.NEXT_PUBLIC_API_URL}/staff/${restaurantId}`
-            
+
             // CLEAN USERNAME: remove any existing prefix if the user typed it by mistake
             const cleanUsername = username.includes('@') ? username.split('@')[1] : username;
             const prefix = restaurantName?.replace(/\s+/g, '').toLowerCase()
@@ -84,7 +73,7 @@ export default function StaffManagementPage() {
                 method: editingStaff ? 'PATCH' : 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.data.session?.access_token}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ 
                     displayName, 
@@ -138,12 +127,12 @@ export default function StaffManagementPage() {
                     <h1 className="text-3xl font-black tracking-tight text-zinc-900">Gestion Staff & POS</h1>
                     <p className="text-zinc-500 font-medium">Contrôlez les accès et partagez le lien de vente.</p>
                 </div>
-                <button onClick={() => { setEditingStaff(null); setDisplayName(''); setUsername(''); setPassword(''); setIsModalOpen(true); }} className="bg-[#064e3b] text-white px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl shadow-emerald-900/20 hover:scale-105 active:scale-95 transition-all"><UserPlus className="w-4 h-4" /> Créer un accès</button>
+                <button onClick={() => { setEditingStaff(null); setDisplayName(''); setUsername(''); setPassword(''); setIsModalOpen(true); }} className="bg-brand text-white px-6 py-3 rounded-2xl font-black uppercase text-xs flex items-center gap-2 shadow-xl shadow-emerald-900/20 hover:scale-105 active:scale-95 transition-all"><UserPlus className="w-4 h-4" /> Créer un accès</button>
             </header>
 
             {/* QUICK ACCESS POS LINKS */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-[#064e3b] text-white p-8 rounded-[2.5rem] flex items-center justify-between group shadow-2xl shadow-emerald-900/20 relative overflow-hidden">
+                <div className="bg-brand text-white p-8 rounded-[2.5rem] flex items-center justify-between group shadow-2xl shadow-emerald-900/20 relative overflow-hidden">
                     <div className="space-y-4 relative z-10">
                         <div>
                             <h2 className="text-xl font-black italic">Terminal de Vente</h2>
@@ -152,7 +141,7 @@ export default function StaffManagementPage() {
                         <div className="flex gap-2">
                             <button 
                                 onClick={() => window.open('/pos/login', '_blank')}
-                                className="px-5 py-2.5 bg-white text-[#064e3b] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-lg"
+                                className="px-5 py-2.5 bg-white text-brand rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-lg"
                             >
                                 Ouvrir
                             </button>
@@ -184,16 +173,16 @@ export default function StaffManagementPage() {
                 {Array.isArray(staff) && staff.map((member) => (
                     <div key={member.id} className="bg-white rounded-[2.5rem] border border-zinc-100 p-8 shadow-sm relative group transition-all hover:shadow-xl flex flex-col">
                         <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                            <button onClick={() => openEdit(member)} className="p-2 bg-amber-50 text-[#c5a059] rounded-xl hover:scale-110 transition-all"><Edit2 className="w-4 h-4" /></button>
-                            <button onClick={async () => { if(confirm('Supprimer?')) { await fetch(`${process.env.NEXT_PUBLIC_API_URL}/staff/${member.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}` } }); fetchStaff(restaurantId!) } }} className="p-2 bg-red-50 text-red-500 rounded-xl hover:scale-110 transition-all"><Trash2 className="w-4 h-4" /></button>
+                            <button onClick={() => openEdit(member)} className="p-2 bg-amber-50 text-gold rounded-xl hover:scale-110 transition-all"><Edit2 className="w-4 h-4" /></button>
+                            <button onClick={async () => { if(confirm('Supprimer?')) { await fetch(`${process.env.NEXT_PUBLIC_API_URL}/staff/${member.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); fetchStaff(restaurantId!) } }} className="p-2 bg-red-50 text-red-500 rounded-xl hover:scale-110 transition-all"><Trash2 className="w-4 h-4" /></button>
                         </div>
-                        <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 mb-6 group-hover:bg-[#c5a059]/10 group-hover:text-[#c5a059] transition-all"><User className="w-8 h-8" /></div>
+                        <div className="w-14 h-14 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 mb-6 group-hover:bg-gold/10 group-hover:text-gold transition-all"><User className="w-8 h-8" /></div>
                         <h3 className="font-black text-xl mb-1 text-zinc-900">{member.display_name}</h3>
                         
                         <div className="space-y-3 mb-6">
                             <div className="flex flex-col">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Identifiant</p>
-                                <p className="text-sm font-bold text-[#c5a059]">{member.username}</p>
+                                <p className="text-sm font-bold text-gold">{member.username}</p>
                             </div>
 
                             <div className="flex flex-col">
@@ -233,11 +222,11 @@ export default function StaffManagementPage() {
                         <p className="text-zinc-400 text-sm font-medium mb-8">Définissez les accès de l'employé.</p>
 
                         <div className="space-y-4">
-                            <input required type="text" placeholder="Nom d'affichage (ex: Jean)" value={displayName} onChange={e => setDisplayName(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-[#064e3b] font-bold transition-all text-zinc-900" />
+                            <input required type="text" placeholder="Nom d'affichage (ex: Jean)" value={displayName} onChange={e => setDisplayName(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-brand font-bold transition-all text-zinc-900" />
                             
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase text-zinc-400 ml-1">Identifiant unique</label>
-                                <div className="flex items-center bg-zinc-50 border border-zinc-100 rounded-2xl overflow-hidden focus-within:bg-white focus-within:border-[#064e3b] transition-all">
+                                <div className="flex items-center bg-zinc-50 border border-zinc-100 rounded-2xl overflow-hidden focus-within:bg-white focus-within:border-brand transition-all">
                                     <div className="px-4 py-4 bg-zinc-100 text-zinc-400 font-bold text-xs border-r border-zinc-200 shrink-0">
                                         {restaurantName?.replace(/\s+/g, '').toLowerCase()}@
                                     </div>
@@ -252,7 +241,7 @@ export default function StaffManagementPage() {
                                 </div>
                             </div>
 
-                            <input required type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-[#064e3b] font-bold transition-all text-zinc-900" />
+                            <input required type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-zinc-50 border border-zinc-100 outline-none focus:bg-white focus:border-brand font-bold transition-all text-zinc-900" />
                             
                             <div className="pt-4 space-y-6">
                                 <div className="space-y-3">
@@ -279,7 +268,7 @@ export default function StaffManagementPage() {
 
                         <div className="mt-10 flex gap-3">
                             <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 font-bold text-zinc-400 hover:text-zinc-600 transition-colors">Annuler</button>
-                            <button type="submit" disabled={saving} className="flex-[2] bg-[#064e3b] text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl flex items-center justify-center gap-2 hover:bg-[#053e2f] transition-all disabled:opacity-50">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Valider</button>
+                            <button type="submit" disabled={saving} className="flex-[2] bg-brand text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl flex items-center justify-center gap-2 hover:bg-brand-dark transition-all disabled:opacity-50">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Valider</button>
                         </div>
                     </form>
                 </div>

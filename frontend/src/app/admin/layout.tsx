@@ -2,25 +2,24 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { AuthProvider } from '@/contexts/AuthContext'
-import { 
-    UtensilsCrossed, 
-    QrCode, 
-    LogOut, 
-    Settings, 
-    ChefHat, 
-    User, 
-    BarChart3, 
-    MessageCircle, 
-    ShieldCheck, 
-    Menu, 
-    X, 
-    MessageSquare, 
-    ShoppingBag, 
+import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import {
+    UtensilsCrossed,
+    QrCode,
+    LogOut,
+    Settings,
+    ChefHat,
+    User,
+    BarChart3,
+    MessageCircle,
+    ShieldCheck,
+    Menu,
+    X,
+    MessageSquare,
+    ShoppingBag,
     Globe,
-    LayoutDashboard,
     Clock
 } from 'lucide-react'
 import { Toaster } from 'sonner'
@@ -30,43 +29,27 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode
 }) {
-    const router = useRouter()
+    return (
+        <AuthProvider>
+            <AdminLayoutInner>{children}</AdminLayoutInner>
+        </AuthProvider>
+    )
+}
+
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+    const { restaurantId, isMaster, isApproved, isLoading } = useAuth()
     const pathname = usePathname()
-    const [isMaster, setIsMaster] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-    const [restaurantId, setRestaurantId] = useState<string | null>(null)
-    const [isLoadingSession, setIsLoadingSession] = useState(true)
-    const [isApproved, setIsApproved] = useState(true)
 
     useEffect(() => {
         setIsSidebarOpen(false)
         setIsPreviewOpen(false)
     }, [pathname])
 
-    useEffect(() => {
-        const checkUser = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                router.push('/login')
-            } else {
-                const { data: res } = await supabase.from('restaurants').select('id, is_master, is_approved').eq('owner_id', session.user.id).single()
-                setRestaurantId(res?.id || null)
-                setIsMaster(res?.is_master || false)
-                
-                if (res && !res.is_master && res.is_approved === false) {
-                    setIsApproved(false)
-                }
-                setIsLoadingSession(false)
-            }
-        }
-        checkUser()
-    }, [router])
-
     const handleSignOut = async () => {
         await supabase.auth.signOut()
-        router.push('/login')
-        router.refresh()
+        window.location.href = '/login'
     }
 
     const isActive = (path: string) => pathname === path
@@ -88,27 +71,27 @@ export default function AdminLayout({
         { name: 'Avis', href: '/admin/feedback', icon: MessageSquare },
     ]
 
-    const filteredNavItems = isMaster 
+    const filteredNavItems = isMaster
         ? [{ name: 'Master Control', href: '/admin/master', icon: ShieldCheck }, ...navItems]
         : navItems
 
-    if (isLoadingSession) return (
-        <div className="min-h-screen bg-[#fdfcfb] flex items-center justify-center">
-            <ChefHat className="w-10 h-10 animate-bounce text-[#064e3b]" />
+    if (isLoading) return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+            <ChefHat className="w-10 h-10 animate-bounce text-brand" />
         </div>
     )
 
     if (!isApproved && !isMaster) return (
-        <div className="min-h-screen bg-[#fdfcfb] flex flex-col items-center justify-center p-6 text-center">
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
             <div className="w-24 h-24 bg-emerald-50 rounded-[2.5rem] flex items-center justify-center mb-8 border border-emerald-100 shadow-xl shadow-emerald-900/5">
-                <Clock className="w-10 h-10 text-[#064e3b] animate-pulse" />
+                <Clock className="w-10 h-10 text-brand animate-pulse" />
             </div>
             <h2 className="text-3xl font-serif font-bold text-zinc-900 mb-4">Compte en attente de validation</h2>
             <p className="text-zinc-500 max-w-md mx-auto leading-relaxed mb-10 font-medium">
                 Bienvenue chez Nore ! Votre demande d'inscription est bien reçue. Pour garantir l'excellence de notre réseau, chaque établissement est validé manuellement. Vous recevrez un accès complet très prochainement.
             </p>
             <div className="flex flex-col gap-4 w-full max-w-xs">
-                <button onClick={() => window.open('https://wa.me/221772354747', '_blank')} className="px-8 py-4 bg-[#064e3b] text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-900/20 flex items-center justify-center gap-2 hover:bg-black transition-all">
+                <button onClick={() => window.open('https://wa.me/221772354747', '_blank')} className="px-8 py-4 bg-brand text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-900/20 flex items-center justify-center gap-2 hover:bg-black transition-all">
                     <MessageCircle className="w-4 h-4" /> Contacter le Support
                 </button>
                 <button onClick={handleSignOut} className="px-8 py-4 text-zinc-400 font-bold text-sm hover:text-zinc-600 transition-colors">
@@ -119,8 +102,7 @@ export default function AdminLayout({
     )
 
     return (
-        <AuthProvider>
-        <div className="min-h-screen bg-[#fdfcfb] flex flex-col lg:flex-row font-sans selection:bg-[#064e3b]/10 selection:text-[#064e3b]">
+        <div className="min-h-screen bg-background flex flex-col lg:flex-row font-sans selection:bg-brand/10 selection:text-brand">
             <Toaster position="top-center" richColors />
 
             {/* Mobile Backdrop */}
@@ -129,11 +111,11 @@ export default function AdminLayout({
             )}
 
             {/* Sidebar (Desktop & Mobile Drawer) */}
-            <aside className={`fixed inset-y-0 left-0 w-72 bg-[#053e2f] shadow-2xl flex flex-col text-white z-[110] transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 overflow-y-auto no-scrollbar ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed inset-y-0 left-0 w-72 bg-brand-dark shadow-2xl flex flex-col text-white z-[110] transition-transform duration-500 ease-in-out lg:relative lg:translate-x-0 overflow-y-auto no-scrollbar ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-8 pb-10 flex items-center justify-between">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-3">
-                            <div className="bg-[#c5a059] text-[#064e3b] p-2 rounded-xl shadow-lg"><ChefHat className="w-6 h-6" /></div>
+                            <div className="bg-gold text-brand p-2 rounded-xl shadow-lg"><ChefHat className="w-6 h-6" /></div>
                             <h1 className="text-2xl font-serif font-bold tracking-tight text-white">Nore</h1>
                         </div>
                     </div>
@@ -144,7 +126,7 @@ export default function AdminLayout({
                     {filteredNavItems.map((item) => {
                         const active = isActive(item.href)
                         return (
-                            <Link key={item.name} href={item.href} className={`flex items-center px-4 py-3.5 rounded-2xl transition-all ${active ? 'bg-[#c5a059] text-[#064e3b] shadow-lg font-bold' : 'text-emerald-100/70 hover:bg-white/5 hover:text-white'}`}>
+                            <Link key={item.name} href={item.href} className={`flex items-center px-4 py-3.5 rounded-2xl transition-all ${active ? 'bg-gold text-brand shadow-lg font-bold' : 'text-emerald-100/70 hover:bg-white/5 hover:text-white'}`}>
                                 <item.icon className="w-5 h-5 mr-3" />
                                 <span className="text-sm tracking-wide">{item.name}</span>
                             </Link>
@@ -154,11 +136,11 @@ export default function AdminLayout({
 
                 <div className="p-6 mt-auto space-y-2">
                     <button onClick={() => window.open('/#shop', '_self')} className="flex items-center w-full px-5 py-3.5 mb-2 text-emerald-100/70 hover:bg-white/5 hover:text-white rounded-2xl transition-all group border border-transparent hover:border-emerald-500/20">
-                        <ShoppingBag className="w-5 h-5 mr-3 text-[#c5a059]" />
+                        <ShoppingBag className="w-5 h-5 mr-3 text-gold" />
                         <span className="text-sm font-bold">Boutique Hardware</span>
                     </button>
                     <button onClick={() => window.open('https://wa.me/221772354747', '_blank')} className="flex items-center w-full px-5 py-3.5 mb-2 text-emerald-100/70 hover:bg-white/5 hover:text-white rounded-2xl transition-all group border border-transparent hover:border-emerald-500/20">
-                        <MessageCircle className="w-5 h-5 mr-3 text-[#c5a059]" />
+                        <MessageCircle className="w-5 h-5 mr-3 text-gold" />
                         <span className="text-sm font-bold">Support WhatsApp</span>
                     </button>
                     <button onClick={handleSignOut} className="flex items-center w-full px-5 py-3.5 text-red-300 hover:bg-red-500/10 rounded-2xl transition-all font-bold text-sm">
@@ -175,15 +157,15 @@ export default function AdminLayout({
                         <button onClick={() => setIsSidebarOpen(true)} className="p-2.5 bg-zinc-50 rounded-xl text-zinc-900 border border-black/5 shadow-sm active:scale-95 transition-all">
                             <Menu className="w-5 h-5" />
                         </button>
-                        <span className="font-serif font-bold text-lg text-[#064e3b]">Nore</span>
+                        <span className="font-serif font-bold text-lg text-brand">Nore</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 ml-auto">
-                        <button onClick={() => setIsPreviewOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-[#064e3b] rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm active:scale-95 transition-all">
+                        <button onClick={() => setIsPreviewOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-brand rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-100 shadow-sm active:scale-95 transition-all">
                             <Globe className="w-3.5 h-3.5" />
                             <span className="hidden xs:block text-xs">Aperçu Menu</span>
                         </button>
-                        <Link href="/admin/settings" className="p-2.5 bg-zinc-50 rounded-xl text-zinc-400 border border-black/5 hover:text-[#064e3b] transition-all">
+                        <Link href="/admin/settings" className="p-2.5 bg-zinc-50 rounded-xl text-zinc-400 border border-black/5 hover:text-brand transition-all">
                             <Settings className="w-5 h-5" />
                         </Link>
                     </div>
@@ -199,10 +181,10 @@ export default function AdminLayout({
                         const active = isActive(item.href)
                         return (
                             <Link key={item.name} href={item.href} className="flex flex-col items-center gap-1 group">
-                                <div className={`p-2.5 rounded-2xl transition-all duration-300 ${active ? 'bg-[#064e3b]' : 'bg-zinc-100'} ${active ? 'text-white shadow-lg shadow-emerald-900/20 scale-110 -translate-y-1' : 'text-zinc-400 group-active:scale-90'}`}>
+                                <div className={`p-2.5 rounded-2xl transition-all duration-300 ${active ? 'bg-brand' : 'bg-zinc-100'} ${active ? 'text-white shadow-lg shadow-emerald-900/20 scale-110 -translate-y-1' : 'text-zinc-400 group-active:scale-90'}`}>
                                     <item.icon className={`w-5 h-5 ${active ? 'stroke-[2.5px]' : ''}`} />
                                 </div>
-                                <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${active ? 'text-[#064e3b]' : 'text-zinc-400'}`}>
+                                <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${active ? 'text-brand' : 'text-zinc-400'}`}>
                                     {item.name}
                                 </span>
                             </Link>
@@ -227,6 +209,5 @@ export default function AdminLayout({
                 </div>
             )}
         </div>
-        </AuthProvider>
     )
 }

@@ -14,6 +14,7 @@ import { OrdersModule } from './orders/orders.module';
 import { StaffModule } from './staff/staff.module';
 import { UploadModule } from './upload/upload.module';
 import { ShopModule } from './shop/shop.module';
+import { ContentModule } from './content/content.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ShopModule } from './shop/shop.module';
     StaffModule,
     UploadModule,
     ShopModule,
+    ContentModule,
   ],
   controllers: [AppController],
   providers: [

@@ -39,10 +39,10 @@ export default function POSLoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#053e2f] flex items-center justify-center p-6 font-sans">
+        <div className="min-h-screen bg-brand-dark flex items-center justify-center p-6 font-sans">
             <div className="w-full max-w-md bg-white rounded-[3rem] p-10 shadow-2xl animate-pop-in">
                 <div className="text-center mb-10">
-                    <div className="w-20 h-20 bg-[#c5a059] text-[#064e3b] rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3">
+                    <div className="w-20 h-20 bg-gold text-brand rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3">
                         <ChefHat className="w-10 h-10" />
                     </div>
                     <h1 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight">Nore POS</h1>
@@ -60,7 +60,7 @@ export default function POSLoginPage() {
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder="nom_restaurant@identifiant"
-                                className="w-full pl-14 pr-6 py-5 rounded-2xl bg-zinc-50 border border-zinc-100 focus:bg-white focus:border-[#c5a059] outline-none font-bold transition-all shadow-sm"
+                                className="w-full pl-14 pr-6 py-5 rounded-2xl bg-zinc-50 border border-zinc-100 focus:bg-white focus:border-gold outline-none font-bold transition-all shadow-sm"
                             />
                         </div>
                     </div>
@@ -75,7 +75,7 @@ export default function POSLoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="w-full pl-14 pr-6 py-5 rounded-2xl bg-zinc-50 border border-zinc-100 focus:bg-white focus:border-[#c5a059] outline-none font-bold transition-all shadow-sm"
+                                className="w-full pl-14 pr-6 py-5 rounded-2xl bg-zinc-50 border border-zinc-100 focus:bg-white focus:border-gold outline-none font-bold transition-all shadow-sm"
                             />
                         </div>
                     </div>
@@ -83,7 +83,7 @@ export default function POSLoginPage() {
                     <button 
                         disabled={loading}
                         type="submit"
-                        className="w-full bg-[#064e3b] text-white py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] shadow-2xl shadow-emerald-900/40 flex items-center justify-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50 mt-4"
+                        className="w-full bg-brand text-white py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] shadow-2xl shadow-emerald-900/40 flex items-center justify-center gap-3 active:scale-[0.98] transition-all disabled:opacity-50 mt-4"
                     >
                         {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <LogIn className="w-6 h-6" />}
                         Connexion
