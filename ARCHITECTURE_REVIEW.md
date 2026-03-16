@@ -127,14 +127,62 @@ Aucun test frontend. Le backend a quelques fichiers `.spec.ts` (squelettes gén�
 
 `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing`, `three` et `postprocessing` sont installés. Ce sont des librairies 3D **très lourdes** (~500KB+ gzipped). À vérifier si elles sont réellement utilisées et nécessaires, sinon les supprimer pour réduire le bundle.
 
+### 3.10 Mots de passe staff stockés en clair (CRITIQUE SÉCURITÉ)
+
+Dans `backend/src/staff/staff.service.ts`, les mots de passe des comptes POS sont stockés **en texte clair** dans la table `staff_accounts` :
+
+```ts
+.insert({
+  password: staffData.password,  // ← plaintext !
+})
+```
+
+**Impact** : En cas de fuite de la base de données, tous les mots de passe staff sont compromis immédiatement.
+
+**Recommandation** : Hasher avec bcrypt avant insertion, et comparer avec `bcrypt.compare()` lors du login POS.
+
+### 3.11 Clé API Resend en dur dans le code (CRITIQUE SÉCURITÉ)
+
+Dans `backend/src/email/email.service.ts` :
+
+```ts
+this.resend = new Resend(process.env.RESEND_API_KEY || 're_H3eSWEg1_...');
+```
+
+Une clé API de production est exposée en fallback directement dans le code source. Si le repo est public ou fuite, cette clé permet d'envoyer des emails au nom de `noremenu.com`.
+
+**Recommandation** : Supprimer le fallback, rendre la variable d'environnement obligatoire et faire une rotation de la clé actuelle.
+
+### 3.12 Aucune validation d'entrée côté backend
+
+Les contrôleurs NestJS acceptent les données brutes (`any`) sans aucun DTO ni décorateur de validation (`class-validator`). Exemple :
+
+```ts
+async createStaffAccount(restaurantId: string, staffData: any, token: string)
+```
+
+**Impact** : Vulnérable aux injections et données malformées.
+
+**Recommandation** : Créer des DTOs avec `class-validator` et activer le `ValidationPipe` global.
+
+### 3.13 Aucun rate limiting sur les endpoints publics
+
+Les endpoints publics (création de commande, feedback, tracking QR) n'ont aucune protection contre les abus. Un utilisateur malveillant pourrait spammer des milliers de commandes ou de feedbacks.
+
+**Recommandation** : Ajouter `@nestjs/throttler` avec des limites appropriées.
+
 ---
 
 ## 4. Matrice de priorités
 
 | Priorité | Action | Effort | Impact |
 |---|---|---|---|
+| **P0** | Hasher les mots de passe staff (bcrypt) | Faible | Sécurité critique |
+| **P0** | Supprimer la clé API Resend du code + rotation | Faible | Sécurité critique |
 | **P0** | Réactiver le middleware auth | Faible | Sécurité |
+| **P0** | Ajouter validation des entrées (DTOs + ValidationPipe) | Moyen | Sécurité |
 | **P0** | Uniformiser l'accès data (backend only) | Moyen | Sécurité + Maintenabilité |
+| **P1** | Ajouter rate limiting (`@nestjs/throttler`) | Faible | Sécurité |
 | **P1** | Extraire composants des pages monolithiques | Élevé | Maintenabilité |
 | **P1** | Ajouter un AuthContext / RestaurantContext | Faible | Performance + DX |
 | **P1** | Migrer vers `@supabase/ssr` client (browser/server) | Faible | SSR + Auth correcte |
@@ -149,9 +197,10 @@ Aucun test frontend. Le backend a quelques fichiers `.spec.ts` (squelettes gén�
 
 L'app fonctionne et offre un produit riche. Le backend est bien structuré en modules. Les principaux axes d'amélioration sont :
 
-1. **Décomposer les pages monolithiques** en composants + hooks
+1. **Corriger les failles de sécurité critiques** : hasher les mots de passe, supprimer la clé API du code, valider les entrées
 2. **Sécuriser l'accès admin** (middleware + SSR auth)
-3. **Unifier le canal d'accès aux données** (tout passe par le backend)
-4. **Partager l'état global** (Context pour auth/restaurant)
+3. **Décomposer les pages monolithiques** en composants + hooks
+4. **Unifier le canal d'accès aux données** (tout passe par le backend)
+5. **Partager l'état global** (Context pour auth/restaurant)
 
 Ces changements rendront le code significativement plus maintenable et sécurisé sans changer les fonctionnalités.
