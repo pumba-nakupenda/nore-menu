@@ -1,9 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
 import { Plus, Loader2, UtensilsCrossed, FileSpreadsheet, Download, Eye } from 'lucide-react'
-import { toast } from 'sonner'
 import {
     DndContext,
     closestCenter,
@@ -11,10 +8,8 @@ import {
     PointerSensor,
     useSensor,
     useSensors,
-    DragEndEvent
 } from '@dnd-kit/core'
 import {
-    arrayMove,
     SortableContext,
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
@@ -28,11 +23,7 @@ import BadgeEditor from '@/components/admin/menu/BadgeEditor'
 import BulkImportCSV from '@/components/admin/menu/BulkImportCSV'
 
 export default function MenuPage() {
-    const { restaurantId, restaurant, token } = useAuth()
-    const currency = restaurant?.currency || 'FCFA'
-    const [lang, setLang] = useState<'fr' | 'en'>('fr')
-
-    const form = useMenuForm(restaurantId, token)
+    const menu = useMenuForm()
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -41,49 +32,7 @@ export default function MenuPage() {
         })
     )
 
-    useEffect(() => {
-        if (restaurantId) form.loadMenu(restaurantId)
-    }, [restaurantId])
-
-    const t = (item: any, field: string) => {
-        if (!item) return ''
-        if (lang === 'en') {
-            return item[`${field}_en`] || item[field]
-        }
-        return item[field]
-    }
-
-    const handleDragEnd = async (event: DragEndEvent) => {
-        const { active, over } = event
-        if (!over || active.id === over.id) return
-
-        const oldIndex = form.categories.findIndex(c => c.id === active.id)
-        const newIndex = form.categories.findIndex(c => c.id === over.id)
-
-        const newOrder = arrayMove(form.categories, oldIndex, newIndex)
-        form.setCategories(newOrder)
-
-        try {
-            const orders = newOrder.map((cat, index) => ({
-                id: cat.id,
-                order: index
-            }))
-
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/menu/reorder-categories`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ orders })
-            })
-            toast.success('Ordre du menu mis à jour !')
-        } catch (err) {
-            toast.error('Erreur lors du changement d\'ordre')
-        }
-    }
-
-    if (form.loading && !form.categories.length) return (
+    if (menu.loading && !menu.categories.length) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-zinc-400 gap-4">
             <Loader2 className="w-10 h-10 animate-spin text-brand" />
             <p className="font-medium animate-pulse">Chargement de votre menu premium...</p>
@@ -104,14 +53,14 @@ export default function MenuPage() {
                 {/* SCROLLABLE TOOLBAR MOBILE */}
                 <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap">
                     <a
-                        href={restaurantId ? `/menu/${restaurantId}` : '#'}
+                        href={menu.restaurantId ? `/menu/${menu.restaurantId}` : '#'}
                         target="_blank"
                         className="whitespace-nowrap bg-emerald-50 text-brand border border-emerald-100 px-4 py-2.5 rounded-xl hover:bg-emerald-100 flex items-center justify-center transition-all font-bold text-[10px] uppercase tracking-widest shrink-0"
                     >
                         <Eye className="w-3.5 h-3.5 mr-2" /> Aperçu
                     </a>
                     <button
-                        onClick={form.downloadTemplate}
+                        onClick={menu.downloadTemplate}
                         className="whitespace-nowrap bg-white text-gold border border-gold/20 px-4 py-2.5 rounded-xl hover:bg-amber-50 flex items-center justify-center shadow-sm transition-all font-bold text-[10px] uppercase tracking-widest shrink-0"
                     >
                         <Download className="w-3.5 h-3.5 mr-2" /> Modèle
@@ -123,49 +72,49 @@ export default function MenuPage() {
                         <FileSpreadsheet className="w-3.5 h-3.5 mr-2 text-emerald-600" /> Import
                     </button>
                     <button
-                        onClick={() => form.openModal('category')}
+                        onClick={() => menu.openModal('category')}
                         className="whitespace-nowrap bg-brand text-white px-5 py-2.5 rounded-xl hover:bg-brand-dark flex items-center justify-center shadow-xl shadow-emerald-900/10 transition-all font-bold text-[10px] uppercase tracking-widest shrink-0"
                     >
                         <Plus className="w-4 h-4 mr-2" /> Catégorie
                     </button>
                 </div>
-                <input type="file" id="global-csv-import" accept=".csv" onChange={form.handleFileImport} className="hidden" />
+                <input type="file" id="global-csv-import" accept=".csv" onChange={menu.handleFileImport} className="hidden" />
             </div>
 
             <div className="space-y-8 md:space-y-12">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
+                    onDragEnd={menu.handleDragEnd}
                     modifiers={[restrictToVerticalAxis]}
                 >
                     <SortableContext
-                        items={form.categories.map(c => c.id)}
+                        items={menu.categories.map(c => c.id)}
                         strategy={verticalListSortingStrategy}
                     >
-                        {form.categories.map((category) => (
+                        {menu.categories.map((category) => (
                             <SortableCategory
                                 key={category.id}
                                 category={category}
-                                t={t}
-                                currency={currency}
-                                restaurantId={restaurantId}
-                                openBadgeModal={form.openBadgeModal}
-                                openModal={form.openModal}
-                                handleDeleteCategory={form.handleDeleteCategory}
-                                handleDeleteDish={form.handleDeleteDish}
+                                t={menu.t}
+                                currency={menu.currency}
+                                restaurantId={menu.restaurantId}
+                                openBadgeModal={menu.openBadgeModal}
+                                openModal={menu.openModal}
+                                handleDeleteCategory={menu.handleDeleteCategory}
+                                handleDeleteDish={menu.handleDeleteDish}
                             />
                         ))}
                     </SortableContext>
                 </DndContext>
 
-                {form.categories.length === 0 && (
+                {menu.categories.length === 0 && (
                     <div className="text-center py-20 bg-white rounded-[3rem] border border-dashed border-black/10 shadow-sm">
                         <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-100">
                             <UtensilsCrossed className="w-10 h-10 text-brand" />
                         </div>
                         <h4 className="text-2xl font-serif font-bold text-zinc-900 mb-2">Votre menu est vide</h4>
-                        <button onClick={() => form.openModal('category')} className="bg-brand text-white px-8 py-4 rounded-2xl hover:bg-brand-dark transition-all font-bold shadow-xl">
+                        <button onClick={() => menu.openModal('category')} className="bg-brand text-white px-8 py-4 rounded-2xl hover:bg-brand-dark transition-all font-bold shadow-xl">
                             Créer la première catégorie
                         </button>
                     </div>
@@ -174,71 +123,71 @@ export default function MenuPage() {
 
             {/* MODALS */}
             <DishEditModal
-                isOpen={form.isModalOpen}
-                editingItem={form.editingItem}
-                modalType={form.modalType}
-                newItemName={form.newItemName}
-                setNewItemName={form.setNewItemName}
-                newItemNameEn={form.newItemNameEn}
-                setNewItemNameEn={form.setNewItemNameEn}
-                newDishPrice={form.newDishPrice}
-                setNewDishPrice={form.setNewDishPrice}
-                newDishDesc={form.newDishDesc}
-                setNewDishDesc={form.setNewDishDesc}
-                newDishDescEn={form.newDishDescEn}
-                setNewDishDescEn={form.setNewDishDescEn}
-                newDishTags={form.newDishTags}
-                toggleTag={form.toggleTag}
-                newDishAvailable={form.newDishAvailable}
-                setNewDishAvailable={form.setNewDishAvailable}
-                newDishSoldOut={form.newDishSoldOut}
-                setNewDishSoldOut={form.setNewDishSoldOut}
-                newDishSpecialty={form.newDishSpecialty}
-                setNewDishSpecialty={form.setNewDishSpecialty}
-                newDishImage={form.newDishImage}
-                handleImageChange={form.handleImageChange}
-                uploading={form.uploading}
-                currency={currency}
-                lang={lang}
-                onClose={() => form.setIsModalOpen(false)}
-                onSubmit={form.handleSubmit}
+                isOpen={menu.isModalOpen}
+                editingItem={menu.editingItem}
+                modalType={menu.modalType}
+                newItemName={menu.newItemName}
+                setNewItemName={menu.setNewItemName}
+                newItemNameEn={menu.newItemNameEn}
+                setNewItemNameEn={menu.setNewItemNameEn}
+                newDishPrice={menu.newDishPrice}
+                setNewDishPrice={menu.setNewDishPrice}
+                newDishDesc={menu.newDishDesc}
+                setNewDishDesc={menu.setNewDishDesc}
+                newDishDescEn={menu.newDishDescEn}
+                setNewDishDescEn={menu.setNewDishDescEn}
+                newDishTags={menu.newDishTags}
+                toggleTag={menu.toggleTag}
+                newDishAvailable={menu.newDishAvailable}
+                setNewDishAvailable={menu.setNewDishAvailable}
+                newDishSoldOut={menu.newDishSoldOut}
+                setNewDishSoldOut={menu.setNewDishSoldOut}
+                newDishSpecialty={menu.newDishSpecialty}
+                setNewDishSpecialty={menu.setNewDishSpecialty}
+                newDishImage={menu.newDishImage}
+                handleImageChange={menu.handleImageChange}
+                uploading={menu.uploading}
+                currency={menu.currency}
+                lang={menu.lang}
+                onClose={() => menu.setIsModalOpen(false)}
+                onSubmit={menu.handleSubmit}
             />
 
             <CategoryEditModal
-                isOpen={form.isModalOpen}
-                editingItem={form.editingItem}
-                modalType={form.modalType}
-                newItemName={form.newItemName}
-                setNewItemName={form.setNewItemName}
-                newItemNameEn={form.newItemNameEn}
-                setNewItemNameEn={form.setNewItemNameEn}
-                uploading={form.uploading}
-                onClose={() => form.setIsModalOpen(false)}
-                onSubmit={form.handleSubmit}
+                isOpen={menu.isModalOpen}
+                editingItem={menu.editingItem}
+                modalType={menu.modalType}
+                newItemName={menu.newItemName}
+                setNewItemName={menu.setNewItemName}
+                newItemNameEn={menu.newItemNameEn}
+                setNewItemNameEn={menu.setNewItemNameEn}
+                uploading={menu.uploading}
+                onClose={() => menu.setIsModalOpen(false)}
+                onSubmit={menu.handleSubmit}
             />
 
             <BadgeEditor
-                isOpen={form.isBadgeModalOpen}
-                categories={form.categories}
-                selectedCategoryId={form.selectedCategoryId}
-                lang={lang}
-                newBadgeName={form.newBadgeName}
-                setNewBadgeName={form.setNewBadgeName}
-                newBadgeNameEn={form.newBadgeNameEn}
-                setNewBadgeNameEn={form.setNewBadgeNameEn}
-                newBadgeIcon={form.newBadgeIcon}
-                setNewBadgeIcon={form.setNewBadgeIcon}
-                onClose={() => form.setIsBadgeModalOpen(false)}
-                onSubmit={form.handleBadgeSubmit}
-                onDeleteBadge={form.handleDeleteBadge}
+                isOpen={menu.isBadgeModalOpen}
+                categories={menu.categories}
+                selectedCategoryId={menu.selectedCategoryId}
+                lang={menu.lang}
+                newBadgeName={menu.newBadgeName}
+                setNewBadgeName={menu.setNewBadgeName}
+                newBadgeNameEn={menu.newBadgeNameEn}
+                setNewBadgeNameEn={menu.setNewBadgeNameEn}
+                newBadgeIcon={menu.newBadgeIcon}
+                setNewBadgeIcon={menu.setNewBadgeIcon}
+                onClose={() => menu.setIsBadgeModalOpen(false)}
+                onSubmit={menu.handleBadgeSubmit}
+                onDeleteBadge={menu.handleDeleteBadge}
             />
 
             <BulkImportCSV
-                isOpen={form.isImportModalOpen}
-                importData={form.importData}
-                loading={form.loading}
-                onClose={() => form.setIsImportModalOpen(false)}
-                onConfirm={form.confirmBulkImport}
+                isOpen={menu.isImportModalOpen}
+                importData={menu.importData}
+                loading={menu.loading}
+                onClose={() => menu.setIsImportModalOpen(false)}
+                onConfirm={menu.confirmBulkImport}
             />
         </div>
     )
