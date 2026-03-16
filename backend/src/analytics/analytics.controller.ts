@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Param, Post, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { AnalyticsService } from './analytics.service';
 import { SupabaseGuard } from '../auth/supabase.guard';
+import { StaffGuard } from '../auth/staff.guard';
+import { TrackLikeDto, TrackQrScanDto, TrackDishViewDto, TrackWhatsAppOrderDto, UpdateWhatsAppStatusDto, UpdateWhatsAppPaymentDto } from '../dto/analytics.dto';
 
 @Controller('analytics')
 export class AnalyticsController {
@@ -8,13 +10,13 @@ export class AnalyticsController {
 
     // Public endpoint - Toggle dish like
     @Post('like')
-    async toggleLike(@Body() body: { restaurantId: string; dishId: string; sessionId: string }) {
+    async toggleLike(@Body() body: TrackLikeDto) {
         return this.analyticsService.toggleDishLike(body.restaurantId, body.dishId, body.sessionId);
     }
 
     // Public endpoint - Track QR scan
     @Post('qr-scan')
-    async trackQrScan(@Body() body: { restaurantId: string; tableNumber?: string }, @Req() req: any) {
+    async trackQrScan(@Body() body: TrackQrScanDto, @Req() req: any) {
         const userAgent = req.headers['user-agent'] || 'unknown';
         const referrer = req.headers['referer'] || req.headers['referrer'];
         return this.analyticsService.trackQrScan(body.restaurantId, userAgent, referrer, body.tableNumber);
@@ -22,21 +24,13 @@ export class AnalyticsController {
 
     // Public endpoint - Track dish view
     @Post('dish-view')
-    async trackDishView(@Body() body: { restaurantId: string; dishId: string; sessionId?: string }) {
+    async trackDishView(@Body() body: TrackDishViewDto) {
         return this.analyticsService.trackDishView(body.restaurantId, body.dishId, body.sessionId);
     }
 
     // Public endpoint - Track WhatsApp order
     @Post('whatsapp-order')
-    async trackWhatsAppOrder(@Body() body: {
-        restaurantId: string;
-        items: any[];
-        totalPrice: number;
-        customerName?: string;
-        tableNumber?: string;
-        orderType?: string;
-        deliveryAddress?: string;
-    }) {
+    async trackWhatsAppOrder(@Body() body: TrackWhatsAppOrderDto) {
         return this.analyticsService.trackWhatsAppOrder(body.restaurantId, {
             items: body.items,
             totalPrice: body.totalPrice,
@@ -55,16 +49,12 @@ export class AnalyticsController {
         return this.analyticsService.getWhatsAppOrders(restaurantId, token);
     }
 
-    // Public/POS endpoint - Update WhatsApp order status (Validate/Cancel)
+    // Protected endpoint - Update WhatsApp order status (StaffGuard required)
+    @UseGuards(StaffGuard)
     @Patch('whatsapp-orders/:orderId')
     async updateWhatsAppStatus(
         @Param('orderId') orderId: string,
-        @Body() body: { 
-            status: 'VALIDATED' | 'CANCELLED'; 
-            staffId?: string;
-            customerName?: string;
-            deliveryAddress?: string;
-        }
+        @Body() body: UpdateWhatsAppStatusDto
     ) {
         return this.analyticsService.updateWhatsAppOrderStatus(orderId, body.status, body.staffId, {
             customerName: body.customerName,
@@ -72,11 +62,12 @@ export class AnalyticsController {
         });
     }
 
-    // Public/POS endpoint - Update WhatsApp order payment status
+    // Protected endpoint - Update WhatsApp order payment status (StaffGuard required)
+    @UseGuards(StaffGuard)
     @Patch('whatsapp-orders/:orderId/payment')
     async updateWhatsAppPayment(
         @Param('orderId') orderId: string,
-        @Body() body: { isPaid: boolean; staffId?: string }
+        @Body() body: UpdateWhatsAppPaymentDto
     ) {
         return this.analyticsService.updateWhatsAppPaymentStatus(orderId, body.isPaid, body.staffId);
     }
@@ -116,8 +107,10 @@ export class AnalyticsController {
         );
     }
 
+    // Protected endpoint - Trigger aggregation (admin only)
+    @UseGuards(SupabaseGuard)
     @Post('aggregate')
-    async triggerAggregation(@Query('date') date?: string) {
+    async triggerAggregation(@Req() req: any, @Query('date') date?: string) {
         return this.analyticsService.runDailyAggregation(date);
     }
 
@@ -132,10 +125,12 @@ export class AnalyticsController {
         return this.analyticsService.getStaffActivity(staffId, restaurantId, token);
     }
 
+    // Protected endpoint - Global stats (master admin only)
     @UseGuards(SupabaseGuard)
     @Get('global-stats')
-    async getGlobalStats() {
-        return this.analyticsService.getGlobalStats();
+    async getGlobalStats(@Req() req: any) {
+        const token = this.extractToken(req);
+        return this.analyticsService.getGlobalStats(token);
     }
 
     private extractToken(req: any): string {

@@ -118,7 +118,7 @@ export class AnalyticsService {
                 source: 'WHATSAPP'
             });
 
-            if (kitchenError) console.error('Kitchen conversion error:', kitchenError);
+            if (kitchenError) throw new InternalServerErrorException(`Kitchen conversion failed: ${kitchenError.message}`);
         }
 
         // Log activity
@@ -236,11 +236,14 @@ export class AnalyticsService {
         }
         if (filters?.dateStart) query = query.gte('created_at', `${filters.dateStart}T00:00:00`);
         if (filters?.dateEnd) query = query.lte('created_at', `${filters.dateEnd}T23:59:59`);
-        if (filters?.search) query = query.or(`customer_name.ilike.%${filters.search}%,id.cast.text.ilike.%${filters.search}%`);
+        if (filters?.search) {
+            const sanitized = filters.search.replace(/[%_'"\\]/g, '');
+            query = query.or(`customer_name.ilike.%${sanitized}%,id.cast.text.ilike.%${sanitized}%`);
+        }
 
         const { data: unifiedOrders, count: totalOrders, error: queryError } = await query.range(from, to);
         if (queryError) {
-            console.error('Unified query error:', queryError);
+            throw new InternalServerErrorException(queryError.message);
         }
 
         return {
@@ -329,8 +332,8 @@ export class AnalyticsService {
         return data?.map(like => like.dish_id) || [];
     }
 
-    async getGlobalStats() {
-        const client = this.supabase.getClient();
+    async getGlobalStats(token?: string) {
+        const client = token ? this.supabase.getClient(token) : this.supabase.getClient();
         
         const { count: totalRestaurants } = await client.from('restaurants').select('*', { count: 'exact', head: true });
         const { count: totalDishes } = await client.from('dishes').select('*', { count: 'exact', head: true });

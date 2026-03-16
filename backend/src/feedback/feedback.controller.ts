@@ -1,13 +1,14 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
 import { SupabaseGuard } from '../auth/supabase.guard';
+import { CreateFeedbackDto } from '../dto/feedback.dto';
 
 @Controller('feedback')
 export class FeedbackController {
     constructor(private readonly feedbackService: FeedbackService) { }
 
     @Post()
-    async submitFeedback(@Body() body: { restaurantId: string; rating: number; comment: string; tableNumber?: string }) {
+    async submitFeedback(@Body() body: CreateFeedbackDto) {
         return this.feedbackService.createFeedback(body.restaurantId, body.rating, body.comment, body.tableNumber);
     }
 

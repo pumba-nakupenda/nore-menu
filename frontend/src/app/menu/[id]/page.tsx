@@ -76,12 +76,12 @@ export default function PublicMenuPage() {
                 setLang(savedLang)
             }
 
-            // Realtime Menu Updates
+            // Realtime Menu Updates (filtered by restaurant)
             const channel = supabase
-                .channel('public-menu-updates')
+                .channel(`public-menu-updates-${params.id}`)
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'restaurants', filter: `id=eq.${params.id}` }, () => loadMenu(params.id as string))
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => loadMenu(params.id as string))
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'dishes' }, () => loadMenu(params.id as string))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'categories', filter: `restaurant_id=eq.${params.id}` }, () => loadMenu(params.id as string))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'dishes', filter: `restaurant_id=eq.${params.id}` }, () => loadMenu(params.id as string))
                 .subscribe()
 
             // Generate or retrieve session ID
@@ -100,6 +100,10 @@ export default function PublicMenuPage() {
 
             // Track QR scan
             trackQrScan(params.id as string)
+
+            return () => {
+                supabase.removeChannel(channel)
+            }
         }
         // Load selection from local storage
         const saved = localStorage.getItem(`selection_${params.id}`)

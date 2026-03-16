@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { StaffGuard } from '../auth/staff.guard';
+import { CreateOrderDto, UpdateOrderStatusDto } from '../dto/orders.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -8,7 +9,7 @@ export class OrdersController {
 
   @UseGuards(StaffGuard)
   @Post(':restaurantId')
-  async createOrder(@Param('restaurantId') restaurantId: string, @Body() orderData: any) {
+  async createOrder(@Param('restaurantId') restaurantId: string, @Body() orderData: CreateOrderDto) {
     return this.ordersService.createOrder(restaurantId, orderData);
   }
 
@@ -25,7 +26,7 @@ export class OrdersController {
 
   @UseGuards(StaffGuard)
   @Patch(':orderId/pos-status')
-  async updateStatus(@Param('orderId') orderId: string, @Body() body: any) {
+  async updateStatus(@Param('orderId') orderId: string, @Body() body: UpdateOrderStatusDto) {
     return this.ordersService.updateOrderStatus(orderId, body.status, body.isPaid, body.staffId);
   }
 

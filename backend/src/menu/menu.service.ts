@@ -259,9 +259,8 @@ export class MenuService {
 
             const filePath = parts[1];
             await this.supabase.getClient(token).storage.from(bucket).remove([filePath]);
-            console.log(`Successfully deleted orphaned image: ${filePath}`);
-        } catch (e) {
-            console.error('Failed to cleanup storage:', e);
+        } catch {
+            // Storage cleanup is best-effort — failure is non-critical
         }
     }
 

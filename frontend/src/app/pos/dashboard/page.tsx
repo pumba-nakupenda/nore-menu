@@ -49,12 +49,10 @@ export default function POSDashboardPage() {
 
     useEffect(() => {
         const sessionStr = localStorage.getItem('nore_pos_session')
-        console.log('POS Session check:', sessionStr ? 'Trouvée' : 'Non trouvée')
-        
-        if (!sessionStr) { 
-            console.log('Aucune session POS, redirection vers login...')
+
+        if (!sessionStr) {
             router.push('/pos/login')
-            return 
+            return
         }
 
         let staffData: any
@@ -64,8 +62,7 @@ export default function POSDashboardPage() {
                 throw new Error('Données de session incomplètes')
             }
             setStaff(staffData)
-        } catch (e) {
-            console.error('Session POS invalide:', e)
+        } catch {
             localStorage.removeItem('nore_pos_session')
             router.push('/pos/login')
             return

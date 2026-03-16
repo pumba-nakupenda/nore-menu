@@ -11,6 +11,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--primary);
+  --color-brand-dark: #053e2f;
+  --color-gold: var(--accent);
+  --color-gold-dark: #b48a4d;
   --font-sans: var(--font-inter);
   --font-serif: var(--font-playfair);
   --font-classic: var(--font-cormorant);

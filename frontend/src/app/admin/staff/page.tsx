@@ -30,7 +30,7 @@ export default function StaffManagementPage() {
     })
 
     const copyAccessKit = (member: any) => {
-        const text = `🍽️ Accès Nore POS\n\nIdentifiant : ${member.username}\nMot de passe : ${member.password}\nLien : ${window.location.origin}/pos/login`
+        const text = `🍽️ Accès Nore POS\n\nIdentifiant : ${member.username}\nLien : ${window.location.origin}/pos/login\n\n(Le mot de passe doit être communiqué séparément pour des raisons de sécurité)`
         navigator.clipboard.writeText(text)
         toast.success('Kit de connexion copié !')
     }

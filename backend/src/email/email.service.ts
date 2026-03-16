@@ -6,8 +6,11 @@ export class EmailService {
   private resend: Resend;
 
   constructor() {
-    // Uses provided key as fallback
-    this.resend = new Resend(process.env.RESEND_API_KEY || 're_H3eSWEg1_2fwMURPHXHPoa6whhixpovm5');
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.warn('RESEND_API_KEY is not set. Emails will not be sent.');
+    }
+    this.resend = new Resend(apiKey || '');
   }
 
   async sendWelcomeEmail(to: string, restaurantName: string) {
